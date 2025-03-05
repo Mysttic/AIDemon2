@@ -1,16 +1,92 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:AIDemonV2.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AIDemonV2.Views.MainView"
-             x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+             x:Class="AIDemonV2.Views.MainView">
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<Grid x:Name="MainGrid" RowDefinitions="*" ColumnDefinitions="Auto,*,Auto">
+
+		<!-- LEWA KOLUMNA -->
+		<Border Grid.Column="0" Background="#333333">
+			<Grid x:Name="LeftPanelGrid">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<!-- Przycisk -->
+					<RowDefinition Height="*" />
+					<!-- Zawartość (Settings, lista) -->
+				</Grid.RowDefinitions>
+
+				<!-- Rząd 0: Przycisk zwijania -->
+				<Button x:Name="ToggleLeftPanelButton"
+						Grid.Row="0"
+						Content="&lt;&lt;"
+						Margin="5"/>
+
+				<!-- Rząd 1: Główna zawartość (ukrywana) -->
+				<StackPanel Grid.Row="1" Margin="5" Spacing="5">
+					<Button x:Name="SettingsButton" Content="Settings"/>
+					<ListBox x:Name="LeftPanelList" />
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<!-- ŚRODKOWA KOLUMNA -->
+		<Border Grid.Column="1" Background="#000000">
+			<Grid RowDefinitions="*,Auto">
+				<ListBox Grid.Row="0" Margin="5,5,5,0" Foreground="White" />
+				<Grid Grid.Row="1" Margin="5,0,5,5">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<TextBox Grid.Column="0" Height="50" Watermark="Enter your prompt..." />
+					<Button Grid.Column="1" Content="Send" Width="80" Margin="5,0,0,0"/>
+				</Grid>
+			</Grid>
+		</Border>
+
+		<!-- PRAWA KOLUMNA -->
+		<Border Grid.Column="2" Background="#80BFFF">
+			<Grid x:Name="RightPanelGrid">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="2*" />
+					<!-- Zawartość edytora kodu -->
+					<ColumnDefinition Width="Auto"/>
+					<!-- Przycisk >> zawsze widoczny -->
+				</Grid.ColumnDefinitions>
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+
+				<!-- kol. 0, row 0: Przyciski Save/Action/Remove -->
+				<StackPanel x:Name="RightPanelButtons"
+							Grid.Column="0" Grid.Row="0"
+							Orientation="Horizontal"
+							HorizontalAlignment="Right"
+							Margin="10">
+					<Button Content="Save" Background="#444444" Foreground="White" Margin="0,0,5,0"/>
+					<Button Content="Action" Background="#444444" Foreground="White" Margin="0,0,5,0"/>
+					<Button Content="Remove" Background="#444444" Foreground="White"/>
+				</StackPanel>
+
+				<!-- kol. 0, row 1: TextBox (edytor kodu) -->
+				<TextBox x:Name="RightPanelEditor"
+						 Grid.Column="0" Grid.Row="1"
+						 Grid.ColumnSpan="2"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 Margin="10"
+						 MaxWidth="600"/>
+
+				<!-- kol. 1 (cały row span) - Przycisk zwijania prawego panelu -->
+				<Button x:Name="ToggleRightPanelButton"
+						Grid.Column="1"
+						Grid.RowSpan="2"
+						Content=">>"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Top"
+						Margin="5"/>
+			</Grid>
+		</Border>
+	</Grid>
 </UserControl>
