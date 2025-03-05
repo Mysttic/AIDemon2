@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AIDemonV2.Views.MainChatView">
+
+	<Grid RowDefinitions="*,Auto">
+
+		<!-- Lista wiadomości -->
+		<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" x:Name="ChatScrollViewer">
+			<ItemsControl ItemsSource="{Binding Messages}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<VirtualizingStackPanel />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Border Padding="8" Margin="5"
+                                Background="{Binding AIModel, Converter={StaticResource AIMessageBackgroundConverter}}"
+                                HorizontalAlignment="{Binding AIModel, Converter={StaticResource MessageAlignmentConverter}}">
+
+							<StackPanel>
+								<TextBlock Text="{Binding MessageContent}" FontWeight="Bold" Foreground="White"/>
+								<TextBlock Text="{Binding OriginalMessage}" Foreground="LightGray"/>
+								<TextBlock Text="{Binding RunDate, StringFormat='HH:mm:ss'}"
+                                           FontSize="10"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Right"/>
+								<TextBlock Text="{Binding AIModel.Name}" FontSize="10" Foreground="LightBlue"/>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+
+	</Grid>
+</UserControl>

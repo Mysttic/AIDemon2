@@ -2,5 +2,10 @@
 
 public class MainViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
+	public MainChatViewModel ChatViewModel { get; }
+
+	public MainViewModel()
+	{
+		ChatViewModel = new MainChatViewModel();
+	}
 }
