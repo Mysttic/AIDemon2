@@ -30,15 +30,34 @@
 		<!-- ŚRODKOWA KOLUMNA -->
 		<Border Grid.Column="1" Background="#000000">
 			<Grid RowDefinitions="*,Auto">
-				<views:MainChatView />
-				
-				<Grid Grid.Row="1" Margin="5,0,5,5">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<TextBox Grid.Column="0" Height="50" Watermark="Enter your prompt..." />
-					<Button Grid.Column="1" Content="Send" Width="80" Margin="5,0,0,0"/>
+				<views:MainChatView
+					Grid.Row="0"/>
+
+				<Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="5">
+					<TextBox Grid.Column="0"
+							 AcceptsReturn="True"
+							 TextWrapping="Wrap"
+							 MinHeight="50"
+							 MaxHeight="150"
+							 Watermark="Enter your prompt...">
+						<TextBox.Styles>
+							<Style Selector="ScrollViewer">
+								<Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+							</Style>
+						</TextBox.Styles>
+					</TextBox>
+
+					<Button Grid.Column="1"
+							Width="80"
+							Margin="5,0,0,0"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Bottom"
+							IsEnabled="{Binding IsNotBusy}">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+							<PathIcon Data="{Binding SendButtonIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+							<TextBlock Text="Send"/>
+						</StackPanel>
+					</Button>
 				</Grid>
 			</Grid>
 		</Border>
