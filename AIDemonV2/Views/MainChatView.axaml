@@ -21,7 +21,6 @@
 
 							<StackPanel>
 								<TextBlock Text="{Binding MessageContent}" FontWeight="Bold" Foreground="White"/>
-								<TextBlock Text="{Binding OriginalMessage}" Foreground="LightGray"/>
 								<TextBlock Text="{Binding RunDate, StringFormat='HH:mm:ss'}"
                                            FontSize="10"
                                            Foreground="Gray"

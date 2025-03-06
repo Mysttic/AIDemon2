@@ -22,16 +22,18 @@ public partial class MainView : UserControl
 		if (_isLeftPanelVisible)
 		{
 			row.Height = new GridLength(0);  // Ukrywamy zawartość panelu
-			SettingsButton.IsVisible = false;
-			LeftPanelList.IsVisible = false;
+			LeftPanel.IsVisible = false;
+			//SettingsButton.IsVisible = false;
+			//LeftPanelList.IsVisible = false;
 			ToggleLeftPanelButton.Content = ">>";
 			_isLeftPanelVisible = false;
 		}
 		else
 		{
 			row.Height = new GridLength(1, GridUnitType.Star);
-			SettingsButton.IsVisible = true;
-			LeftPanelList.IsVisible = true;
+			LeftPanel.IsVisible = true;
+			//SettingsButton.IsVisible = true;
+			//LeftPanelList.IsVisible = true;
 			ToggleLeftPanelButton.Content = "<<";
 			_isLeftPanelVisible = true;
 		}

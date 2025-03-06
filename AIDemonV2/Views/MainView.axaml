@@ -10,9 +10,7 @@
 			<Grid x:Name="LeftPanelGrid">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
-					<!-- Przycisk -->
 					<RowDefinition Height="*" />
-					<!-- Zawartość (Settings, lista) -->
 				</Grid.RowDefinitions>
 
 				<!-- Rząd 0: Przycisk zwijania -->
@@ -21,11 +19,11 @@
 						Content="&lt;&lt;"
 						Margin="5"/>
 
-				<!-- Rząd 1: Główna zawartość (ukrywana) -->
-				<StackPanel Grid.Row="1" Margin="5" Spacing="5">
-					<Button x:Name="SettingsButton" Content="Settings"/>
-					<ListBox x:Name="LeftPanelList" />
-				</StackPanel>
+
+				<views:LeftPanelView
+					x:Name="LeftPanel"
+					Grid.Row="1"/>
+
 			</Grid>
 		</Border>
 

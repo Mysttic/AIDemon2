@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AIDemonV2.Views.LeftPanelView">
+
+	<!-- Rząd 1: Główna zawartość (ukrywana) -->
+	<Grid RowDefinitions="*,3*">
+		<!-- Górna sekcja z przyciskiem -->
+		<StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
+			<Button x:Name="SettingsButton" Content="Settings"/>
+		</StackPanel>
+
+		<!-- Dolna sekcja z listą -->
+		<ListBox Grid.Row="1" ItemsSource="{Binding SavedMessages}" Margin="5">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Border BorderThickness="1" BorderBrush="Gray" Padding="5" Margin="3">
+						<StackPanel>
+							<TextBlock Text="{Binding Message.MessageContent}" FontWeight="Bold" Foreground="White"/>
+							<TextBlock Text="{Binding Message.RunDate, StringFormat='HH:mm:ss'}"
+                                       FontSize="10"
+                                       Foreground="Gray"
+                                       HorizontalAlignment="Right"/>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</Grid>
+
+</UserControl>
