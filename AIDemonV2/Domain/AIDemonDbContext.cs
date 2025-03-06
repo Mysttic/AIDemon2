@@ -9,7 +9,6 @@ public class AIDemonDbContext : DbContext
 {
 	public DbSet<AIModel> AIModels { get; set; }
 	public DbSet<Message> Messages { get; set; }
-	public DbSet<ProgrammingLanguage> ProgrammingLanguages { get; set; }
 	public DbSet<SavedMessage> SavedMessages { get; set; }
 	public DbSet<Settings> Settings { get; set; }
 	public AIDemonDbContext(DbContextOptions<AIDemonDbContext> options) : base(options)

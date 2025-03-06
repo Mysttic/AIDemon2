@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AIDemonV2.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,21 +25,6 @@ namespace AIDemonV2.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AIModels", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProgrammingLanguages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProgrammingLanguages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,7 +60,7 @@ namespace AIDemonV2.Migrations
                     ApiKey = table.Column<string>(type: "text", nullable: false),
                     InstructionPrompt = table.Column<string>(type: "text", nullable: false),
                     SelectedAIModelId = table.Column<int>(type: "integer", nullable: true),
-                    ProgrammingLanguageId = table.Column<int>(type: "integer", nullable: true),
+                    ProgrammingLanguage = table.Column<string>(type: "text", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -86,11 +71,6 @@ namespace AIDemonV2.Migrations
                         name: "FK_Settings_AIModels_SelectedAIModelId",
                         column: x => x.SelectedAIModelId,
                         principalTable: "AIModels",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Settings_ProgrammingLanguages_ProgrammingLanguageId",
-                        column: x => x.ProgrammingLanguageId,
-                        principalTable: "ProgrammingLanguages",
                         principalColumn: "Id");
                 });
 
@@ -117,8 +97,8 @@ namespace AIDemonV2.Migrations
 
             migrationBuilder.InsertData(
                 table: "Settings",
-                columns: new[] { "Id", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguageId", "SelectedAIModelId" },
-                values: new object[] { 1, "", new DateTime(2025, 3, 5, 11, 42, 57, 175, DateTimeKind.Utc).AddTicks(9204), "You are a helpful assistant.", new DateTime(2025, 3, 5, 11, 42, 57, 175, DateTimeKind.Utc).AddTicks(9206), null, null });
+                columns: new[] { "Id", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguage", "SelectedAIModelId" },
+                values: new object[] { 1, "", new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3973), "You are a helpful assistant.", new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3975), null, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_AIModelId",
@@ -129,11 +109,6 @@ namespace AIDemonV2.Migrations
                 name: "IX_SavedMessages_MessageId",
                 table: "SavedMessages",
                 column: "MessageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Settings_ProgrammingLanguageId",
-                table: "Settings",
-                column: "ProgrammingLanguageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Settings_SelectedAIModelId",
@@ -152,9 +127,6 @@ namespace AIDemonV2.Migrations
 
             migrationBuilder.DropTable(
                 name: "Messages");
-
-            migrationBuilder.DropTable(
-                name: "ProgrammingLanguages");
 
             migrationBuilder.DropTable(
                 name: "AIModels");

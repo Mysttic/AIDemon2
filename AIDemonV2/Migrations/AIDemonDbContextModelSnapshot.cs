@@ -79,29 +79,6 @@ namespace AIDemonV2.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("ProgrammingLanguage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProgrammingLanguages");
-                });
-
             modelBuilder.Entity("SavedMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -148,15 +125,13 @@ namespace AIDemonV2.Migrations
                     b.Property<DateTime>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("ProgrammingLanguageId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProgrammingLanguage")
+                        .HasColumnType("text");
 
                     b.Property<int?>("SelectedAIModelId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProgrammingLanguageId");
 
                     b.HasIndex("SelectedAIModelId");
 
@@ -167,9 +142,9 @@ namespace AIDemonV2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 5, 11, 42, 57, 175, DateTimeKind.Utc).AddTicks(9204),
+                            CreationDate = new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3973),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 5, 11, 42, 57, 175, DateTimeKind.Utc).AddTicks(9206)
+                            ModificationDate = new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3975)
                         });
                 });
 
@@ -197,15 +172,9 @@ namespace AIDemonV2.Migrations
 
             modelBuilder.Entity("Settings", b =>
                 {
-                    b.HasOne("ProgrammingLanguage", "ProgrammingLanguage")
-                        .WithMany()
-                        .HasForeignKey("ProgrammingLanguageId");
-
                     b.HasOne("AIModel", "SelectedAIModel")
                         .WithMany()
                         .HasForeignKey("SelectedAIModelId");
-
-                    b.Navigation("ProgrammingLanguage");
 
                     b.Navigation("SelectedAIModel");
                 });

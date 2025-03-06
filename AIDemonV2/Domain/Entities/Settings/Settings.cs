@@ -8,10 +8,7 @@ public class Settings : EntityBase, ISettings
 	[ForeignKey(nameof(SelectedAIModelId))]
 	public int? SelectedAIModelId { get; set; }
 	public AIModel? SelectedAIModel { get; set; }
-
-	[ForeignKey(nameof(ProgrammingLanguageId))]
-	public int? ProgrammingLanguageId { get; set; }
-	public ProgrammingLanguage? ProgrammingLanguage { get; set; }
+	public string? ProgrammingLanguage { get; set; }
 
 	public Settings()
 	{
