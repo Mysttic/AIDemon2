@@ -41,21 +41,23 @@ public partial class MainView : UserControl
 
 	private void OnToggleRightPanelClick(object? sender, RoutedEventArgs e)
 	{
-		var col = RightPanelGrid.ColumnDefinitions[0];
+		var row = RightPanelGrid.RowDefinitions[1];
 
 		if (_isRightPanelVisible)
 		{
-			col.Width = new GridLength(0);
-			RightPanelEditor.IsVisible = false;
-			RightPanelButtons.IsVisible = false; // Ukrywa przyciski Save/Action/Remove
+			row.Height = new GridLength(0);
+			RightPanel.IsVisible = false;
+			//RightPanelEditor.IsVisible = false;
+			//RightPanelButtons.IsVisible = false; // Ukrywa przyciski Save/Action/Remove
 			ToggleRightPanelButton.Content = "<<";
 			_isRightPanelVisible = false;
 		}
 		else
 		{
-			col.Width = new GridLength(1, GridUnitType.Star); // Powrót do domyślnego rozmiaru
-			RightPanelEditor.IsVisible = true;
-			RightPanelButtons.IsVisible = true; // Pokazuje przyciski
+			row.Height = new GridLength(1, GridUnitType.Star); // Powrót do domyślnego rozmiaru
+			RightPanel.IsVisible = true;
+			//RightPanelEditor.IsVisible = true;
+			//RightPanelButtons.IsVisible = true; // Pokazuje przyciski
 			ToggleRightPanelButton.Content = ">>";
 			_isRightPanelVisible = true;
 		}
