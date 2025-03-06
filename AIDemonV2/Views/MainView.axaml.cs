@@ -23,8 +23,6 @@ public partial class MainView : UserControl
 		{
 			row.Height = new GridLength(0);  // Ukrywamy zawartość panelu
 			LeftPanel.IsVisible = false;
-			//SettingsButton.IsVisible = false;
-			//LeftPanelList.IsVisible = false;
 			ToggleLeftPanelButton.Content = ">>";
 			_isLeftPanelVisible = false;
 		}
@@ -32,8 +30,6 @@ public partial class MainView : UserControl
 		{
 			row.Height = new GridLength(1, GridUnitType.Star);
 			LeftPanel.IsVisible = true;
-			//SettingsButton.IsVisible = true;
-			//LeftPanelList.IsVisible = true;
 			ToggleLeftPanelButton.Content = "<<";
 			_isLeftPanelVisible = true;
 		}
@@ -47,8 +43,6 @@ public partial class MainView : UserControl
 		{
 			row.Height = new GridLength(0);
 			RightPanel.IsVisible = false;
-			//RightPanelEditor.IsVisible = false;
-			//RightPanelButtons.IsVisible = false; // Ukrywa przyciski Save/Action/Remove
 			ToggleRightPanelButton.Content = "<<";
 			_isRightPanelVisible = false;
 		}
@@ -56,8 +50,6 @@ public partial class MainView : UserControl
 		{
 			row.Height = new GridLength(1, GridUnitType.Star); // Powrót do domyślnego rozmiaru
 			RightPanel.IsVisible = true;
-			//RightPanelEditor.IsVisible = true;
-			//RightPanelButtons.IsVisible = true; // Pokazuje przyciski
 			ToggleRightPanelButton.Content = ">>";
 			_isRightPanelVisible = true;
 		}

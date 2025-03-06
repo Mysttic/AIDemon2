@@ -61,6 +61,12 @@
 						</StackPanel>
 					</Button>
 				</Grid>
+
+				<views:SettingsView 
+					x:Name="SettingsViewControl"
+					DataContext="{Binding LeftPanelViewModel}"
+                    IsVisible="false"
+                    ZIndex="10"/>
 			</Grid>
 		</Border>
 

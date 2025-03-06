@@ -1,39 +1,26 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AIDemonV2.ViewModels;
 
-public partial class LeftPanelViewModel : ObservableObject
+public partial class LeftPanelViewModel : ViewModelBase
 {
 	public ObservableCollection<SavedMessage> SavedMessages { get; set; } = new ObservableCollection<SavedMessage>();
 
-	public LeftPanelViewModel()
+	ISettingsRepository _settingsRepository;
+
+	public LeftPanelViewModel(ISettingsRepository settingsRepository)
 	{
-		// Inicjalizacja listy zapisanych wiadomości
-		SavedMessages = new ObservableCollection<SavedMessage>
-		{
-			new SavedMessage
-			{
-				Message = new Message
-				{
-					MessageContent = "Testowa wiadomość 1",
-					RunDate = DateTime.Now
-				}
-			},
-			new SavedMessage
-			{
-				Message = new Message
-				{
-					MessageContent = "Testowa wiadomość 2",
-					RunDate = DateTime.Now.AddMinutes(-10)
-				}
-			}
-		};
+		_settingsRepository = settingsRepository;
 	}
+
 }
 

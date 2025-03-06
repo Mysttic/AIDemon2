@@ -1,4 +1,6 @@
-﻿using Avalonia;
+﻿using AIDemonV2.ViewModels;
+using AIDemonV2.Views;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +22,11 @@ class Program
 
 		InitializeScope(serviceProvider);
 
-		BuildAvaloniaApp()
+		BuildAvaloniaApp(serviceProvider)
+			.AfterSetup(builder =>
+			{
+				builder.Instance!.Resources["ServiceProvider"] = serviceProvider;
+			})
 			.StartWithClassicDesktopLifetime(args);
 	}
 
@@ -32,6 +38,16 @@ class Program
 			options.UseNpgsql("Host=localhost;Port=5432;Database=AIDemonDB;Username=postgres;Password=postgres;");
 		});
 		// Rejestracja innych serwisów...
+		services.AddScoped<ISettingsRepository, SettingsRepository>();
+
+		services.AddSingleton<MainViewModel>();
+		services.AddSingleton<LeftPanelViewModel>();
+		services.AddSingleton<MainChatViewModel>();
+		services.AddSingleton<RightPanelViewModel>();
+		services.AddTransient<SettingsViewModel>();
+
+		services.AddTransient<MainWindow>();
+		services.AddTransient<LeftPanelView>();
 	}
 
 	private static void InitializeScope(ServiceProvider serviceProvider)
@@ -44,7 +60,7 @@ class Program
 	}
 
 	// Avalonia configuration, don't remove; also used by visual designer.
-	public static AppBuilder BuildAvaloniaApp()
+	public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
 		=> AppBuilder.Configure<App>()
 			.UsePlatformDetect()
 			.WithInterFont()
