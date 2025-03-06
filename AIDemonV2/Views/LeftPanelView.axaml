@@ -1,12 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="AIDemonV2.Views.LeftPanelView">
 
 	<!-- Rząd 1: Główna zawartość (ukrywana) -->
 	<Grid RowDefinitions="*,3*">
 		<!-- Górna sekcja z przyciskiem -->
 		<StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
-			<Button x:Name="SettingsButton" Content="Settings"/>
+			<Button x:Name="SettingsButton" Padding="10">
+				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+					<materialIcons:MaterialIcon Kind="Settings" Width="16" Height="16"/>
+					<TextBlock Text="Settings" VerticalAlignment="Center"/>
+				</StackPanel>
+			</Button>
 		</StackPanel>
 
 		<!-- Dolna sekcja z listą -->

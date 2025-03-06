@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="AIDemonV2.Views.RightPanelView">
 	<Grid RowDefinitions="Auto,*">
 		<!-- Przyciski Save/Action/Remove -->
@@ -7,9 +8,24 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10">
-			<Button Content="Save" Background="#444444" Foreground="White" Margin="0,0,5,0"/>
-			<Button Content="Action" Background="#444444" Foreground="White" Margin="0,0,5,0"/>
-			<Button Content="Remove" Background="#444444" Foreground="White"/>
+			<Button 
+				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
+				Background="#444444" 
+				Foreground="White" 
+				Margin="0,0,5,0"
+				Padding="15,5,15,5"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=RocketLaunch}"
+				Background="#444444" 
+				Foreground="White" 
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Delete}"
+				Background="#FF0000" 
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"/>
 		</StackPanel>
 
 		<!-- Edytor kodu -->
