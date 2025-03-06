@@ -21,17 +21,17 @@ public partial class MainView : UserControl
 		ToggleLeftPanelButton.Click += OnToggleLeftPanelClick;
 		ToggleRightPanelButton.Click += OnToggleRightPanelClick;
 
-		_services = (IServiceProvider)Application.Current!.Resources["Services"];
-		var vm = _services.GetRequiredService<MainViewModel>();
-		DataContext = vm;
+		//_services = (IServiceProvider)Application.Current!.Resources["Services"];
+		//var vm = _services.GetRequiredService<MainViewModel>();
+		//DataContext = vm;
 
-		_leftPanelViewModel = vm.LeftPanelViewModel;
+		//_leftPanelViewModel = vm.LeftPanelViewModel;
 
-		// Obsługa otwierania okna SettingsView
-		_leftPanelViewModel.ShowSettingsCommand.Subscribe(_ =>
-		{
-			OpenSettingsView();
-		});
+		//// Obsługa otwierania okna SettingsView
+		//_leftPanelViewModel.ShowSettingsCommand.Subscribe(_ =>
+		//{
+		//	OpenSettingsView();
+		//});
 
 	}
 

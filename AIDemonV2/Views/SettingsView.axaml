@@ -49,8 +49,8 @@
 						HorizontalAlignment="Right"
 						Spacing="10"
 						Margin="0 20 0 0">
-				<Button Content="Save" Command="{Binding SaveCommand}"/>
-				<Button Content="Cancel" Command="{Binding CancelCommand}"/>
+				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}"/>
+				<Button x:Name="CancelButton" Content="Cancel" Command="{Binding CancelCommand}"/>
 			</StackPanel>
 		</Grid>
 	</Border>

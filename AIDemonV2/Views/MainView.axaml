@@ -92,7 +92,7 @@
 
 		<views:SettingsView
 					x:Name="SettingsViewControl"
-					IsVisible="{Binding LeftPanelViewModel.IsSettingsVisible, Mode=TwoWay}"
+					IsVisible="false"
 					Grid.ColumnSpan="3"
                     ZIndex="10"/>
 	</Grid>
