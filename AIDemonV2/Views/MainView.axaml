@@ -62,11 +62,7 @@
 					</Button>
 				</Grid>
 
-				<views:SettingsView 
-					x:Name="SettingsViewControl"
-					DataContext="{Binding LeftPanelViewModel}"
-                    IsVisible="false"
-                    ZIndex="10"/>
+				
 			</Grid>
 		</Border>
 
@@ -93,5 +89,11 @@
 					Grid.Row="1"/>
 			</Grid>
 		</Border>
+
+		<views:SettingsView
+					x:Name="SettingsViewControl"
+					IsVisible="{Binding LeftPanelViewModel.IsSettingsVisible, Mode=TwoWay}"
+					Grid.ColumnSpan="3"
+                    ZIndex="10"/>
 	</Grid>
 </UserControl>

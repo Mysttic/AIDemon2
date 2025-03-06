@@ -1,13 +1,6 @@
-﻿using Avalonia.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AIDemonV2.ViewModels;
 
@@ -15,11 +8,26 @@ public partial class LeftPanelViewModel : ViewModelBase
 {
 	public ObservableCollection<SavedMessage> SavedMessages { get; set; } = new ObservableCollection<SavedMessage>();
 
-	ISettingsRepository _settingsRepository;
+	private readonly ISettingsRepository _settingsRepository;
+
+	private bool _isSettingsVisible;
+	public bool IsSettingsVisible
+	{
+		get => _isSettingsVisible;
+		set => this.RaiseAndSetIfChanged(ref _isSettingsVisible, value);
+	}
+
+
+	public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; }
 
 	public LeftPanelViewModel(ISettingsRepository settingsRepository)
 	{
 		_settingsRepository = settingsRepository;
+		ShowSettingsCommand = ReactiveCommand.Create(() =>
+		{
+			IsSettingsVisible = true;  
+		});
+
 	}
 
 }

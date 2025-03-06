@@ -12,12 +12,9 @@ public class MainViewModel : ViewModelBase
 	public MainChatViewModel ChatViewModel { get; }
 	public RightPanelViewModel RightPanelViewModel { get; }
 
-	ISettingsRepository _settingsRepository;
-
-	public MainViewModel(ISettingsRepository settingsRepository)
+	public MainViewModel(LeftPanelViewModel leftPanelViewModel)
 	{
-		_settingsRepository = settingsRepository;
-		LeftPanelViewModel = new LeftPanelViewModel(settingsRepository);
+		LeftPanelViewModel = leftPanelViewModel;
 		ChatViewModel = new MainChatViewModel();
 		RightPanelViewModel = new RightPanelViewModel();
 		

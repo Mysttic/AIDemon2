@@ -8,7 +8,8 @@
 		<!-- Górna sekcja z przyciskiem -->
 		<StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
 			<Button 
-				x:Name="SettingsButton"				
+				x:Name="SettingsButton"		
+				Command="{Binding ShowSettingsCommand}"
 				Padding="10">
 				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
 					<materialIcons:MaterialIcon Kind="Settings" Width="16" Height="16"/>

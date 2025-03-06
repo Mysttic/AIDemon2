@@ -15,7 +15,6 @@ public partial class LeftPanelView : UserControl
 		InitializeComponent();
 		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
 			.GetRequiredService<LeftPanelViewModel>();
-		SettingsButton.Click += OnSettingsButtonClick;
 	}
 
 	private void OnSettingsButtonClick(object? sender, RoutedEventArgs e)

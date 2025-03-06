@@ -9,6 +9,8 @@ public partial class SettingsViewModel : ObservableObject
 {
 	private readonly ISettingsRepository _settingsRepository;
 
+	public event Action? CloseRequested;
+
 	public SettingsViewModel(ISettingsRepository settingsRepository)
 	{
 		_settingsRepository = settingsRepository;
@@ -26,8 +28,6 @@ public partial class SettingsViewModel : ObservableObject
 
 	[ObservableProperty]
 	private string? programmingLanguage;
-
-	public event Action CloseRequested;
 
 	private async void LoadSettings()
 	{
@@ -54,12 +54,18 @@ public partial class SettingsViewModel : ObservableObject
 
 			await _settingsRepository.Update(settings);
 		}
-		CloseRequested?.Invoke();
+		CloseSettings();
 	}
 
 	[RelayCommand]
 	private void Cancel()
 	{
+		CloseSettings();
+	}
+
+	private void CloseSettings()
+	{
 		CloseRequested?.Invoke();
+		CloseRequested = null; // Usunięcie subskrypcji po zamknięciu
 	}
 }

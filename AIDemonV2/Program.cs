@@ -34,7 +34,7 @@ class Program
 			options.UseNpgsql("Host=localhost;Port=5432;Database=AIDemonDB;Username=postgres;Password=postgres;");
 		});
 		// Rejestracja innych serwisów...
-		services.AddScoped<ISettingsRepository, SettingsRepository>();
+		services.AddSingleton<ISettingsRepository, SettingsRepository>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();
@@ -48,11 +48,9 @@ class Program
 
 	private static void InitializeScope(ServiceProvider serviceProvider)
 	{
-		using (var scope = serviceProvider.CreateScope())
-		{
-			var dbContext = scope.ServiceProvider.GetRequiredService<AIDemonDbContext>();
-			dbContext.Database.Migrate(); // lub dbContext.Database.EnsureCreated();
-		}
+		using var scope = serviceProvider.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<AIDemonDbContext>();
+		dbContext.Database.Migrate(); // lub dbContext.Database.EnsureCreated();
 	}
 
 	// Avalonia configuration, don't remove; also used by visual designer.
