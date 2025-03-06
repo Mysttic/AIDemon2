@@ -13,8 +13,8 @@ public partial class LeftPanelView : UserControl
 	public LeftPanelView()
 	{
 		InitializeComponent();
-		DataContext = ((IServiceProvider)Application.Current!.Resources["ServiceProvider"])
-						  .GetRequiredService<LeftPanelViewModel>();
+		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
+			.GetRequiredService<LeftPanelViewModel>();
 		SettingsButton.Click += OnSettingsButtonClick;
 	}
 

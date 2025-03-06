@@ -4,9 +4,8 @@ using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
-namespace AIDemonV2.Desktop;
+namespace AIDemonV2;
 
 class Program
 {
@@ -23,10 +22,7 @@ class Program
 		InitializeScope(serviceProvider);
 
 		BuildAvaloniaApp(serviceProvider)
-			.AfterSetup(builder =>
-			{
-				builder.Instance!.Resources["ServiceProvider"] = serviceProvider;
-			})
+			.AfterSetup(_ => App.Current!.Resources["Services"] = serviceProvider)
 			.StartWithClassicDesktopLifetime(args);
 	}
 
