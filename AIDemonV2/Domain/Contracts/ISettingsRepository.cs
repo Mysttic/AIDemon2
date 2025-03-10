@@ -4,5 +4,5 @@ public interface ISettingsRepository
 {
 	Task<Settings?> Get();
 
-	Task<Settings> Update(Settings entity);
+	Task<Settings> UpdateAsync(Settings entity);
 }

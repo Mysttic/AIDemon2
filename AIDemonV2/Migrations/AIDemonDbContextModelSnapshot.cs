@@ -142,9 +142,9 @@ namespace AIDemonV2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3973),
+                            CreationDate = new DateTime(2025, 3, 10, 8, 37, 34, 242, DateTimeKind.Utc).AddTicks(2143),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3975)
+                            ModificationDate = new DateTime(2025, 3, 10, 8, 37, 34, 242, DateTimeKind.Utc).AddTicks(2144)
                         });
                 });
 

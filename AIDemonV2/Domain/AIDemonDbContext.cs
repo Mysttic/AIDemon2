@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using System;
+using AIDemonV2.Properties;
 
 
 public class AIDemonDbContext : DbContext
@@ -12,14 +11,14 @@ public class AIDemonDbContext : DbContext
 	public DbSet<SavedMessage> SavedMessages { get; set; }
 	public DbSet<Settings> Settings { get; set; }
 	public AIDemonDbContext(DbContextOptions<AIDemonDbContext> options) : base(options)
-	{		
+	{
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
 
-		modelBuilder.Entity<Settings>().HasData(			
+		modelBuilder.Entity<Settings>().HasData(
 			new Settings
 			{
 				Id = 1,
@@ -45,7 +44,7 @@ public class AIDemonDbContextFactory : IDesignTimeDbContextFactory<AIDemonDbCont
 	public AIDemonDbContext CreateDbContext(string[] args)
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<AIDemonDbContext>();
-		optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=AIDemonDB;Username=postgres;Password=postgres;");
+		optionsBuilder.UseNpgsql(Resources.ConnectionString);
 
 		return new AIDemonDbContext(optionsBuilder.Options);
 	}

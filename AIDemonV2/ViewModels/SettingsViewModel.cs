@@ -1,5 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AIDemonV2.Properties;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -7,14 +9,15 @@ namespace AIDemonV2.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-	private readonly ISettingsRepository _settingsRepository;
+	private readonly IServiceProvider _serviceProvider;
 
 	public event Action? CloseRequested;
 
-	public SettingsViewModel(ISettingsRepository settingsRepository)
+	public SettingsViewModel(IServiceProvider serviceProvider)
 	{
-		_settingsRepository = settingsRepository;
+		_serviceProvider = serviceProvider;
 		LoadSettings();
+		LoadAiModels();
 	}
 
 	[ObservableProperty]
@@ -23,15 +26,20 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string instructionPrompt;
 
+	public List<AIModel> AIModelsList { get; private set; } = new();
 	[ObservableProperty]
 	private AIModel? selectedAIModel;
 
+	public List<string> ProgrammingLanguageList { get; } =  Resources.ProgrammingLanguages.Split(';').ToList();
 	[ObservableProperty]
 	private string? programmingLanguage;
 
 	private async void LoadSettings()
 	{
-		var settings = await _settingsRepository.Get();
+		using var scope = _serviceProvider.CreateScope();
+		var settingsRepository = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
+
+		var settings = await settingsRepository.Get();
 		if (settings != null)
 		{
 			ApiKey = settings.ApiKey;
@@ -41,10 +49,23 @@ public partial class SettingsViewModel : ObservableObject
 		}
 	}
 
+	private async void LoadAiModels()
+	{
+		using var scope = _serviceProvider.CreateScope();
+		var aiModelRepository = scope.ServiceProvider.GetRequiredService<IAIModelRepository>();
+
+		var aimodels = await aiModelRepository.GetAllAsync();
+		AIModelsList = aimodels.ToList();
+		OnPropertyChanged(nameof(AIModelsList));
+	}
+
 	[RelayCommand]
 	private async Task Save()
 	{
-		var settings = await _settingsRepository.Get();
+		using var scope = _serviceProvider.CreateScope();
+		var settingsRepository = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
+
+		var settings = await settingsRepository.Get();
 		if (settings != null)
 		{
 			settings.ApiKey = ApiKey;
@@ -52,7 +73,7 @@ public partial class SettingsViewModel : ObservableObject
 			settings.SelectedAIModel = SelectedAIModel;
 			settings.ProgrammingLanguage = ProgrammingLanguage;
 
-			await _settingsRepository.Update(settings);
+			await settingsRepository.UpdateAsync(settings);
 		}
 		CloseSettings();
 	}
@@ -66,6 +87,6 @@ public partial class SettingsViewModel : ObservableObject
 	private void CloseSettings()
 	{
 		CloseRequested?.Invoke();
-		CloseRequested = null; // Usunięcie subskrypcji po zamknięciu
+		CloseRequested = null;
 	}
 }

@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using AIDemonV2.Properties;
 
 namespace AIDemonV2;
 
@@ -29,21 +30,26 @@ class Program
 	private static void ConfigureServices(IServiceCollection services)
 	{
 		// Rejestracja DbContext – connection string ustawiony wewnętrznie
-		services.AddDbContext<AIDemonDbContext>(options =>
-		{
-			options.UseNpgsql("Host=localhost;Port=5432;Database=AIDemonDB;Username=postgres;Password=postgres;");
-		});
-		// Rejestracja innych serwisów...
-		services.AddSingleton<ISettingsRepository, SettingsRepository>();
+		services.AddDbContext<AIDemonDbContext>(options =>		
+			options.UseNpgsql(Resources.ConnectionString),
+			ServiceLifetime.Scoped
+		);
+		// Rejestracja innych serwisów jako Scoped zamiast Transient
+		services.AddScoped<IAIModelRepository, AIModelRepository>();
+		services.AddScoped<IMessageRepository, MessageRepository>();
+		services.AddScoped<ISavedMessageRepository, SavedMessageRepository>();
+		services.AddScoped<ISettingsRepository, SettingsRepository>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();
 		services.AddSingleton<MainChatViewModel>();
 		services.AddSingleton<RightPanelViewModel>();
-		services.AddTransient<SettingsViewModel>();
+
+		services.AddTransient<SettingsViewModel>(); // Można zostawić Transient
 
 		services.AddTransient<MainWindow>();
 		services.AddTransient<LeftPanelView>();
+		services.AddTransient<RightPanelView>();
 	}
 
 	private static void InitializeScope(ServiceProvider serviceProvider)

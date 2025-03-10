@@ -98,7 +98,7 @@ namespace AIDemonV2.Migrations
             migrationBuilder.InsertData(
                 table: "Settings",
                 columns: new[] { "Id", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguage", "SelectedAIModelId" },
-                values: new object[] { 1, "", new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3973), "You are a helpful assistant.", new DateTime(2025, 3, 6, 11, 15, 4, 291, DateTimeKind.Utc).AddTicks(3975), null, null });
+                values: new object[] { 1, "", new DateTime(2025, 3, 10, 8, 37, 34, 242, DateTimeKind.Utc).AddTicks(2143), "You are a helpful assistant.", new DateTime(2025, 3, 10, 8, 37, 34, 242, DateTimeKind.Utc).AddTicks(2144), null, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_AIModelId",

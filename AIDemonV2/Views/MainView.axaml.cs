@@ -35,27 +35,29 @@ public partial class MainView : UserControl
 
 	}
 
-	private void OpenSettingsView()
-	{
-		var settingsVM = new SettingsViewModel(_services.GetRequiredService<ISettingsRepository>());
+	//private void OpenSettingsView()
+	//{
+	//	var settingsVM = new SettingsViewModel(
+	//		_services.GetRequiredService<ISettingsRepository>(),
+	//		_services.GetRequiredService<IAIModelRepository>());
 
-		settingsVM.CloseRequested += () =>
-		{
-			Dispatcher.UIThread.Post(() =>
-			{
-				_leftPanelViewModel.IsSettingsVisible = false;
-				SettingsViewControl.IsVisible = false;
-				SettingsViewControl.DataContext = null; // Reset DataContext
-			});
-		};
+	//	settingsVM.CloseRequested += () =>
+	//	{
+	//		Dispatcher.UIThread.Post(() =>
+	//		{
+	//			_leftPanelViewModel.IsSettingsVisible = false;
+	//			SettingsViewControl.IsVisible = false;
+	//			SettingsViewControl.DataContext = null; // Reset DataContext
+	//		});
+	//	};
 
-		Dispatcher.UIThread.Post(() =>
-		{
-			SettingsViewControl.DataContext = settingsVM;
-			_leftPanelViewModel.IsSettingsVisible = true;
-			SettingsViewControl.IsVisible = true;
-		});
-	}
+	//	Dispatcher.UIThread.Post(() =>
+	//	{
+	//		SettingsViewControl.DataContext = settingsVM;
+	//		_leftPanelViewModel.IsSettingsVisible = true;
+	//		SettingsViewControl.IsVisible = true;
+	//	});
+	//}
 
 	private void OnToggleLeftPanelClick(object? sender, RoutedEventArgs e)
 	{

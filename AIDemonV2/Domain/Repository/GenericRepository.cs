@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
@@ -11,32 +9,32 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 		_context = context;
 	}
 
-	public async Task<IEnumerable<T>> GetAll()
+	public async Task<IEnumerable<T>> GetAllAsync()
 	{
 		return await _context.Set<T>().ToListAsync();
 	}
 
-	public async Task<T?> GetById(int? id)
+	public async Task<T?> GetByIdAsync(int? id)
 	{
 		var result = await _context.Set<T>().FindAsync(id);
 		return result ?? null;
 	}
 
-	public async Task<T> Add(T entity)
+	public async Task<T> AddAsync(T entity)
 	{
 		await _context.Set<T>().AddAsync(entity);
 		await _context.SaveChangesAsync();
 		return entity;
 	}
 
-	public async Task<T> Update(T entity)
+	public async Task<T> UpdateAsync(T entity)
 	{
 		_context.Set<T>().Update(entity);
 		await _context.SaveChangesAsync();
 		return entity;
 	}
 
-	public async Task<T> Delete(T entity)
+	public async Task<T> DeleteAsync(T entity)
 	{
 		_context.Set<T>().Remove(entity);
 		await _context.SaveChangesAsync();
