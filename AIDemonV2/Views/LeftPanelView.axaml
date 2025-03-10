@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="clr-namespace:AIDemonV2.ViewModels"
              x:Class="AIDemonV2.Views.LeftPanelView">
 
 	<!-- Rząd 1: Główna zawartość (ukrywana) -->
@@ -19,16 +20,20 @@
 		</StackPanel>
 
 		<!-- Dolna sekcja z listą -->
-		<ListBox Grid.Row="1" ItemsSource="{Binding SavedMessages}" Margin="5">
+		<ListBox Grid.Row="1" ItemsSource="{Binding FavouriteMessages}" Margin="0">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Border BorderThickness="1" BorderBrush="Gray" Padding="5" Margin="3">
+					<Border BorderThickness="1" BorderBrush="Gray" Padding="0" Margin="0"
+							CornerRadius="0" Background="#333" MinWidth="150" MaxWidth="250" Height="100">
 						<StackPanel>
-							<TextBlock Text="{Binding Message.MessageContent}" FontWeight="Bold" Foreground="White"/>
-							<TextBlock Text="{Binding Message.RunDate, StringFormat='HH:mm:ss'}"
-                                       FontSize="10"
-                                       Foreground="Gray"
-                                       HorizontalAlignment="Right"/>
+							<TextBlock Text="{Binding MessageContent, Converter={StaticResource TextTruncateConverter}, ConverterParameter=30}"
+									   Foreground="White"
+									   TextWrapping="Wrap"
+									   MaxWidth="200"/>
+							<TextBlock Text="{Binding CreationDate, StringFormat='HH:mm:ss'}"
+									   FontSize="10"
+									   Foreground="LightGray"
+									   HorizontalAlignment="Right"/>
 						</StackPanel>
 					</Border>
 				</DataTemplate>

@@ -12,9 +12,6 @@ public partial class MainView : UserControl
 	private bool _isLeftPanelVisible = true;
 	private bool _isRightPanelVisible = true;
 
-	private readonly LeftPanelViewModel _leftPanelViewModel;
-	private readonly IServiceProvider _services;
-
 	public MainView()
 	{
 		InitializeComponent();

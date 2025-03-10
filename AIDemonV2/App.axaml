@@ -15,6 +15,7 @@
 		<vm:AIMessageBackgroundConverter x:Key="AIMessageBackgroundConverter"/>
 		<vm:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
 		<vm:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+		<vm:TextTruncateConverter x:Key="TextTruncateConverter"/>
 	</Application.Resources>
 
 </Application>

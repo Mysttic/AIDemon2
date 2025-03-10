@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="clr-namespace:AIDemonV2.ViewModels"
              x:Class="AIDemonV2.Views.RightPanelView">
 	<Grid RowDefinitions="Auto,*">
 		<!-- Przyciski Save/Action/Remove -->
@@ -10,19 +11,29 @@
                     Margin="10">
 			<Button 
 				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
+				Command="{Binding SaveFavouriteCommand}"
 				Background="#444444" 
 				Foreground="White" 
 				Margin="0,0,5,0"
 				Padding="15,5,15,5"/>
 			<Button
 				Content="{materialIcons:MaterialIconExt Kind=RocketLaunch}"
+				Command="{Binding RunCodeCommand}"
 				Background="#444444" 
 				Foreground="White" 
 				Margin="5,0,5,0"
 				Padding="15,5,15,5"/>
 			<Button
 				Content="{materialIcons:MaterialIconExt Kind=Delete}"
+				Command="{Binding DeleteMessageCommand}"
 				Background="#FF0000" 
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Clear}"
+				Command="{Binding ClearMessageCommand}"
+				Background="#444444"
 				Foreground="White"
 				Margin="5,0,5,0"
 				Padding="15,5,15,5"/>
@@ -30,6 +41,7 @@
 
 		<!-- Edytor kodu -->
 		<TextBox Grid.Row="1"
+				 Text="{Binding SelectedMessage.MessageContent}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
                  Margin="10"

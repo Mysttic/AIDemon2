@@ -18,8 +18,7 @@
 					<DataTemplate>
 						<Border Padding="8" Margin="5"
                                 Background="{Binding AIModel, Converter={StaticResource AIMessageBackgroundConverter}}"
-                                HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource MessageAlignmentConverter}}">
-
+                                HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource MessageAlignmentConverter}}">								
 							<StackPanel>
 								<TextBlock Text="{Binding MessageContent}" 
 										   FontWeight="Bold" 

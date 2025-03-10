@@ -7,6 +7,7 @@ namespace AIDemonV2.ViewModels;
 
 public partial class MainChatViewModel : ObservableObject
 {
+	private readonly RightPanelViewModel _rightPanelViewModel;
 	private readonly IMessageRepository _messageRepository;
 	public event Action? ScrollRequested;
 	private ObservableCollection<Message> _messages = new();
@@ -23,8 +24,19 @@ public partial class MainChatViewModel : ObservableObject
 	[ObservableProperty]
 	private string _newMessage = string.Empty;
 
-	public MainChatViewModel(IMessageRepository messageRepository)
+	private Message? _selectedMessage;
+	public Message? SelectedMessage
 	{
+		get => _selectedMessage;
+		set => SetProperty(ref _selectedMessage, value);
+	}
+
+
+	public MainChatViewModel(
+		RightPanelViewModel rightPanelViewModel,
+		IMessageRepository messageRepository)
+	{
+		_rightPanelViewModel = rightPanelViewModel;
 		_messageRepository = messageRepository;
 		_ = LoadMessages();
 	}
@@ -45,6 +57,18 @@ public partial class MainChatViewModel : ObservableObject
 		Messages.Add(message);
 		ScrollRequested?.Invoke(); // Wywołanie eventu do przewinięcia
 	}
+
+	public void RemoveMessage(Message message)
+	{
+		Messages.Remove(message);
+		ScrollRequested?.Invoke();
+	}
+
+	//public void SelectMessageForEditing(Message message)
+	//{
+	//	_rightPanelViewModel.SelectedMessage = message;
+	//	//_rightPanelViewModel.CodeEditorText = message.MessageContent;
+	//}
 
 
 }

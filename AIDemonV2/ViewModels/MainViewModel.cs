@@ -31,17 +31,28 @@ public partial class MainViewModel : ObservableObject
 	[ObservableProperty]
 	private string newMessageText = string.Empty;
 
-	public MainViewModel(LeftPanelViewModel leftPanelViewModel, MainChatViewModel chatViewModel, 
-		IMessageRepository messageRepository, ISettingsRepository settingsRepository)
+	public MainViewModel(
+		LeftPanelViewModel leftPanelViewModel, 
+		MainChatViewModel chatViewModel, 
+		RightPanelViewModel rightPanelViewModel,
+		IMessageRepository messageRepository, 
+		ISettingsRepository settingsRepository)
 	{
 		LeftPanelViewModel = leftPanelViewModel;
 		ChatViewModel = chatViewModel;
-		RightPanelViewModel = new RightPanelViewModel();
+		RightPanelViewModel = rightPanelViewModel;
 		_messageRepository = messageRepository;
 		_settingsRepository = settingsRepository;
+		RightPanelViewModel.MessageUpdated += OnMessageUpdated;
 		_ = LoadMessages();
 		_ = CreateIOInteligenceClient();
 	}
+
+	private void OnMessageUpdated(Message? updatedMessage)
+	{
+		_ = LeftPanelViewModel.LoadFavouriteMessages();
+	}
+
 
 	private async Task CreateIOInteligenceClient()
 	{
@@ -53,7 +64,7 @@ public partial class MainViewModel : ObservableObject
 	{
 		var messages = await _messageRepository.GetAllAsync();
 		ChatViewModel.Messages.Clear();
-		foreach (var message in messages)
+		foreach (var message in messages.OrderBy(m=>m.Id))
 		{
 			ChatViewModel.Messages.Add(message);
 		}
