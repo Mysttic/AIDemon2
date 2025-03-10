@@ -33,7 +33,9 @@
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Instruction Prompt:" Width="200" Foreground="White"/>
-					<TextBox Text="{Binding InstructionPrompt}" Width="250"/>
+					<TextBox Text="{Binding InstructionPrompt}" 
+							 Width="250" Height="200"
+							 TextWrapping="Wrap"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="AIModel:" Width="200" Foreground="White"/>

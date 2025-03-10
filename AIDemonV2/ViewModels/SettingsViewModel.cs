@@ -7,14 +7,13 @@ namespace AIDemonV2.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-	private readonly IServiceProvider _serviceProvider;
-
+	private readonly ISettingsRepository _settingsRepository;
 	public event Action? CloseRequested;
 
-	public SettingsViewModel(IServiceProvider serviceProvider)
+	public SettingsViewModel(ISettingsRepository settingsRepository)
 	{
-		_serviceProvider = serviceProvider;
-		LoadSettings();
+		_settingsRepository = settingsRepository;
+		LoadSettingsAsync();
 	}
 
 	[ObservableProperty]
@@ -31,12 +30,9 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string? programmingLanguage;
 
-	private async void LoadSettings()
+	private async void LoadSettingsAsync()
 	{
-		using var scope = _serviceProvider.CreateScope();
-		var settingsRepository = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
-
-		var settings = await settingsRepository.Get();
+		var settings = await _settingsRepository.Get();
 		if (settings != null)
 		{
 			ApiKey = settings.ApiKey;
@@ -49,18 +45,20 @@ public partial class SettingsViewModel : ObservableObject
 	[RelayCommand]
 	private async Task Save()
 	{
-		using var scope = _serviceProvider.CreateScope();
-		var settingsRepository = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
-
-		var settings = await settingsRepository.Get();
+		var settings = await _settingsRepository.Get();
 		if (settings != null)
 		{
-			settings.ApiKey = ApiKey;
+			if (settings.InstructionPrompt != InstructionPrompt ||
+				settings.AIModel != AIModel ||
+				settings.ProgrammingLanguage != ProgrammingLanguage)				
+				MainViewModel.clientWasInitialized = false;
+
+			settings.ApiKey = ApiKey;			
 			settings.InstructionPrompt = InstructionPrompt;
 			settings.AIModel = AIModel;
 			settings.ProgrammingLanguage = ProgrammingLanguage;
 
-			await settingsRepository.UpdateAsync(settings);
+			await _settingsRepository.UpdateAsync(settings);
 		}
 		CloseSettings();
 	}

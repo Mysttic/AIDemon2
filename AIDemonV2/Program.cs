@@ -35,8 +35,8 @@ class Program
 			ServiceLifetime.Scoped
 		);
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
-		services.AddScoped<IMessageRepository, MessageRepository>();
-		services.AddScoped<ISettingsRepository, SettingsRepository>();
+		services.AddSingleton<IMessageRepository, MessageRepository>();
+		services.AddSingleton<ISettingsRepository, SettingsRepository>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();
