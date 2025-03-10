@@ -2,8 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace AIDemonV2.ViewModels;
 
@@ -17,7 +15,6 @@ public partial class SettingsViewModel : ObservableObject
 	{
 		_serviceProvider = serviceProvider;
 		LoadSettings();
-		LoadAiModels();
 	}
 
 	[ObservableProperty]
@@ -26,11 +23,11 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string instructionPrompt;
 
-	public List<AIModel> AIModelsList { get; private set; } = new();
+	public List<string> AIModelsList { get; private set; } = Resources.AIModels.Split(';').ToList();
 	[ObservableProperty]
-	private AIModel? selectedAIModel;
+	private string? aIModel;
 
-	public List<string> ProgrammingLanguageList { get; } =  Resources.ProgrammingLanguages.Split(';').ToList();
+	public List<string> ProgrammingLanguageList { get; } = Resources.ProgrammingLanguages.Split(';').ToList();
 	[ObservableProperty]
 	private string? programmingLanguage;
 
@@ -44,19 +41,9 @@ public partial class SettingsViewModel : ObservableObject
 		{
 			ApiKey = settings.ApiKey;
 			InstructionPrompt = settings.InstructionPrompt;
-			SelectedAIModel = settings.SelectedAIModel;
+			AIModel = settings.AIModel;
 			ProgrammingLanguage = settings.ProgrammingLanguage;
 		}
-	}
-
-	private async void LoadAiModels()
-	{
-		using var scope = _serviceProvider.CreateScope();
-		var aiModelRepository = scope.ServiceProvider.GetRequiredService<IAIModelRepository>();
-
-		var aimodels = await aiModelRepository.GetAllAsync();
-		AIModelsList = aimodels.ToList();
-		OnPropertyChanged(nameof(AIModelsList));
 	}
 
 	[RelayCommand]
@@ -70,7 +57,7 @@ public partial class SettingsViewModel : ObservableObject
 		{
 			settings.ApiKey = ApiKey;
 			settings.InstructionPrompt = InstructionPrompt;
-			settings.SelectedAIModel = SelectedAIModel;
+			settings.AIModel = AIModel;
 			settings.ProgrammingLanguage = ProgrammingLanguage;
 
 			await settingsRepository.UpdateAsync(settings);

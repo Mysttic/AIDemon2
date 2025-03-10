@@ -38,19 +38,14 @@
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="AIModel:" Width="200" Foreground="White"/>
 					<ComboBox ItemsSource="{Binding AIModelsList}"
-							  SelectedItem="{Binding selectedAIModel, Mode=TwoWay}"
+							  SelectedItem="{Binding AIModel, Mode=TwoWay}"
 							  Width="250">
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Name}" />
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
 					</ComboBox>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Programming Language:" Width="200" Foreground="White"/>
 					<ComboBox ItemsSource="{Binding ProgrammingLanguageList}"
-							  SelectedItem="{Binding programmingLanguage, Mode=TwoWay}"
+							  SelectedItem="{Binding ProgrammingLanguage, Mode=TwoWay}"
 							  Width="250"/>					
 				</StackPanel>
 			</StackPanel>

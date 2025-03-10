@@ -6,7 +6,7 @@ namespace AIDemonV2.ViewModels;
 
 public partial class LeftPanelViewModel : ViewModelBase
 {
-	public ObservableCollection<SavedMessage> SavedMessages { get; set; } = new ObservableCollection<SavedMessage>();
+	public ObservableCollection<Message> SavedMessages { get; set; } = new ObservableCollection<Message>();
 
 	private readonly ISettingsRepository _settingsRepository;
 

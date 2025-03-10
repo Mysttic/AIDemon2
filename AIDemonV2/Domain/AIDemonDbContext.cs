@@ -6,9 +6,7 @@ using AIDemonV2.Properties;
 
 public class AIDemonDbContext : DbContext
 {
-	public DbSet<AIModel> AIModels { get; set; }
 	public DbSet<Message> Messages { get; set; }
-	public DbSet<SavedMessage> SavedMessages { get; set; }
 	public DbSet<Settings> Settings { get; set; }
 	public AIDemonDbContext(DbContextOptions<AIDemonDbContext> options) : base(options)
 	{
@@ -24,11 +22,16 @@ public class AIDemonDbContext : DbContext
 				Id = 1,
 				ApiKey = string.Empty,
 				InstructionPrompt = "You are a helpful assistant.",
-				SelectedAIModel = null,
+				AIModel = null,
 				ProgrammingLanguage = null,
 				CreationDate = DateTime.UtcNow,
 				ModificationDate = DateTime.UtcNow
 			});
+
+		modelBuilder.Entity<Message>()
+			.Property(m => m.RunDate)
+			.HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
 	}
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

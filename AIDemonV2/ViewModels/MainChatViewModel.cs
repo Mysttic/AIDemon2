@@ -7,35 +7,44 @@ namespace AIDemonV2.ViewModels;
 
 public partial class MainChatViewModel : ObservableObject
 {
-	public ObservableCollection<Message> Messages { get; } = new();
+	private readonly IMessageRepository _messageRepository;
+	public event Action? ScrollRequested;
+	private ObservableCollection<Message> _messages = new();
+	public ObservableCollection<Message> Messages
+	{
+		get => _messages;
+		set
+		{
+			_messages = value;
+			OnPropertyChanged();
+		}
+	}
 
 	[ObservableProperty]
 	private string _newMessage = string.Empty;
 
-	public MainChatViewModel()
+	public MainChatViewModel(IMessageRepository messageRepository)
 	{
-		LoadInitialMessages();
+		_messageRepository = messageRepository;
+		_ = LoadMessages();
 	}
 
-	private void LoadInitialMessages()
+	private async Task LoadMessages()
 	{
-		Messages.Add(new Message
+		var messages = await _messageRepository.GetAllAsync();
+		Messages.Clear();
+		foreach (var message in messages)
 		{
-			Id = 1,
-			MessageContent = "Hello! How can I help you?",
-			OriginalMessage = "User: What can you do?",
-			RunDate = DateTime.Now,
-			AIModel = new AIModel { Name = "GPT-4" }
-		});
-
-		Messages.Add(new Message
-		{
-			Id = 2,
-			MessageContent = "I can assist with various tasks!",
-			OriginalMessage = "User: Explain Avalonia UI",
-			RunDate = DateTime.Now,
-			AIModel = new AIModel { Name = "ChatBot" }
-		});
+			AddMessage(message);
+			//Messages.Add(message);
+		}
 	}
+
+	public void AddMessage(Message message)
+	{
+		Messages.Add(message);
+		ScrollRequested?.Invoke(); // Wywołanie eventu do przewinięcia
+	}
+
 
 }

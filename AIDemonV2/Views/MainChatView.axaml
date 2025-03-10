@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="clr-namespace:AIDemonV2.ViewModels"
              x:Class="AIDemonV2.Views.MainChatView">
 
 	<Grid RowDefinitions="*,Auto">
@@ -17,15 +18,19 @@
 					<DataTemplate>
 						<Border Padding="8" Margin="5"
                                 Background="{Binding AIModel, Converter={StaticResource AIMessageBackgroundConverter}}"
-                                HorizontalAlignment="{Binding AIModel, Converter={StaticResource MessageAlignmentConverter}}">
+                                HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource MessageAlignmentConverter}}">
 
 							<StackPanel>
-								<TextBlock Text="{Binding MessageContent}" FontWeight="Bold" Foreground="White"/>
-								<TextBlock Text="{Binding RunDate, StringFormat='HH:mm:ss'}"
+								<TextBlock Text="{Binding MessageContent}" 
+										   FontWeight="Bold" 
+										   Foreground="White" 
+										   MaxWidth="400"
+                                           TextWrapping="Wrap"/>
+								<TextBlock Text="{Binding CreationDate, StringFormat='HH:mm:ss'}"
                                            FontSize="10"
                                            Foreground="Gray"
                                            HorizontalAlignment="Right"/>
-								<TextBlock Text="{Binding AIModel.Name}" FontSize="10" Foreground="LightBlue"/>
+								<TextBlock Text="{Binding AIModel}" FontSize="10" Foreground="LightBlue"/>
 							</StackPanel>
 						</Border>
 					</DataTemplate>

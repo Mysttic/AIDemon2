@@ -12,7 +12,11 @@ public class MessageAlignmentConverter : IValueConverter
 {
 	public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
 	{
-		return value != null ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+		if (value is bool isUserMessage)
+		{
+			return isUserMessage ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+		}
+		return HorizontalAlignment.Left;
 	}
 
 	public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

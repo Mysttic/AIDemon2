@@ -14,7 +14,7 @@ class Program
 	// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
 	// yet and stuff might break.
 	[STAThread]
-	public static void Main(string[] args)
+	public static async Task Main(string[] args)
 	{
 		var services = new ServiceCollection();
 		ConfigureServices(services);
@@ -35,9 +35,7 @@ class Program
 			ServiceLifetime.Scoped
 		);
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
-		services.AddScoped<IAIModelRepository, AIModelRepository>();
 		services.AddScoped<IMessageRepository, MessageRepository>();
-		services.AddScoped<ISavedMessageRepository, SavedMessageRepository>();
 		services.AddScoped<ISettingsRepository, SettingsRepository>();
 
 		services.AddSingleton<MainViewModel>();

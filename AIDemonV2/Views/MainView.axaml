@@ -42,6 +42,7 @@
 							 MinHeight="50"
 							 MaxHeight="150"
 							 Watermark="Enter your prompt..."
+							 Text="{Binding NewMessageText, Mode=TwoWay}"
 							 Padding="10,5,10,35">
 						<TextBox.Styles>
 							<Style Selector="ScrollViewer">
@@ -55,7 +56,8 @@
 							Margin="0,0,2,2"
 							HorizontalAlignment="Right"
 							VerticalAlignment="Bottom"
-							IsEnabled="{Binding IsNotBusy}">
+							Command="{Binding SendMessageCommand}"
+							IsEnabled="{Binding NewMessageText, Converter={StaticResource StringNotEmptyConverter}}">
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 							<materialIcons:MaterialIcon Kind="Send" Width="16" Height="16"/>
 						</StackPanel>
