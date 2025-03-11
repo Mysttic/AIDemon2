@@ -11,17 +11,14 @@ public class Message : EntityBase, IMessage
 	public string? ProgrammingLanguage { get; set; }
 	public DateTime RunDate { get; set; }
 	public bool Favourite { get; set; }
-	public bool IsUserMessage => string.IsNullOrEmpty(AIModel);
 
-	// Klucz obcy dla samoodwołania (odpowiedź)
 	public int? ReplyToMessageId { get; set; }
-
-	// Właściwość nawigacyjna dla wiadomości, do której odpowiadamy
 	[ForeignKey("ReplyToMessageId")]
 	public Message? ReplyTo { get; set; }
-
-	// Kolekcja wiadomości będących odpowiedziami na tę wiadomość
 	public ICollection<Message> Replies { get; set; } = new List<Message>();
+
+	public bool IsModified => ModificationDate > CreationDate;
+	public bool IsUserMessage => string.IsNullOrEmpty(ProgrammingLanguage);
 	public Message()
 	{
 	}

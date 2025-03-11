@@ -128,7 +128,7 @@ public partial class MainViewModel : ObservableObject
 		}
 		catch (Exception ex)
 		{
-			await HandleAIResponse(null, userMessage, "Sorry, I'm having trouble connecting to the AI service. Please try again later.");
+			await HandleAIResponse(_settings, userMessage, "Sorry, I'm having trouble connecting to the AI service. Please try again later.", true);
 		}
 		finally
 		{
@@ -144,7 +144,7 @@ public partial class MainViewModel : ObservableObject
 		return cleaned.Trim();
 	}
 
-	private async Task HandleAIResponse(Settings settings, Message userMessage, string responseText)
+	private async Task HandleAIResponse(Settings settings, Message userMessage, string responseText, bool isFailed = false)
 	{
 		var aiMessage = new Message
 		{
@@ -153,7 +153,7 @@ public partial class MainViewModel : ObservableObject
 			CreationDate = DateTime.UtcNow,
 			ModificationDate = DateTime.UtcNow,
 			AIModel = settings?.AIModel,
-			ProgrammingLanguage = settings?.ProgrammingLanguage,
+			ProgrammingLanguage = isFailed ? string.Empty : settings?.ProgrammingLanguage,
 			ReplyTo = userMessage,
 		};
 

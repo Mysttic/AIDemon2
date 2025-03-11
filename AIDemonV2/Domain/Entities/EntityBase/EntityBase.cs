@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PropertyChanged;
+using System;
 
+[AddINotifyPropertyChangedInterface]
 public class EntityBase : IEntityBase
 {
 	public int Id { get; set; }

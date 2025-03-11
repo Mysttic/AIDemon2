@@ -44,7 +44,7 @@ public partial class LeftPanelView : UserControl
 				{
 					if (mainView.DataContext is MainViewModel vm)
 					{
-						vm.RightPanelViewModel.SelectedMessage = message;
+						vm.RightPanelViewModel.SelectMessage(message);
 						if(!mainView.RightPanel.IsVisible)
 							mainView.ToggleRightPanelButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 					}

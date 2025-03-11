@@ -8,7 +8,8 @@
 		<StackPanel Grid.Row="0"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
-                    Margin="10">
+                    Margin="10"
+					IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToBoolConverter}}">
 			<Button 
 				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
 				Command="{Binding SaveFavouriteCommand}"
@@ -23,7 +24,15 @@
 				Foreground="White" 
 				Margin="5,0,5,0"
 				Padding="15,5,15,5"
-				IsEnabled="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Replay}"
+				Command="{Binding ResendMessageCommand}"
+				Background="#444444"
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringEmptyConverter}}"/>
 			<Button
 				Content="{materialIcons:MaterialIconExt Kind=Delete}"
 				Command="{Binding DeleteMessageCommand}"
@@ -43,7 +52,7 @@
 
 		<!-- Edytor kodu -->
 		<TextBox Grid.Row="1"
-				 Text="{Binding SelectedMessage.MessageContent}"
+				 Text="{Binding MessageContent}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
                  Margin="10"

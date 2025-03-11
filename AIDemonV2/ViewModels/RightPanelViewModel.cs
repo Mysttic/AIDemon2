@@ -12,15 +12,29 @@ public partial class RightPanelViewModel : ObservableObject
 {
 	private readonly IMessageRepository _messageRepository;
 
-	[ObservableProperty]
-	public Message selectedMessage;
+	private Message _selectedMessage;
+	public Message SelectedMessage
+	{
+		get => _selectedMessage;
+		private set => SetProperty(ref _selectedMessage, value);
+	}
 
 	public event Action<Message>? MessageUpdated;
+
+	[ObservableProperty]
+	public string messageContent;
 
 	public RightPanelViewModel(
 		IMessageRepository messageRepository)
 	{
 		_messageRepository = messageRepository;
+		
+	}
+
+	public void SelectMessage(Message message)
+	{
+		SelectedMessage = message;
+		MessageContent = message?.MessageContent ?? string.Empty;
 	}
 
 	[RelayCommand]
@@ -28,7 +42,9 @@ public partial class RightPanelViewModel : ObservableObject
 	{
 		if (SelectedMessage!= null)
 		{
+			SelectedMessage.MessageContent = MessageContent;
 			SelectedMessage.Favourite = true;
+			SelectedMessage.ModificationDate = DateTime.UtcNow;
 			await _messageRepository.UpdateAsync(SelectedMessage);
 			MessageUpdated?.Invoke(SelectedMessage);
 		}
@@ -44,11 +60,22 @@ public partial class RightPanelViewModel : ObservableObject
 	}
 
 	[RelayCommand]
+	private void ResendMessage()
+	{
+		if (!string.IsNullOrEmpty(SelectedMessage?.MessageContent))
+		{
+			Console.WriteLine($"Resending message:\n{SelectedMessage?.MessageContent}");
+		}
+	}
+
+	[RelayCommand]
 	private async Task DeleteMessage()
 	{
 		if (SelectedMessage != null)
 		{
+			MessageContent = string.Empty;
 			SelectedMessage.Favourite = false;
+			SelectedMessage.ModificationDate = DateTime.UtcNow;
 			await _messageRepository.UpdateAsync(SelectedMessage);
 			MessageUpdated?.Invoke(SelectedMessage);
 			SelectedMessage = null;
@@ -61,6 +88,7 @@ public partial class RightPanelViewModel : ObservableObject
 		if (SelectedMessage != null)
 		{
 			SelectedMessage = null;
+			MessageContent = string.Empty;
 		}
 	}
 
