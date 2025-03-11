@@ -7,9 +7,12 @@ namespace AIDemonV2.ViewModels;
 
 public partial class MainChatViewModel : ObservableObject
 {
-	private readonly RightPanelViewModel _rightPanelViewModel;
+	private readonly IChatService _chatService;
 	private readonly IMessageRepository _messageRepository;
+	private readonly RightPanelViewModel _rightPanelViewModel;
+
 	public event Action? ScrollRequested;
+	public event Action<bool>? IsLoading;
 	private ObservableCollection<Message> _messages = new();
 	public ObservableCollection<Message> Messages
 	{
@@ -33,15 +36,38 @@ public partial class MainChatViewModel : ObservableObject
 
 
 	public MainChatViewModel(
-		RightPanelViewModel rightPanelViewModel,
-		IMessageRepository messageRepository)
+		IChatService chatService,
+		IMessageRepository messageRepository,
+		RightPanelViewModel rightPanelViewModel)
 	{
-		_rightPanelViewModel = rightPanelViewModel;
+		_chatService = chatService;
 		_messageRepository = messageRepository;
+		_rightPanelViewModel = rightPanelViewModel;
+		_rightPanelViewModel.ResendMessageRequested += ResendMessageRequested;
 		_ = LoadMessages();
 	}
 
-	private async Task LoadMessages()
+	private async void ResendMessageRequested(Message newMessage)
+	{
+		NewMessage = newMessage.MessageContent;
+		if (string.IsNullOrWhiteSpace(NewMessage))
+			return;
+
+		AddMessage(newMessage);
+
+		IsLoading?.Invoke(true);
+		// Wyślij wiadomość przez serwis, który odpowiada za komunikację z AI
+		var message = await _chatService.SendMessageAsync(NewMessage);
+
+		// Dodaj wiadomość do kolekcji, co odświeży widok
+		AddMessage(message);
+
+		// Wyczyść pole wejściowe
+		NewMessage = string.Empty;
+		IsLoading?.Invoke(false);
+	}
+
+	public async Task LoadMessages()
 	{
 		var messages = await _messageRepository.GetAllAsync();
 		Messages.Clear();

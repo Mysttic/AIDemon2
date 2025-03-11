@@ -20,6 +20,7 @@ public partial class RightPanelViewModel : ObservableObject
 	}
 
 	public event Action<Message>? MessageUpdated;
+	public event Action<Message>? ResendMessageRequested;
 
 	[ObservableProperty]
 	public string messageContent;
@@ -62,10 +63,14 @@ public partial class RightPanelViewModel : ObservableObject
 	[RelayCommand]
 	private void ResendMessage()
 	{
-		if (!string.IsNullOrEmpty(SelectedMessage?.MessageContent))
+		var newMessage = new Message
 		{
-			Console.WriteLine($"Resending message:\n{SelectedMessage?.MessageContent}");
-		}
+			MessageContent = SelectedMessage.MessageContent,
+			OriginalMessage = SelectedMessage.MessageContent,
+			CreationDate = DateTime.UtcNow,
+			ModificationDate = DateTime.UtcNow
+		};
+		ResendMessageRequested?.Invoke(newMessage);
 	}
 
 	[RelayCommand]

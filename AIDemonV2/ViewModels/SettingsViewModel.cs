@@ -8,11 +8,13 @@ namespace AIDemonV2.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
 	private readonly ISettingsRepository _settingsRepository;
+	private readonly IChatService _chatService;
 	public event Action? CloseRequested;
 
-	public SettingsViewModel(ISettingsRepository settingsRepository)
+	public SettingsViewModel(ISettingsRepository settingsRepository, IChatService chatService)
 	{
 		_settingsRepository = settingsRepository;
+		_chatService = chatService;
 		LoadSettingsAsync();
 	}
 
@@ -50,8 +52,8 @@ public partial class SettingsViewModel : ObservableObject
 		{
 			if (settings.InstructionPrompt != InstructionPrompt ||
 				settings.AIModel != AIModel ||
-				settings.ProgrammingLanguage != ProgrammingLanguage)				
-				MainViewModel.clientWasInitialized = false;
+				settings.ProgrammingLanguage != ProgrammingLanguage)
+				_chatService.ResetClient();
 
 			settings.ApiKey = ApiKey;			
 			settings.InstructionPrompt = InstructionPrompt;

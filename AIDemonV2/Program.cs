@@ -37,6 +37,7 @@ class Program
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
 		services.AddSingleton<IMessageRepository, MessageRepository>();
 		services.AddSingleton<ISettingsRepository, SettingsRepository>();
+		services.AddSingleton<IChatService, ChatService>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();
