@@ -3,13 +3,14 @@
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:vm="clr-namespace:AIDemonV2.ViewModels"
              x:Class="AIDemonV2.Views.RightPanelView">
-	<Grid RowDefinitions="Auto,*">
-		<!-- Przyciski Save/Action/Remove -->
+	<Grid RowDefinitions="Auto,*,Auto">
+		<!-- Przyciski (row 0) -->
 		<StackPanel Grid.Row="0"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10"
 					IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToBoolConverter}}">
+			<!-- Przyciski Save, RunCode, Resend, Delete, Clear -->
 			<Button 
 				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
 				Command="{Binding SaveFavouriteCommand}"
@@ -50,12 +51,23 @@
 				Padding="15,5,15,5"/>
 		</StackPanel>
 
-		<!-- Edytor kodu -->
+		<!-- Edytor kodu (row 1) -->
 		<TextBox Grid.Row="1"
 				 Text="{Binding MessageContent}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
                  Margin="10"
                  MaxWidth="600"/>
+
+		<!-- Okno wyjścia konsoli (row 2) -->
+		<Border Grid.Row="2" Margin="10" BorderThickness="1" BorderBrush="Gray">
+			<TextBox Text="{Binding ConsoleOutput}"
+					 IsReadOnly="True"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 Background="Black"
+					 Foreground="White"
+					 Height="150"/>
+		</Border>
 	</Grid>
 </UserControl>

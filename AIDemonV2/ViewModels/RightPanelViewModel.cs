@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace AIDemonV2.ViewModels;
 public partial class RightPanelViewModel : ObservableObject
 {
 	private readonly IMessageRepository _messageRepository;
+	private readonly ICodeRunnerService _codeRunnerService;
 
 	private Message _selectedMessage;
 	public Message SelectedMessage
@@ -25,16 +27,22 @@ public partial class RightPanelViewModel : ObservableObject
 	[ObservableProperty]
 	public string messageContent;
 
+	[ObservableProperty]
+	public string consoleOutput;
+
 	public RightPanelViewModel(
-		IMessageRepository messageRepository)
+		IMessageRepository messageRepository,
+		ICodeRunnerService codeRunnerService)
 	{
 		_messageRepository = messageRepository;		
+		_codeRunnerService = codeRunnerService;
 	}
 
 	public void SelectMessage(Message message)
 	{
 		SelectedMessage = message;
 		MessageContent = message?.MessageContent ?? string.Empty;
+		ConsoleOutput = string.Empty;
 	}
 
 	[RelayCommand]
@@ -51,11 +59,23 @@ public partial class RightPanelViewModel : ObservableObject
 	}
 
 	[RelayCommand]
-	private void RunCode()
+	private async Task RunCode()
 	{
-		if (!string.IsNullOrEmpty(SelectedMessage?.MessageContent))
+		if (!string.IsNullOrEmpty(SelectedMessage?.MessageContent) &&
+			!string.IsNullOrEmpty(SelectedMessage?.ProgrammingLanguage))
 		{
-			Console.WriteLine($"Running code:\n{SelectedMessage?.MessageContent}");
+			ConsoleOutput = string.Empty;
+
+			await _codeRunnerService.RunCodeAsync(
+				MessageContent,
+				SelectedMessage.ProgrammingLanguage,
+				output =>
+				{
+					Dispatcher.UIThread.Post(() =>
+					{
+						ConsoleOutput += output;
+					});
+				});
 		}
 	}
 
@@ -87,6 +107,7 @@ public partial class RightPanelViewModel : ObservableObject
 		{
 			SelectedMessage = null;
 			MessageContent = string.Empty;
+			ConsoleOutput = string.Empty;
 		}
 	}
 

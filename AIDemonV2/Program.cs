@@ -38,6 +38,7 @@ class Program
 		services.AddSingleton<IMessageRepository, MessageRepository>();
 		services.AddSingleton<ISettingsRepository, SettingsRepository>();
 		services.AddSingleton<IChatService, ChatService>();
+		services.AddSingleton<ICodeRunnerService, CodeRunnerService>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();

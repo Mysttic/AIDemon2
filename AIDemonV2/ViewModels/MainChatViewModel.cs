@@ -9,7 +9,6 @@ public partial class MainChatViewModel : ObservableObject
 {
 	private readonly IChatService _chatService;
 	private readonly IMessageRepository _messageRepository;
-	private readonly RightPanelViewModel _rightPanelViewModel;
 
 	public event Action? ScrollRequested;
 	public event Action<bool>? IsLoading;
@@ -37,12 +36,10 @@ public partial class MainChatViewModel : ObservableObject
 
 	public MainChatViewModel(
 		IChatService chatService,
-		IMessageRepository messageRepository,
-		RightPanelViewModel rightPanelViewModel)
+		IMessageRepository messageRepository)
 	{
 		_chatService = chatService;
 		_messageRepository = messageRepository;
-		_rightPanelViewModel = rightPanelViewModel;
 		_ = LoadMessages();
 	}
 

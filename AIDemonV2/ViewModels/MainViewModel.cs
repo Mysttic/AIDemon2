@@ -70,13 +70,18 @@ public partial class MainViewModel : ObservableObject
 	[RelayCommand]
 	private async Task SendMessage()
 	{
-		if (string.IsNullOrWhiteSpace(NewMessageText)) return;
-		IsLoading = true;
+		if (string.IsNullOrWhiteSpace(NewMessageText)) 
+			return;
+		Message userMessage = new Message(NewMessageText);
+		await _messageRepository.AddAsync(userMessage);
+		ChatViewModel.AddMessage(userMessage);
+		NewMessageText = string.Empty;
+		
 		try
 		{
-			var aiMessage = await _chatService.SendMessageAsync(NewMessageText);
-			ChatViewModel.AddMessage(aiMessage);
-			NewMessageText = string.Empty;
+			IsLoading = true;
+			var aiMessage = await _chatService.SendMessageAsync(userMessage);
+			ChatViewModel.AddMessage(aiMessage);			
 		}
 		finally
 		{

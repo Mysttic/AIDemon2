@@ -22,4 +22,14 @@ public class Message : EntityBase, IMessage
 	public Message()
 	{
 	}
+
+	public Message(string messageContent)
+	{
+		MessageContent = messageContent;
+		OriginalMessage = messageContent;
+		RunDate = DateTime.UtcNow;
+		CreationDate = DateTime.UtcNow;
+		ModificationDate = DateTime.UtcNow;
+		AIModel = null;
+	}
 }

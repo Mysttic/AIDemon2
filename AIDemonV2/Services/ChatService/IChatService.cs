@@ -1,5 +1,5 @@
 ﻿public interface IChatService
 {
-	Task<Message> SendMessageAsync(string newMessageText);
+	Task<Message> SendMessageAsync(Message userMessage);
 	void ResetClient();
 }

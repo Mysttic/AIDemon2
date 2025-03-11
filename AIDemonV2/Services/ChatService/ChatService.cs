@@ -24,27 +24,14 @@ public class ChatService : IChatService
 		_ioIntelligenceClient = new IoIntelligenceClient(_settings.ApiKey);
 	}
 
-	public async Task<Message> SendMessageAsync(string newMessageText)
+	public async Task<Message> SendMessageAsync(Message userMessage)
 	{
-		if (string.IsNullOrWhiteSpace(newMessageText))
-			throw new ArgumentException("Message text cannot be empty.", nameof(newMessageText));
+		if (userMessage == null)
+			throw new ArgumentNullException(nameof(userMessage));
 
 		if (_ioIntelligenceClient == null)
 			await InitializeAsync();
-
-		// Utwórz wiadomość użytkownika
-		var userMessage = new Message
-		{
-			MessageContent = newMessageText,
-			OriginalMessage = newMessageText,
-			RunDate = DateTime.UtcNow,
-			CreationDate = DateTime.UtcNow,
-			ModificationDate = DateTime.UtcNow,
-			AIModel = null
-		};
-
-		await _messageRepository.AddAsync(userMessage);
-
+				
 		// Przygotowanie wiadomości dla AI
 		var messages = new List<ChatCompletionMessage>();
 
@@ -67,7 +54,7 @@ public class ChatService : IChatService
 		messages.Add(new ChatCompletionMessage
 		{
 			Role = "user",
-			Content = JsonSerializer.Serialize(new { text = newMessageText })
+			Content = JsonSerializer.Serialize(new { text = userMessage.MessageContent })
 		});
 
 		var chatRequest = new ChatCompletionRequest
