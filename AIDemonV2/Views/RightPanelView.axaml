@@ -22,14 +22,16 @@
 				Background="#444444" 
 				Foreground="White" 
 				Margin="5,0,5,0"
-				Padding="15,5,15,5"/>
+				Padding="15,5,15,5"
+				IsEnabled="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
 			<Button
 				Content="{materialIcons:MaterialIconExt Kind=Delete}"
 				Command="{Binding DeleteMessageCommand}"
 				Background="#FF0000" 
 				Foreground="White"
 				Margin="5,0,5,0"
-				Padding="15,5,15,5"/>
+				Padding="15,5,15,5"
+				IsEnabled="{Binding SelectedMessage.Favourite}"/>
 			<Button
 				Content="{materialIcons:MaterialIconExt Kind=Clear}"
 				Command="{Binding ClearMessageCommand}"

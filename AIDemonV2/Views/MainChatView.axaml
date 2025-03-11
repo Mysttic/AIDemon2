@@ -20,7 +20,7 @@
                                 Background="{Binding AIModel, Converter={StaticResource AIMessageBackgroundConverter}}"
                                 HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource MessageAlignmentConverter}}">								
 							<StackPanel>
-								<TextBlock Text="{Binding MessageContent}" 
+								<TextBlock Text="{Binding OriginalMessage}" 
 										   FontWeight="Bold" 
 										   Foreground="White" 
 										   MaxWidth="400"

@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AIDemonV2.Migrations
 {
     [DbContext(typeof(AIDemonDbContext))]
-    [Migration("20250310113003_Initial")]
+    [Migration("20250311081518_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -55,10 +55,15 @@ namespace AIDemonV2.Migrations
                     b.Property<string>("ProgrammingLanguage")
                         .HasColumnType("text");
 
+                    b.Property<int?>("ReplyToMessageId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("RunDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReplyToMessageId");
 
                     b.ToTable("Messages");
                 });
@@ -98,10 +103,24 @@ namespace AIDemonV2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 10, 11, 30, 3, 279, DateTimeKind.Utc).AddTicks(4209),
+                            CreationDate = new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3778),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 10, 11, 30, 3, 279, DateTimeKind.Utc).AddTicks(4209)
+                            ModificationDate = new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3779)
                         });
+                });
+
+            modelBuilder.Entity("Message", b =>
+                {
+                    b.HasOne("Message", "ReplyTo")
+                        .WithMany("Replies")
+                        .HasForeignKey("ReplyToMessageId");
+
+                    b.Navigation("ReplyTo");
+                });
+
+            modelBuilder.Entity("Message", b =>
+                {
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

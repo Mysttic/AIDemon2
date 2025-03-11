@@ -32,6 +32,11 @@ public class AIDemonDbContext : DbContext
 			.Property(m => m.RunDate)
 			.HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
+		modelBuilder.Entity<Message>()
+			.HasMany(m => m.Replies)
+			.WithOne(m => m.ReplyTo)
+			.HasForeignKey(m => m.ReplyToMessageId);
+
 	}
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

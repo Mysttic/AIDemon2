@@ -5,9 +5,11 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyChanged;
 
 namespace AIDemonV2.Views;
 
+[DoNotNotify]
 public partial class MainChatView : UserControl
 {
 	public MainChatView()
@@ -38,6 +40,8 @@ public partial class MainChatView : UserControl
 					if (mainView.DataContext is MainViewModel vm)
 					{
 						vm.RightPanelViewModel.SelectedMessage = message;
+						if (!mainView.RightPanel.IsVisible)
+							mainView.ToggleRightPanelButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 					}
 				}
 			}

@@ -48,7 +48,6 @@ public partial class MainChatViewModel : ObservableObject
 		foreach (var message in messages)
 		{
 			AddMessage(message);
-			//Messages.Add(message);
 		}
 	}
 
@@ -63,12 +62,5 @@ public partial class MainChatViewModel : ObservableObject
 		Messages.Remove(message);
 		ScrollRequested?.Invoke();
 	}
-
-	//public void SelectMessageForEditing(Message message)
-	//{
-	//	_rightPanelViewModel.SelectedMessage = message;
-	//	//_rightPanelViewModel.CodeEditorText = message.MessageContent;
-	//}
-
 
 }

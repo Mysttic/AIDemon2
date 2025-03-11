@@ -7,10 +7,12 @@ using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyChanged;
 using System;
 
 namespace AIDemonV2;
 
+[DoNotNotify]
 public partial class App : Application
 {
 	public override void Initialize()

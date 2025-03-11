@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AIDemonV2.App"
-			 xmlns:vm="clr-namespace:AIDemonV2.Converters"
+			 xmlns:cv="clr-namespace:AIDemonV2.Converters"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -12,10 +12,11 @@
     </Application.Styles>
 
 	<Application.Resources>
-		<vm:AIMessageBackgroundConverter x:Key="AIMessageBackgroundConverter"/>
-		<vm:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
-		<vm:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
-		<vm:TextTruncateConverter x:Key="TextTruncateConverter"/>
+		<cv:AIMessageBackgroundConverter x:Key="AIMessageBackgroundConverter"/>
+		<cv:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
+		<cv:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+		<cv:TextTruncateConverter x:Key="TextTruncateConverter"/>
+		<cv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 	</Application.Resources>
 
 </Application>

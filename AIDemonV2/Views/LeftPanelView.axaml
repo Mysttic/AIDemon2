@@ -24,9 +24,9 @@
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Border BorderThickness="1" BorderBrush="Gray" Padding="0" Margin="0"
-							CornerRadius="0" Background="#333" MinWidth="150" MaxWidth="250" Height="100">
+							CornerRadius="0" Background="#333" MinWidth="150" MaxWidth="250" Height="70" MaxHeight="70">
 						<StackPanel>
-							<TextBlock Text="{Binding MessageContent, Converter={StaticResource TextTruncateConverter}, ConverterParameter=30}"
+							<TextBlock Text="{Binding MessageContent, Converter={StaticResource TextTruncateConverter}, ConverterParameter=70}"
 									   Foreground="White"
 									   TextWrapping="Wrap"
 									   MaxWidth="200"/>

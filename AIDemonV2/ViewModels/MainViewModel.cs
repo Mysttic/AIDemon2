@@ -27,6 +27,7 @@ public partial class MainViewModel : ObservableObject
 	private Settings _settings;
 
 	public static bool clientWasInitialized = false;
+	public bool IsLoading { get; set; }
 
 	[ObservableProperty]
 	private string newMessageText = string.Empty;
@@ -78,7 +79,7 @@ public partial class MainViewModel : ObservableObject
 		var userMessage = new Message
 		{
 			MessageContent = NewMessageText,
-			OriginalMessage = $"User: {NewMessageText}",
+			OriginalMessage = NewMessageText,
 			RunDate = DateTime.UtcNow,
 			CreationDate = DateTime.UtcNow,
 			ModificationDate = DateTime.UtcNow,
@@ -118,9 +119,21 @@ public partial class MainViewModel : ObservableObject
 
 		};
 
-		var chatResponse = await _ioIntelligenceClient.Models.CreateChatCompletionAsync(chatRequest);
-		string chatReply = SanitizeResponse(chatResponse.Choices.First().Message.Content);
-		await HandleAIResponse(_settings,chatReply);
+		try
+		{
+			IsLoading = true;
+			var chatResponse = await _ioIntelligenceClient.Models.CreateChatCompletionAsync(chatRequest);
+			string chatReply = SanitizeResponse(chatResponse.Choices.First().Message.Content);
+			await HandleAIResponse(_settings, userMessage, chatReply);
+		}
+		catch (Exception ex)
+		{
+			await HandleAIResponse(null, userMessage, "Sorry, I'm having trouble connecting to the AI service. Please try again later.");
+		}
+		finally
+		{
+			IsLoading = false;
+		}
 	}
 
 	static string SanitizeResponse(string response)
@@ -131,7 +144,7 @@ public partial class MainViewModel : ObservableObject
 		return cleaned.Trim();
 	}
 
-	private async Task HandleAIResponse(Settings settings, string responseText)
+	private async Task HandleAIResponse(Settings settings, Message userMessage, string responseText)
 	{
 		var aiMessage = new Message
 		{
@@ -139,8 +152,9 @@ public partial class MainViewModel : ObservableObject
 			OriginalMessage = responseText,
 			CreationDate = DateTime.UtcNow,
 			ModificationDate = DateTime.UtcNow,
-			AIModel = settings.AIModel,
-			ProgrammingLanguage = settings.ProgrammingLanguage,
+			AIModel = settings?.AIModel,
+			ProgrammingLanguage = settings?.ProgrammingLanguage,
+			ReplyTo = userMessage,
 		};
 
 		await _messageRepository.AddAsync(aiMessage);

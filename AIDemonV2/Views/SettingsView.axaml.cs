@@ -4,9 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyChanged;
 
 namespace AIDemonV2.Views;
 
+[DoNotNotify]
 public partial class SettingsView : UserControl
 {
 	public SettingsView()

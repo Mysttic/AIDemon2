@@ -24,12 +24,18 @@ namespace AIDemonV2.Migrations
                     ProgrammingLanguage = table.Column<string>(type: "text", nullable: true),
                     RunDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Favourite = table.Column<bool>(type: "boolean", nullable: false),
+                    ReplyToMessageId = table.Column<int>(type: "integer", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Messages_ReplyToMessageId",
+                        column: x => x.ReplyToMessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -53,7 +59,12 @@ namespace AIDemonV2.Migrations
             migrationBuilder.InsertData(
                 table: "Settings",
                 columns: new[] { "Id", "AIModel", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguage" },
-                values: new object[] { 1, null, "", new DateTime(2025, 3, 10, 11, 30, 3, 279, DateTimeKind.Utc).AddTicks(4209), "You are a helpful assistant.", new DateTime(2025, 3, 10, 11, 30, 3, 279, DateTimeKind.Utc).AddTicks(4209), null });
+                values: new object[] { 1, null, "", new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3778), "You are a helpful assistant.", new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3779), null });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ReplyToMessageId",
+                table: "Messages",
+                column: "ReplyToMessageId");
         }
 
         /// <inheritdoc />

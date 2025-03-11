@@ -4,9 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyChanged;
 
 namespace AIDemonV2.Views;
 
+[DoNotNotify]
 public partial class MainView : UserControl
 {
 	private bool _isLeftPanelVisible = true;
@@ -18,43 +20,7 @@ public partial class MainView : UserControl
 		ToggleLeftPanelButton.Click += OnToggleLeftPanelClick;
 		ToggleRightPanelButton.Click += OnToggleRightPanelClick;
 
-		//_services = (IServiceProvider)Application.Current!.Resources["Services"];
-		//var vm = _services.GetRequiredService<MainViewModel>();
-		//DataContext = vm;
-
-		//_leftPanelViewModel = vm.LeftPanelViewModel;
-
-		//// Obsługa otwierania okna SettingsView
-		//_leftPanelViewModel.ShowSettingsCommand.Subscribe(_ =>
-		//{
-		//	OpenSettingsView();
-		//});
-
 	}
-
-	//private void OpenSettingsView()
-	//{
-	//	var settingsVM = new SettingsViewModel(
-	//		_services.GetRequiredService<ISettingsRepository>(),
-	//		_services.GetRequiredService<IAIModelRepository>());
-
-	//	settingsVM.CloseRequested += () =>
-	//	{
-	//		Dispatcher.UIThread.Post(() =>
-	//		{
-	//			_leftPanelViewModel.IsSettingsVisible = false;
-	//			SettingsViewControl.IsVisible = false;
-	//			SettingsViewControl.DataContext = null; // Reset DataContext
-	//		});
-	//	};
-
-	//	Dispatcher.UIThread.Post(() =>
-	//	{
-	//		SettingsViewControl.DataContext = settingsVM;
-	//		_leftPanelViewModel.IsSettingsVisible = true;
-	//		SettingsViewControl.IsVisible = true;
-	//	});
-	//}
 
 	private void OnToggleLeftPanelClick(object? sender, RoutedEventArgs e)
 	{
