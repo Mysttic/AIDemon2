@@ -40,31 +40,19 @@
 								<!-- Dolna część (data + ikona modyfikacji, przycisk Resend) -->
 								<Grid Grid.Row="1" Margin="0,5,0,0">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto"/>
 										<ColumnDefinition Width="*"/>
 										<ColumnDefinition Width="Auto"/>
 									</Grid.ColumnDefinitions>
 
-									<!-- Ikona/przycisk w lewym dolnym rogu (tylko dla wiadomości użytkownika) -->
-									<Button Grid.Column="0"
-											Command="{Binding ResendMessageCommand}"
-											IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolToVisibilityConverter}}"
-											HorizontalAlignment="Left">
-										<StackPanel Orientation="Horizontal">
-											<!-- Zastąp MaterialIcon czym chcesz -->
-											<materialIcons:MaterialIcon Kind="Replay" Width="16" Height="16"/>
-											<TextBlock Text="Resend" Margin="5,0,0,0"/>
-										</StackPanel>
-									</Button>
-
 									<!-- Nazwa modelu AI (pokazuj tylko, gdy to nie jest wiadomość użytkownika) -->
 									<TextBlock Text="{Binding AIModel}"
+											   Grid.Column="0"
 											   FontSize="10"
 											   Foreground="LightBlue"
 											   IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolInverseToVisibilityConverter}}"/>
 
 									<!-- Data i ewentualna ikona modyfikacji w prawym dolnym rogu -->
-									<StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right">
+									<StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
 										<!-- Data -->
 										<TextBlock Text="{Binding CreationDate, StringFormat='HH:mm:ss'}"
 												   FontSize="10"

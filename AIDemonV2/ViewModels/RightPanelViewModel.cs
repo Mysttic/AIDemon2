@@ -20,7 +20,7 @@ public partial class RightPanelViewModel : ObservableObject
 	}
 
 	public event Action<Message>? MessageUpdated;
-	public event Action<Message>? ResendMessageRequested;
+	public event Action<string>? ResendMessageRequested;
 
 	[ObservableProperty]
 	public string messageContent;
@@ -28,8 +28,7 @@ public partial class RightPanelViewModel : ObservableObject
 	public RightPanelViewModel(
 		IMessageRepository messageRepository)
 	{
-		_messageRepository = messageRepository;
-		
+		_messageRepository = messageRepository;		
 	}
 
 	public void SelectMessage(Message message)
@@ -63,14 +62,7 @@ public partial class RightPanelViewModel : ObservableObject
 	[RelayCommand]
 	private void ResendMessage()
 	{
-		var newMessage = new Message
-		{
-			MessageContent = SelectedMessage.MessageContent,
-			OriginalMessage = SelectedMessage.MessageContent,
-			CreationDate = DateTime.UtcNow,
-			ModificationDate = DateTime.UtcNow
-		};
-		ResendMessageRequested?.Invoke(newMessage);
+		ResendMessageRequested?.Invoke(MessageContent);
 	}
 
 	[RelayCommand]
@@ -81,6 +73,7 @@ public partial class RightPanelViewModel : ObservableObject
 			MessageContent = string.Empty;
 			SelectedMessage.Favourite = false;
 			SelectedMessage.ModificationDate = DateTime.UtcNow;
+			SelectedMessage.MessageContent = SelectedMessage.OriginalMessage;
 			await _messageRepository.UpdateAsync(SelectedMessage);
 			MessageUpdated?.Invoke(SelectedMessage);
 			SelectedMessage = null;

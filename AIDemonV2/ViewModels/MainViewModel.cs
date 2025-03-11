@@ -42,6 +42,7 @@ public partial class MainViewModel : ObservableObject
 		_messageRepository = messageRepository;
 		_chatService = chatService;
 		RightPanelViewModel.MessageUpdated += OnMessageUpdated;
+		RightPanelViewModel.ResendMessageRequested += ResendMessageRequested;
 		ChatViewModel.IsLoading += OnIsLoading;
 		_ = LoadMessages();
 	}
@@ -56,15 +57,14 @@ public partial class MainViewModel : ObservableObject
 		IsLoading = isLoading;
 	}
 
+	private void ResendMessageRequested(string newMessage)
+	{
+		NewMessageText = newMessage;
+	}
+
 	private async Task LoadMessages()
 	{
 		await ChatViewModel.LoadMessages();
-		//var messages = await _messageRepository.GetAllAsync();
-		//ChatViewModel.Messages.Clear();
-		//foreach (var message in messages.OrderBy(m => m.Id))
-		//{
-		//	ChatViewModel.Messages.Add(message);
-		//}
 	}
 
 	[RelayCommand]
