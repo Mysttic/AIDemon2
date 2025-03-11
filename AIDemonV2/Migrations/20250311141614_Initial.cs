@@ -22,7 +22,6 @@ namespace AIDemonV2.Migrations
                     OriginalMessage = table.Column<string>(type: "text", nullable: false),
                     AIModel = table.Column<string>(type: "text", nullable: true),
                     ProgrammingLanguage = table.Column<string>(type: "text", nullable: true),
-                    RunDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Favourite = table.Column<bool>(type: "boolean", nullable: false),
                     ReplyToMessageId = table.Column<int>(type: "integer", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -59,7 +58,7 @@ namespace AIDemonV2.Migrations
             migrationBuilder.InsertData(
                 table: "Settings",
                 columns: new[] { "Id", "AIModel", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguage" },
-                values: new object[] { 1, null, "", new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3778), "You are a helpful assistant.", new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3779), null });
+                values: new object[] { 1, null, "", new DateTime(2025, 3, 11, 14, 16, 13, 325, DateTimeKind.Utc).AddTicks(1286), "You are a helpful assistant.", new DateTime(2025, 3, 11, 14, 16, 13, 325, DateTimeKind.Utc).AddTicks(1289), null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ReplyToMessageId",

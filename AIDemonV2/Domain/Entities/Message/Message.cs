@@ -9,7 +9,6 @@ public class Message : EntityBase, IMessage
 	public string OriginalMessage { get; set; }
 	public string? AIModel { get; set; }
 	public string? ProgrammingLanguage { get; set; }
-	public DateTime RunDate { get; set; }
 	public bool Favourite { get; set; }
 
 	public int? ReplyToMessageId { get; set; }
@@ -27,7 +26,6 @@ public class Message : EntityBase, IMessage
 	{
 		MessageContent = messageContent;
 		OriginalMessage = messageContent;
-		RunDate = DateTime.UtcNow;
 		CreationDate = DateTime.UtcNow;
 		ModificationDate = DateTime.UtcNow;
 		AIModel = null;

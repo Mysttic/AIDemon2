@@ -55,9 +55,6 @@ namespace AIDemonV2.Migrations
                     b.Property<int?>("ReplyToMessageId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("RunDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ReplyToMessageId");
@@ -100,9 +97,9 @@ namespace AIDemonV2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3778),
+                            CreationDate = new DateTime(2025, 3, 11, 14, 16, 13, 325, DateTimeKind.Utc).AddTicks(1286),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 11, 8, 15, 18, 41, DateTimeKind.Utc).AddTicks(3779)
+                            ModificationDate = new DateTime(2025, 3, 11, 14, 16, 13, 325, DateTimeKind.Utc).AddTicks(1289)
                         });
                 });
 
