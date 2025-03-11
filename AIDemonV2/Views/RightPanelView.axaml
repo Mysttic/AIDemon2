@@ -54,10 +54,10 @@
 		<!-- Edytor kodu (row 1) -->
 		<TextBox Grid.Row="1"
 				 Text="{Binding MessageContent}"
-                 AcceptsReturn="True"
-                 TextWrapping="Wrap"
-                 Margin="10"
-                 MaxWidth="600"/>
+				 AcceptsReturn="True"
+				 TextWrapping="Wrap"
+				 Margin="10"
+				 MaxWidth="600"/>
 
 		<!-- Okno wyjścia konsoli (row 2) -->
 		<Border Grid.Row="2" Margin="10" BorderThickness="1" BorderBrush="Gray">
