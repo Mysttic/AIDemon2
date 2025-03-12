@@ -31,9 +31,10 @@ internal class Program
 	{
 		// Rejestracja DbContext – connection string ustawiony wewnętrznie
 		services.AddDbContext<AIDemonDbContext>(options =>
-			options.UseNpgsql(Resources.ConnectionString),
+			options.UseSqlite($"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AIDemonV2.db")};Password={Resources.SQLiteDBPass};"),
 			ServiceLifetime.Scoped
 		);
+
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
 		services.AddSingleton<IMessageRepository, MessageRepository>();
 		services.AddSingleton<ISettingsRepository, SettingsRepository>();

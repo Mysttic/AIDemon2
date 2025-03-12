@@ -46,7 +46,9 @@ public class AIDemonDbContextFactory : IDesignTimeDbContextFactory<AIDemonDbCont
 	public AIDemonDbContext CreateDbContext(string[] args)
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<AIDemonDbContext>();
-		optionsBuilder.UseNpgsql(Resources.ConnectionString);
+		// Ścieżka do bazy SQLite
+		var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AIDemonV2.db");
+		optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
 		return new AIDemonDbContext(optionsBuilder.Options);
 	}

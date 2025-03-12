@@ -70,20 +70,20 @@ namespace AIDemonV2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host=localhost;Port=5432;Database=AIDemonDB;Username=postgres;Password=postgres;.
-        /// </summary>
-        internal static string ConnectionString {
-            get {
-                return ResourceManager.GetString("ConnectionString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to python;powershell.
         /// </summary>
         internal static string ProgrammingLanguages {
             get {
                 return ResourceManager.GetString("ProgrammingLanguages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to P@ssword1.
+        /// </summary>
+        internal static string SQLiteDBPass {
+            get {
+                return ResourceManager.GetString("SQLiteDBPass", resourceCulture);
             }
         }
     }
