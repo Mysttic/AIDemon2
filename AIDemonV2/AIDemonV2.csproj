@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
+	<UseWPF>false</UseWPF>
 	<ImplicitUsings>enable</ImplicitUsings>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	  <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+	  <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 	<StartupObject>AIDemonV2.Program</StartupObject>
+	<Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
