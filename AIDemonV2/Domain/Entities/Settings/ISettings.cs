@@ -5,4 +5,3 @@
 	public string? AIModel { get; set; }
 	public string? ProgrammingLanguage { get; set; }
 }
-

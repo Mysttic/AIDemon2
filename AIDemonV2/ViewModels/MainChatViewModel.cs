@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.ObjectModel;
 
 namespace AIDemonV2.ViewModels;
@@ -11,8 +9,11 @@ public partial class MainChatViewModel : ObservableObject
 	private readonly IMessageRepository _messageRepository;
 
 	public event Action? ScrollRequested;
+
 	public event Action<bool>? IsLoading;
+
 	private ObservableCollection<Message> _messages = new();
+
 	public ObservableCollection<Message> Messages
 	{
 		get => _messages;
@@ -27,12 +28,12 @@ public partial class MainChatViewModel : ObservableObject
 	private string _newMessage = string.Empty;
 
 	private Message? _selectedMessage;
+
 	public Message? SelectedMessage
 	{
 		get => _selectedMessage;
 		set => SetProperty(ref _selectedMessage, value);
 	}
-
 
 	public MainChatViewModel(
 		IChatService chatService,
@@ -64,5 +65,4 @@ public partial class MainChatViewModel : ObservableObject
 		Messages.Remove(message);
 		ScrollRequested?.Invoke();
 	}
-
 }

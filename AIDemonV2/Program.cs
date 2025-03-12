@@ -1,14 +1,14 @@
-﻿using AIDemonV2.ViewModels;
+﻿using AIDemonV2.Properties;
+using AIDemonV2.ViewModels;
 using AIDemonV2.Views;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using AIDemonV2.Properties;
 
 namespace AIDemonV2;
 
-class Program
+internal class Program
 {
 	// Initialization code. Don't use any Avalonia, third-party APIs or any
 	// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -30,7 +30,7 @@ class Program
 	private static void ConfigureServices(IServiceCollection services)
 	{
 		// Rejestracja DbContext – connection string ustawiony wewnętrznie
-		services.AddDbContext<AIDemonDbContext>(options =>		
+		services.AddDbContext<AIDemonDbContext>(options =>
 			options.UseNpgsql(Resources.ConnectionString),
 			ServiceLifetime.Scoped
 		);

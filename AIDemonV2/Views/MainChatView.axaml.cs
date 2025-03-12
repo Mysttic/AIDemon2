@@ -47,6 +47,4 @@ public partial class MainChatView : UserControl
 			}
 		}
 	}
-
-
 }

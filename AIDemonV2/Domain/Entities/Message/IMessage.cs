@@ -1,6 +1,4 @@
-﻿using System;
-
-public interface IMessage : IEntityBase
+﻿public interface IMessage : IEntityBase
 {
 	public string MessageContent { get; set; }
 	public string OriginalMessage { get; set; }
@@ -8,4 +6,3 @@ public interface IMessage : IEntityBase
 	public string? ProgrammingLanguage { get; set; }
 	public bool Favourite { get; set; }
 }
-

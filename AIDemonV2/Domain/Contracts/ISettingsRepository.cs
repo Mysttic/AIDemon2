@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-public interface ISettingsRepository
+﻿public interface ISettingsRepository
 {
 	Task<Settings?> Get();
 

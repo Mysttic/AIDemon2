@@ -4,11 +4,8 @@ using AIDemonV2.Views;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyChanged;
-using System;
 
 namespace AIDemonV2;
 
@@ -22,7 +19,6 @@ public partial class App : Application
 
 	public override void OnFrameworkInitializationCompleted()
 	{
-
 		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
 			var serviceProvider = (IServiceProvider)this.Resources["Services"];

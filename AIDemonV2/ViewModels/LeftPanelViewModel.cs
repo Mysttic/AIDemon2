@@ -1,12 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MsBox.Avalonia.Enums;
-using MsBox.Avalonia;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using CommunityToolkit.Mvvm.Input;
-using IoIntelligence.Client.Models.Agents;
-using MsBox.Avalonia.Dto;
 
 namespace AIDemonV2.ViewModels;
 
@@ -18,6 +14,7 @@ public partial class LeftPanelViewModel : ObservableObject
 	private readonly IDialogService _dialogService;
 
 	private bool _isSettingsVisible;
+
 	public bool IsSettingsVisible
 	{
 		get => _isSettingsVisible;
@@ -36,7 +33,7 @@ public partial class LeftPanelViewModel : ObservableObject
 		_dialogService = dialogService;
 		ShowSettingsCommand = ReactiveCommand.Create(() =>
 		{
-			IsSettingsVisible = true;  
+			IsSettingsVisible = true;
 		});
 		_ = LoadFavouriteMessages();
 	}
@@ -69,4 +66,3 @@ public partial class LeftPanelViewModel : ObservableObject
 		}
 	}
 }
-

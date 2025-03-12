@@ -1,9 +1,5 @@
-﻿using AIDemonV2.ViewModels;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
-using Microsoft.Extensions.DependencyInjection;
 using PropertyChanged;
 
 namespace AIDemonV2.Views;
@@ -19,7 +15,6 @@ public partial class MainView : UserControl
 		InitializeComponent();
 		ToggleLeftPanelButton.Click += OnToggleLeftPanelClick;
 		ToggleRightPanelButton.Click += OnToggleRightPanelClick;
-
 	}
 
 	private void OnToggleLeftPanelClick(object? sender, RoutedEventArgs e)

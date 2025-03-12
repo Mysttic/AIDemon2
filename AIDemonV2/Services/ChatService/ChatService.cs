@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
-using System.Text.RegularExpressions;
+﻿using IoIntelligence.Client.Interfaces;
 using IoIntelligence.Client.Models.AIModel.Chat;
-using IoIntelligence.Client.Interfaces;
 using IoIntelligence.Client.Services;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 public class ChatService : IChatService
 {
@@ -31,7 +31,7 @@ public class ChatService : IChatService
 
 		if (_ioIntelligenceClient == null)
 			await InitializeAsync();
-				
+
 		// Przygotowanie wiadomości dla AI
 		var messages = new List<ChatCompletionMessage>();
 

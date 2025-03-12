@@ -10,10 +10,10 @@ namespace AIDemonV2.Views;
 [DoNotNotify]
 public partial class RightPanelView : UserControl
 {
-    public RightPanelView()
-    {
-        InitializeComponent();
-        DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
+	public RightPanelView()
+	{
+		InitializeComponent();
+		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
 			.GetRequiredService<RightPanelViewModel>();
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using PropertyChanged;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 [AddINotifyPropertyChangedInterface]
@@ -12,12 +11,15 @@ public class Message : EntityBase, IMessage
 	public bool Favourite { get; set; }
 
 	public int? ReplyToMessageId { get; set; }
+
 	[ForeignKey("ReplyToMessageId")]
 	public Message? ReplyTo { get; set; }
+
 	public ICollection<Message> Replies { get; set; } = new List<Message>();
 
 	public bool IsModified => ModificationDate > CreationDate;
 	public bool IsUserMessage => string.IsNullOrEmpty(ProgrammingLanguage);
+
 	public Message()
 	{
 	}

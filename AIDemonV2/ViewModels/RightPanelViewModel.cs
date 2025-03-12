@@ -1,11 +1,6 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AIDemonV2.ViewModels;
 
@@ -34,7 +29,7 @@ public partial class RightPanelViewModel : ObservableObject
 		IMessageRepository messageRepository,
 		ICodeRunnerService codeRunnerService)
 	{
-		_messageRepository = messageRepository;		
+		_messageRepository = messageRepository;
 		_codeRunnerService = codeRunnerService;
 	}
 
@@ -48,7 +43,7 @@ public partial class RightPanelViewModel : ObservableObject
 	[RelayCommand]
 	private async Task SaveFavourite()
 	{
-		if (SelectedMessage!= null)
+		if (SelectedMessage != null)
 		{
 			SelectedMessage.MessageContent = MessageContent;
 			SelectedMessage.Favourite = true;
@@ -110,5 +105,4 @@ public partial class RightPanelViewModel : ObservableObject
 			ConsoleOutput = string.Empty;
 		}
 	}
-
 }

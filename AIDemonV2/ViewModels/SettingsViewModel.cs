@@ -1,7 +1,6 @@
 ﻿using AIDemonV2.Properties;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AIDemonV2.ViewModels;
 
@@ -9,6 +8,7 @@ public partial class SettingsViewModel : ObservableObject
 {
 	private readonly ISettingsRepository _settingsRepository;
 	private readonly IChatService _chatService;
+
 	public event Action? CloseRequested;
 
 	public SettingsViewModel(ISettingsRepository settingsRepository, IChatService chatService)
@@ -25,10 +25,12 @@ public partial class SettingsViewModel : ObservableObject
 	private string instructionPrompt;
 
 	public List<string> AIModelsList { get; private set; } = Resources.AIModels.Split(';').ToList();
+
 	[ObservableProperty]
 	private string? aIModel;
 
 	public List<string> ProgrammingLanguageList { get; } = Resources.ProgrammingLanguages.Split(';').ToList();
+
 	[ObservableProperty]
 	private string? programmingLanguage;
 
@@ -55,7 +57,7 @@ public partial class SettingsViewModel : ObservableObject
 				settings.ProgrammingLanguage != ProgrammingLanguage)
 				_chatService.ResetClient();
 
-			settings.ApiKey = ApiKey;			
+			settings.ApiKey = ApiKey;
 			settings.InstructionPrompt = InstructionPrompt;
 			settings.AIModel = AIModel;
 			settings.ProgrammingLanguage = ProgrammingLanguage;

@@ -1,17 +1,5 @@
-﻿using Avalonia.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Text.Json;
-using System.Text;
-using System.Threading.Tasks;
-using IoIntelligence.Client.Models.AIModel.Chat;
-using IoIntelligence.Client.Interfaces;
-using IoIntelligence.Client.Services;
-using System.Text.RegularExpressions;
-using Tmds.DBus.Protocol;
 
 namespace AIDemonV2.ViewModels;
 
@@ -30,8 +18,8 @@ public partial class MainViewModel : ObservableObject
 	private string newMessageText = string.Empty;
 
 	public MainViewModel(
-		LeftPanelViewModel leftPanelViewModel, 
-		MainChatViewModel chatViewModel, 
+		LeftPanelViewModel leftPanelViewModel,
+		MainChatViewModel chatViewModel,
 		RightPanelViewModel rightPanelViewModel,
 		IMessageRepository messageRepository,
 		IChatService chatService)
@@ -77,18 +65,18 @@ public partial class MainViewModel : ObservableObject
 	[RelayCommand]
 	private async Task SendMessage()
 	{
-		if (string.IsNullOrWhiteSpace(NewMessageText)) 
+		if (string.IsNullOrWhiteSpace(NewMessageText))
 			return;
 		Message userMessage = new Message(NewMessageText);
 		await _messageRepository.AddAsync(userMessage);
 		ChatViewModel.AddMessage(userMessage);
 		NewMessageText = string.Empty;
-		
+
 		try
 		{
 			IsLoading = true;
 			var aiMessage = await _chatService.SendMessageAsync(userMessage);
-			ChatViewModel.AddMessage(aiMessage);			
+			ChatViewModel.AddMessage(aiMessage);
 		}
 		finally
 		{

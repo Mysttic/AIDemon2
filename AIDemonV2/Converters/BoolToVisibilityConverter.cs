@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Data.Converters;
-using System;
+﻿using Avalonia.Data.Converters;
 using System.Globalization;
 
 namespace AIDemonV2.Converters

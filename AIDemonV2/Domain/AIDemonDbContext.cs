@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AIDemonV2.Properties;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using AIDemonV2.Properties;
-
 
 public class AIDemonDbContext : DbContext
 {
 	public DbSet<Message> Messages { get; set; }
 	public DbSet<Settings> Settings { get; set; }
+
 	public AIDemonDbContext(DbContextOptions<AIDemonDbContext> options) : base(options)
 	{
 	}
@@ -32,7 +32,6 @@ public class AIDemonDbContext : DbContext
 			.HasMany(m => m.Replies)
 			.WithOne(m => m.ReplyTo)
 			.HasForeignKey(m => m.ReplyToMessageId);
-
 	}
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -40,7 +39,6 @@ public class AIDemonDbContext : DbContext
 		optionsBuilder.ConfigureWarnings(warnings =>
 			warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
 	}
-
 }
 
 public class AIDemonDbContextFactory : IDesignTimeDbContextFactory<AIDemonDbContext>

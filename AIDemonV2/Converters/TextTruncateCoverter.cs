@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Avalonia.Data.Converters;
 using System.Globalization;
-using Avalonia.Data.Converters;
 
 namespace AIDemonV2.Converters;
 
