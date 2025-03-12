@@ -20,6 +20,7 @@
 		<cv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 		<cv:BoolInverseToVisibilityConverter x:Key="BoolInverseToVisibilityConverter" />
 		<cv:NullToBoolConverter x:Key="NullToBoolConverter" />
+		<cv:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
 	</Application.Resources>
 
 </Application>

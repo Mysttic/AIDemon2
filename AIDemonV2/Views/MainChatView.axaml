@@ -54,10 +54,10 @@
 									<!-- Data i ewentualna ikona modyfikacji w prawym dolnym rogu -->
 									<StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
 										<!-- Data -->
-										<TextBlock Text="{Binding CreationDate, StringFormat='HH:mm:ss'}"
+										<TextBlock Text="{Binding CreationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
 												   FontSize="10"
 												   Foreground="Gray"/>
-										<TextBlock Text="{Binding ModificationDate, StringFormat='HH:mm:ss'}"
+										<TextBlock Text="{Binding ModificationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
 												   FontSize="10"
 												   Foreground="Gray"
 												   IsVisible="{Binding IsModified, Converter={StaticResource BoolToVisibilityConverter}}"/>

@@ -91,13 +91,16 @@ public partial class RightPanelViewModel : ObservableObject
 	{
 		if (SelectedMessage != null)
 		{
-			MessageContent = string.Empty;
-			SelectedMessage.Favourite = false;
-			SelectedMessage.ModificationDate = DateTime.UtcNow;
-			SelectedMessage.MessageContent = SelectedMessage.OriginalMessage;
-			await _messageRepository.UpdateAsync(SelectedMessage);
-			MessageUpdated?.Invoke(SelectedMessage);
-			SelectedMessage = null;
+			if (await _dialogService.ShowConfirmationDialog("Delete message", "Are you sure that you want to delete this message? It will remove all your changes made so far."))
+			{
+				MessageContent = string.Empty;
+				SelectedMessage.Favourite = false;
+				SelectedMessage.ModificationDate = DateTime.UtcNow;
+				SelectedMessage.MessageContent = SelectedMessage.OriginalMessage;
+				await _messageRepository.UpdateAsync(SelectedMessage);
+				MessageUpdated?.Invoke(SelectedMessage);
+				SelectedMessage = null;
+			}
 		}
 	}
 
@@ -106,6 +109,10 @@ public partial class RightPanelViewModel : ObservableObject
 	{
 		if (SelectedMessage != null)
 		{
+			if (MessageContent != SelectedMessage.MessageContent &&
+			!await _dialogService.ShowConfirmationDialog("Clear message", "Are you sure that you want to clear this message? It will remove all your changes made so far."))
+				return;
+
 			SelectedMessage = null;
 			MessageContent = string.Empty;
 			ConsoleOutput = string.Empty;

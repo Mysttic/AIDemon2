@@ -55,7 +55,7 @@
 									   Foreground="White"
 									   TextWrapping="Wrap"
 									   MaxWidth="200"/>
-							<TextBlock Text="{Binding CreationDate, StringFormat='HH:mm:ss'}"
+							<TextBlock Text="{Binding ModificationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
 									   FontSize="10"
 									   Foreground="LightGray"
 									   HorizontalAlignment="Right"/>
