@@ -46,7 +46,7 @@ public partial class MainChatViewModel : ObservableObject
 
 	public async Task LoadMessages()
 	{
-		var messages = await _messageRepository.GetAllAsync();
+		var messages = await _messageRepository.GetMessages();
 		Messages.Clear();
 		foreach (var message in messages)
 		{

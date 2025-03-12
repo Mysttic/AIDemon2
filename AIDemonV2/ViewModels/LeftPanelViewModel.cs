@@ -41,7 +41,7 @@ public partial class LeftPanelViewModel : ObservableObject
 	public async Task LoadFavouriteMessages()
 	{
 		FavouriteMessages.Clear();
-		await _messageRepository.GetAllAsync().ContinueWith(task =>
+		await _messageRepository.GetMessages().ContinueWith(task =>
 		{
 			foreach (var message in task.Result)
 			{
