@@ -15,7 +15,7 @@ public partial class RightPanelViewModel : ObservableObject
 	private readonly ICodeRunnerService _codeRunnerService;
 
 	private Message _selectedMessage;
-	public Message SelectedMessage
+	public Message? SelectedMessage
 	{
 		get => _selectedMessage;
 		private set => SetProperty(ref _selectedMessage, value);
@@ -38,7 +38,7 @@ public partial class RightPanelViewModel : ObservableObject
 		_codeRunnerService = codeRunnerService;
 	}
 
-	public void SelectMessage(Message message)
+	public void SelectMessage(Message? message)
 	{
 		SelectedMessage = message;
 		MessageContent = message?.MessageContent ?? string.Empty;

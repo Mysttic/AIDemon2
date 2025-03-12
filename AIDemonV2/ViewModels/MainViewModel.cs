@@ -44,7 +44,14 @@ public partial class MainViewModel : ObservableObject
 		RightPanelViewModel.MessageUpdated += OnMessageUpdated;
 		RightPanelViewModel.ResendMessageRequested += ResendMessageRequested;
 		ChatViewModel.IsLoading += OnIsLoading;
+		LeftPanelViewModel.OnCleanup += OnCleanup;
 		_ = LoadMessages();
+	}
+
+	private async void OnCleanup()
+	{
+		await LoadMessages();
+		RightPanelViewModel.SelectMessage(null);
 	}
 
 	private void OnMessageUpdated(Message? updatedMessage)

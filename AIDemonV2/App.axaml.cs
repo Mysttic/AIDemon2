@@ -22,12 +22,17 @@ public partial class App : Application
 
 	public override void OnFrameworkInitializationCompleted()
 	{
-		var services = (IServiceProvider)this.Resources["Services"];
 
 		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
-			desktop.MainWindow = services.GetRequiredService<MainWindow>();
-			desktop.MainWindow.DataContext = services.GetRequiredService<MainViewModel>();
+			var serviceProvider = (IServiceProvider)this.Resources["Services"];
+			var dialogService = serviceProvider.GetRequiredService<IDialogService>();
+
+			var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
+			dialogService.Initialize(mainWindow);
+
+			desktop.MainWindow = mainWindow;
+			desktop.MainWindow.DataContext = serviceProvider.GetRequiredService<MainViewModel>();
 		}
 
 		base.OnFrameworkInitializationCompleted();
