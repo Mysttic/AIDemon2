@@ -12,6 +12,7 @@ public partial class LeftPanelViewModel : ObservableObject
 
 	private readonly IMessageRepository _messageRepository;
 	private readonly IDialogService _dialogService;
+	private readonly IMessageExportService _messageExportService;
 
 	private bool _isSettingsVisible;
 
@@ -27,10 +28,12 @@ public partial class LeftPanelViewModel : ObservableObject
 
 	public LeftPanelViewModel(
 		IMessageRepository messageRepository,
-		IDialogService dialogService)
+		IDialogService dialogService,
+		IMessageExportService messageExportService)
 	{
 		_messageRepository = messageRepository;
 		_dialogService = dialogService;
+		_messageExportService = messageExportService;
 		ShowSettingsCommand = ReactiveCommand.Create(() =>
 		{
 			IsSettingsVisible = true;
@@ -41,7 +44,7 @@ public partial class LeftPanelViewModel : ObservableObject
 	public async Task LoadFavouriteMessages()
 	{
 		FavouriteMessages.Clear();
-		await _messageRepository.GetMessages().ContinueWith(task =>
+		await _messageRepository.GetAllAsync().ContinueWith(task =>
 		{
 			foreach (var message in task.Result)
 			{
@@ -64,5 +67,12 @@ public partial class LeftPanelViewModel : ObservableObject
 			await LoadFavouriteMessages();
 			OnCleanup?.Invoke();
 		}
+	}
+
+	[RelayCommand]
+	private async Task Export()
+	{
+		await _messageExportService.ExportMessagesAsync();
+		await _dialogService.ShowConfirmationDialog("Export", "Messages exported successfully.", true);
 	}
 }

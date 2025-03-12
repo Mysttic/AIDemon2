@@ -20,11 +20,12 @@
 						HorizontalContentAlignment="Left"
 						HorizontalAlignment="Stretch"
 						Grid.Row="0"
-						Content="&lt;&lt;"
+						Content=">>"
 						Margin="0"/>
 
 				<views:LeftPanelView
 					x:Name="LeftPanel"
+					IsVisible="False"
 					Grid.Row="1"/>
 
 			</Grid>
@@ -91,7 +92,7 @@
 				<Button x:Name="ToggleRightPanelButton"
 						Background="#006080"
                         Grid.Row="0"
-                        Content=">>"
+                        Content="&lt;&lt;"
 						HorizontalContentAlignment="Right"
                         HorizontalAlignment="Stretch"
                         Margin="0"/>
@@ -99,6 +100,7 @@
 				<!-- Osadzony widok prawego panelu -->
 				<views:RightPanelView 
 					x:Name="RightPanel"
+					IsVisible="False"
 					Grid.Row="1"/>
 			</Grid>
 		</Border>

@@ -40,6 +40,7 @@ internal class Program
 		services.AddSingleton<IChatService, ChatService>();
 		services.AddSingleton<ICodeRunnerService, CodeRunnerService>();
 		services.AddSingleton<IDialogService, DialogService>();
+		services.AddSingleton<IMessageExportService, MessageExportService>();
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();

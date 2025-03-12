@@ -8,6 +8,8 @@ public partial class RightPanelViewModel : ObservableObject
 {
 	private readonly IMessageRepository _messageRepository;
 	private readonly ICodeRunnerService _codeRunnerService;
+	private readonly IMessageExportService _messageExportService;
+	private readonly IDialogService _dialogService;
 
 	private Message _selectedMessage;
 	public Message? SelectedMessage
@@ -27,10 +29,14 @@ public partial class RightPanelViewModel : ObservableObject
 
 	public RightPanelViewModel(
 		IMessageRepository messageRepository,
-		ICodeRunnerService codeRunnerService)
+		ICodeRunnerService codeRunnerService,
+		IMessageExportService messageExportService,
+		IDialogService dialogService)
 	{
 		_messageRepository = messageRepository;
 		_codeRunnerService = codeRunnerService;
+		_messageExportService = messageExportService;
+		_dialogService = dialogService;
 	}
 
 	public void SelectMessage(Message? message)
@@ -103,6 +109,16 @@ public partial class RightPanelViewModel : ObservableObject
 			SelectedMessage = null;
 			MessageContent = string.Empty;
 			ConsoleOutput = string.Empty;
+		}
+	}
+
+	[RelayCommand]
+	private async Task ExportMessage()
+	{
+		if (SelectedMessage != null)
+		{
+			await _messageExportService.ExportMessageAsScriptAsync(SelectedMessage);
+			await _dialogService.ShowConfirmationDialog("Eksport", "Script exported successfully.", true);
 		}
 	}
 }

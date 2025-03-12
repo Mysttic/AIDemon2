@@ -20,10 +20,22 @@
 			</Button>
 
 			<Button
-				x:Name="CleanupButton"
-				Command="{Binding CleanupCommand}"
+				x:Name="ExportButton"
+				Command="{Binding ExportCommand}"
 				Padding="10"
 				Margin="0,5,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+					<materialIcons:MaterialIcon Kind="Export" Width="16" Height="16"/>
+					<TextBlock Text="Export" VerticalAlignment="Stretch"/>
+				</StackPanel>
+			</Button>
+
+			<Button
+				x:Name="CleanupButton"
+				Background="#FF0000" 
+				Command="{Binding CleanupCommand}"
+				Padding="10"
+				Margin="0,35,0,0">
 				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
 					<materialIcons:MaterialIcon Kind="Cleaning" Width="16" Height="16"/>
 					<TextBlock Text="Cleanup" VerticalAlignment="Stretch"/>

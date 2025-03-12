@@ -6,7 +6,7 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
 	{
 	}
 
-	public async Task<IEnumerable<Message>> GetMessages()
+	public new async Task<IEnumerable<Message>> GetAllAsync()
 	{
 		return await _context.Messages.OrderBy(x => x.CreationDate).ToListAsync();
 	}

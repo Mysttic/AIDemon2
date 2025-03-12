@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using AIDemonV2.Extensions;
+using System.Diagnostics;
 
 public class CodeRunnerService : ICodeRunnerService
 {
 	public async Task RunCodeAsync(string code, string language, Action<string> onOutputReceived)
 	{
-		code = RemoveMarkdownCodeBlockMarkers(code);
+		code = code.RemoveMarkdownCodeBlockMarkers();
 		// Wybierz interpreter oraz rozszerzenie pliku w zależności od języka
 		string interpreter, fileExtension;
 		if (language.Equals("python", StringComparison.OrdinalIgnoreCase))
@@ -59,26 +60,4 @@ public class CodeRunnerService : ICodeRunnerService
 		File.Delete(tempFile);
 	}
 
-	private string RemoveMarkdownCodeBlockMarkers(string code)
-	{
-		// Usuń otwierający marker, jeśli istnieje
-		if (code.StartsWith("```"))
-		{
-			int firstNewline = code.IndexOf('\n');
-			if (firstNewline >= 0)
-			{
-				code = code.Substring(firstNewline + 1);
-			}
-		}
-		// Usuń zamykający marker, jeśli istnieje
-		if (code.EndsWith("```"))
-		{
-			int lastNewline = code.LastIndexOf('\n');
-			if (lastNewline >= 0)
-			{
-				code = code.Substring(0, lastNewline);
-			}
-		}
-		return code;
-	}
 }

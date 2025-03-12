@@ -7,8 +7,8 @@ namespace AIDemonV2.Views;
 [DoNotNotify]
 public partial class MainView : UserControl
 {
-	private bool _isLeftPanelVisible = true;
-	private bool _isRightPanelVisible = true;
+	private bool _isLeftPanelVisible = false;
+	private bool _isRightPanelVisible = false;
 
 	public MainView()
 	{

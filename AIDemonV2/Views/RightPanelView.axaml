@@ -35,6 +35,14 @@
 				Padding="15,5,15,5"
 				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringEmptyConverter}}"/>
 			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Export}"
+				Command="{Binding ExportMessageCommand}"
+				Background="#444444"
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
+			<Button
 				Content="{materialIcons:MaterialIconExt Kind=Delete}"
 				Command="{Binding DeleteMessageCommand}"
 				Background="#FF0000" 
