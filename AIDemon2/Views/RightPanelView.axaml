@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="clr-namespace:AIDemon2.ViewModels"
+             x:Class="AIDemon2.Views.RightPanelView">
+	<Grid RowDefinitions="Auto,*,Auto">
+		<!-- Przyciski (row 0) -->
+		<StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+					IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToBoolConverter}}">
+			<!-- Przyciski Save, RunCode, Resend, Delete, Clear -->
+			<Button 
+				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
+				Command="{Binding SaveFavouriteCommand}"
+				Background="#444444" 
+				Foreground="White" 
+				Margin="0,0,5,0"
+				Padding="15,5,15,5"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=RocketLaunch}"
+				Command="{Binding RunCodeCommand}"
+				Background="#444444" 
+				Foreground="White" 
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Replay}"
+				Command="{Binding ResendMessageCommand}"
+				Background="#444444"
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringEmptyConverter}}"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Export}"
+				Command="{Binding ExportMessageCommand}"
+				Background="#444444"
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Delete}"
+				Command="{Binding DeleteMessageCommand}"
+				Background="#FF0000" 
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"
+				IsEnabled="{Binding SelectedMessage.Favourite}"/>
+			<Button
+				Content="{materialIcons:MaterialIconExt Kind=Clear}"
+				Command="{Binding ClearMessageCommand}"
+				Background="#444444"
+				Foreground="White"
+				Margin="5,0,5,0"
+				Padding="15,5,15,5"/>
+		</StackPanel>
+
+		<!-- Edytor kodu (row 1) -->
+		<TextBox Grid.Row="1"
+				 Text="{Binding MessageContent}"
+				 AcceptsReturn="True"
+				 TextWrapping="Wrap"
+				 Margin="10"
+				 MaxWidth="600"/>
+
+		<!-- Okno wyjścia konsoli (row 2) -->
+		<Border Grid.Row="2" Margin="10" BorderThickness="1" BorderBrush="Gray">
+			<TextBox Text="{Binding ConsoleOutput}"
+					 IsReadOnly="True"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 Background="Black"
+					 Foreground="White"
+					 Height="150"/>
+		</Border>
+	</Grid>
+</UserControl>
