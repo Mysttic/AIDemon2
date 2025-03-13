@@ -45,3 +45,19 @@ The application interface consists of the following components:
   - Button for clearing the message editing window
   - Field containing the content of the message in which it can be edited
   - Console output field displaying what the console returns when executing the sent script
+
+## Configuration
+![image](https://github.com/user-attachments/assets/e1ee3862-3ab2-42a0-b7a0-cdde14dfd650)
+Once we receive the key from the **io.net** platform, in the application settings we paste the API key required for communication with this platform.
+
+If we want the communication with the AI ​​model to proceed on the basis that in the received response we are to receive a ready-to-execute script, we must define the content of the instruction that will be sent to the model before sending the actual message from the user. In the Instruction Prompt field, you can freely define the content at your own discretion, an example of the instruction content:
+
+```
+Your task is to write scripts in the given scripting language, the purpose of which is to perform operations in my Windows system. Your answers should contain only ready code that can be pasted into the script and run. You are not to provide any confirmations, explanations or anything other than the code you are to write. You can include additional information in comments in the script. In each script, add a short comment at the beginning describing the script.
+```
+
+The platform provides many different AI models that we can communicate with, in the AIModel field we have this list available to choose from. If the user wants to change the model, they can freely change it here.
+
+If we want the AI ​​to generate scripts for us, we must specify in which language it should write them. In the Programming Language field, there is a selection list available, we must select the language before starting communication.
+
+
