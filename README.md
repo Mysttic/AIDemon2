@@ -1,7 +1,7 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Mysttic/AIDemon2)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Mysttic/AIDemon2?include_prereleases)
 
-# AIDemon2 - your personal AI assistant for Windows
+# AIDemon2 - your personal AI assistant
 
 ![AIDemon2](https://github.com/user-attachments/assets/adf0c421-980d-42c7-a3db-ba903d47b441)
 
