@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:AIDemonV2.Views"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="AIDemonV2.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/AIDemon2.ico"
         Title="AIDemonV2"
 		MinWidth="1000"
         MinHeight="600"

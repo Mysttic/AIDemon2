@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 	<StartupObject>AIDemonV2.Program</StartupObject>
+	<Company>Mysttic</Company>
+	<PackageIcon>AIDemon2.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
