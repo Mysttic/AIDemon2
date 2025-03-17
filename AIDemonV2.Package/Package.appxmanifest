@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="b1629b3c-4680-46b2-b064-53092813c0b0"
-    Publisher="CN=JakubKamiński"
-    Version="1.0.3.0" />
+    Name="24653Mysttic.AIDemon2"
+    Publisher="CN=7D16EB93-BD30-4D8E-A3B6-8FDB3CE89F4A"
+    Version="1.0.17.0" />
 
   <Properties>
-    <DisplayName>AIDemonV2.Package</DisplayName>
-    <PublisherDisplayName>JakubKamiński</PublisherDisplayName>
+    <DisplayName>AIDemon2</DisplayName>
+    <PublisherDisplayName>Mysttic</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -27,17 +27,23 @@
   </Resources>
 
 	<Applications>
-		<Application Id="AIDemonV2"
-						Executable="AIDemonV2.exe"
+		<Application Id="AIDemon2"
+						Executable="AIDemon2.exe"
 						EntryPoint="Windows.FullTrustApplication">
 			<uap:VisualElements
-				DisplayName="AIDemonV2"
-				Description="Aplikacja Avalonia"
+				DisplayName="AIDemon2"
+				Description="AIDemon2 - your personal AI assistant"
 				BackgroundColor="transparent"
-				Square150x150Logo="Images\Square150x150Logo.png"
-				Square44x44Logo="Images\Square44x44Logo.png">
-				<uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
-				<uap:SplashScreen Image="Images\SplashScreen.png" />
+				Square150x150Logo="Images\Square150x150Logo.png" Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile Square71x71Logo="Images\Square71x71Logo.png" Wide310x150Logo="Images\Wide310x150Logo.png" Square310x310Logo="Images\Square310x310Logo.png">
+					<uap:ShowNameOnTiles>
+						<uap:ShowOn Tile="square150x150Logo"/>
+						<uap:ShowOn Tile="wide310x150Logo"/>
+						<uap:ShowOn Tile="square310x310Logo"/>
+					</uap:ShowNameOnTiles>
+				</uap:DefaultTile>
+				<uap:SplashScreen Image="Images\SplashScreen.png"/>
+				<uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
 			</uap:VisualElements>			
 		</Application>
 	</Applications>

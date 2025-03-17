@@ -11,6 +11,7 @@
 	<PackageIcon>AIDemon2.png</PackageIcon>
   <Platforms>AnyCPU;x86</Platforms>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
