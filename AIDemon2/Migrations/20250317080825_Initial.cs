@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AIDemon2.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,6 +22,7 @@ namespace AIDemon2.Migrations
                     AIModel = table.Column<string>(type: "TEXT", nullable: true),
                     ProgrammingLanguage = table.Column<string>(type: "TEXT", nullable: true),
                     Favourite = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Deleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReplyToMessageId = table.Column<int>(type: "INTEGER", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "TEXT", nullable: false)
@@ -57,7 +58,7 @@ namespace AIDemon2.Migrations
             migrationBuilder.InsertData(
                 table: "Settings",
                 columns: new[] { "Id", "AIModel", "ApiKey", "CreationDate", "InstructionPrompt", "ModificationDate", "ProgrammingLanguage" },
-                values: new object[] { 1, null, "", new DateTime(2025, 3, 12, 13, 38, 49, 702, DateTimeKind.Utc).AddTicks(5133), "You are a helpful assistant.", new DateTime(2025, 3, 12, 13, 38, 49, 702, DateTimeKind.Utc).AddTicks(5135), null });
+                values: new object[] { 1, null, "", new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(106), "You are a helpful assistant.", new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(108), null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ReplyToMessageId",

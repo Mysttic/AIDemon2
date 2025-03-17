@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -44,15 +45,9 @@ public partial class LeftPanelViewModel : ObservableObject
 	public async Task LoadFavouriteMessages()
 	{
 		FavouriteMessages.Clear();
-		await _messageRepository.GetAllAsync().ContinueWith(task =>
+		await _messageRepository.GetAllFavouriteAsync().ContinueWith(task =>
 		{
-			foreach (var message in task.Result)
-			{
-				if (message.Favourite)
-				{
-					FavouriteMessages.Add(message);
-				}
-			}
+			FavouriteMessages.AddRange(task.Result);
 		});
 	}
 

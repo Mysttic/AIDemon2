@@ -5,4 +5,5 @@
 	public string? AIModel { get; set; }
 	public string? ProgrammingLanguage { get; set; }
 	public bool Favourite { get; set; }
+	public bool Deleted { get; set; }
 }

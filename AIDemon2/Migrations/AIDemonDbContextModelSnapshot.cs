@@ -28,6 +28,9 @@ namespace AIDemon2.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("Favourite")
                         .HasColumnType("INTEGER");
 
@@ -88,9 +91,9 @@ namespace AIDemon2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 12, 13, 38, 49, 702, DateTimeKind.Utc).AddTicks(5133),
+                            CreationDate = new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(106),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 12, 13, 38, 49, 702, DateTimeKind.Utc).AddTicks(5135)
+                            ModificationDate = new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(108)
                         });
                 });
 
