@@ -9,6 +9,7 @@ public class Message : EntityBase, IMessage
 	public string? AIModel { get; set; }
 	public string? ProgrammingLanguage { get; set; }
 	public bool Favourite { get; set; }
+	public bool Deleted { get; set; }
 
 	public int? ReplyToMessageId { get; set; }
 

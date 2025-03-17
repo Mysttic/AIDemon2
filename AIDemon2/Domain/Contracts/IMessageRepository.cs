@@ -1,6 +1,7 @@
 ﻿public interface IMessageRepository : IGenericRepository<Message>
 {
-	Task<IEnumerable<Message>> GetAllAsync();
+	new Task<IEnumerable<Message>> GetAllAsync();
+	Task<IEnumerable<Message>> GetAllFavouriteAsync();
 
 	Task DeleteAllAsync();
 }

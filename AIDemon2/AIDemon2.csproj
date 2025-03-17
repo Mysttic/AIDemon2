@@ -8,6 +8,7 @@
 	<StartupObject>AIDemon2.Program</StartupObject>
 	<Company>Mysttic</Company>
 	<PackageIcon>AIDemon2.png</PackageIcon>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
