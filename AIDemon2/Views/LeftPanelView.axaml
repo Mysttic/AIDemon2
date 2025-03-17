@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="clr-namespace:AIDemon2.ViewModels"
+             x:Class="AIDemon2.Views.LeftPanelView">
+
+	<!-- Rząd 1: Główna zawartość (ukrywana) -->
+	<Grid RowDefinitions="*,3*">
+		<!-- Górna sekcja z przyciskiem -->
+		<StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
+			<Button 
+				x:Name="SettingsButton"		
+				Command="{Binding ShowSettingsCommand}"
+				Padding="10"
+				Margin="0,10,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+					<materialIcons:MaterialIcon Kind="Settings" Width="16" Height="16"/>
+					<TextBlock Text="Settings" VerticalAlignment="Stretch"/>
+				</StackPanel>
+			</Button>
+
+			<Button
+				x:Name="ExportButton"
+				Command="{Binding ExportCommand}"
+				Padding="10"
+				Margin="0,5,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+					<materialIcons:MaterialIcon Kind="Export" Width="16" Height="16"/>
+					<TextBlock Text="Export" VerticalAlignment="Stretch"/>
+				</StackPanel>
+			</Button>
+
+			<Button
+				x:Name="CleanupButton"
+				Background="#FF0000" 
+				Command="{Binding CleanupCommand}"
+				Padding="10"
+				Margin="0,35,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+					<materialIcons:MaterialIcon Kind="Cleaning" Width="16" Height="16"/>
+					<TextBlock Text="Cleanup" VerticalAlignment="Stretch"/>
+				</StackPanel>
+			</Button>
+		
+		</StackPanel>
+
+		<!-- Dolna sekcja z listą -->
+		<ListBox Grid.Row="1" ItemsSource="{Binding FavouriteMessages}" Margin="0">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Border BorderThickness="1" BorderBrush="Gray" Padding="0" Margin="0"
+							CornerRadius="0" Background="#333" MinWidth="150" MaxWidth="250" Height="70" MaxHeight="70">
+						<StackPanel>
+							<TextBlock Text="{Binding MessageContent, Converter={StaticResource TextTruncateConverter}, ConverterParameter=70}"
+									   Foreground="White"
+									   TextWrapping="Wrap"
+									   MaxWidth="200"/>
+							<TextBlock Text="{Binding ModificationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
+									   FontSize="10"
+									   Foreground="LightGray"
+									   HorizontalAlignment="Right"/>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</Grid>
+
+</UserControl>
