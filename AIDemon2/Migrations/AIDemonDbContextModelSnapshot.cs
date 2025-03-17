@@ -91,9 +91,9 @@ namespace AIDemon2.Migrations
                         {
                             Id = 1,
                             ApiKey = "",
-                            CreationDate = new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(106),
+                            CreationDate = new DateTime(2025, 3, 17, 9, 16, 31, 559, DateTimeKind.Utc).AddTicks(4538),
                             InstructionPrompt = "You are a helpful assistant.",
-                            ModificationDate = new DateTime(2025, 3, 17, 8, 8, 25, 177, DateTimeKind.Utc).AddTicks(108)
+                            ModificationDate = new DateTime(2025, 3, 17, 9, 16, 31, 559, DateTimeKind.Utc).AddTicks(4539)
                         });
                 });
 
