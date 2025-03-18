@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AIDemon2.Extensions
+﻿namespace AIDemon2.Extensions
 {
-    public static class StringExtensions
-    {
-        public static string RemoveMarkdownCodeBlockMarkers(this string code)
+	public static class StringExtensions
+	{
+		public static string RemoveMarkdownCodeBlockMarkers(this string code)
 		{
 			// Usuń otwierający marker, jeśli istnieje
 			if (code.StartsWith("```"))
@@ -31,5 +25,28 @@ namespace AIDemon2.Extensions
 			return code;
 		}
 
+		//public static string ProgrammingLanguageLauncher(this string language)
+		//{
+		//	return language.ToLower() switch
+		//	{
+		//		"python" => "python",
+		//		"powershell" => "pwsh",
+		//		"batch" => "cmd",
+		//		"nodejs" => "node",
+		//		_ => string.Empty
+		//	};
+		//}
+
+		//public static string ProgrammingLanguageExtension(this string language)
+		//{
+		//	return language.ToLower() switch
+		//	{
+		//		"python" => ".py",
+		//		"powershell" => ".ps1",
+		//		"batch" => ".bat",
+		//		"nodejs" => ".js",
+		//		_ => string.Empty
+		//	};
+		//}
 	}
 }

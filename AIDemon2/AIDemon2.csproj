@@ -16,6 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Properties\ProgrammingLanguages.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\ProgrammingLanguages.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AnimatedImage.Avalonia" Version="2.0.0" />
     <PackageReference Include="Avalonia" Version="11.2.5" />
 	<PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
