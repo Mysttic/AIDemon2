@@ -65,7 +65,7 @@
 				 AcceptsReturn="True"
 				 TextWrapping="Wrap"
 				 Margin="10"
-				 MaxWidth="600"/>
+				 MaxWidth="800"/>
 
 		<!-- Okno wyjścia konsoli (row 2) -->
 		<Border Grid.Row="2" Margin="10" BorderThickness="1" BorderBrush="Gray">
@@ -75,7 +75,8 @@
 					 TextWrapping="Wrap"
 					 Background="Black"
 					 Foreground="White"
-					 Height="150"/>
+					 Height="150"
+					 MaxWidth="800"/>
 		</Border>
 	</Grid>
 </UserControl>
