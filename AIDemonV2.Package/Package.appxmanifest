@@ -9,7 +9,7 @@
   <Identity
     Name="24653Mysttic.AIDemon2"
     Publisher="CN=7D16EB93-BD30-4D8E-A3B6-8FDB3CE89F4A"
-    Version="1.0.17.0" />
+    Version="1.0.18.0" />
 
   <Properties>
     <DisplayName>AIDemon2</DisplayName>
