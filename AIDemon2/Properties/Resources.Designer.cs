@@ -70,15 +70,6 @@ namespace AIDemon2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to python;powershell.
-        /// </summary>
-        internal static string ProgrammingLanguages {
-            get {
-                return ResourceManager.GetString("ProgrammingLanguages", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to P@ssword1.
         /// </summary>
         internal static string SQLiteDBPass {

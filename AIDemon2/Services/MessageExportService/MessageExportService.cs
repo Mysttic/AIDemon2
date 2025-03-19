@@ -71,7 +71,7 @@ public class MessageExportService : IMessageExportService
 		}
 
 		// Pobierz rozszerzenie dla języka
-		string extension = GetScriptExtension(message.ProgrammingLanguage);
+		string extension = message.ProgrammingLanguage.ProgrammingLanguageExtension();
 		if (extension == null)
 		{
 			throw new InvalidOperationException($"Nieobsługiwany język: {message.ProgrammingLanguage}");
@@ -86,16 +86,6 @@ public class MessageExportService : IMessageExportService
 
 		// Zapisz plik
 		await File.WriteAllTextAsync(filePath, scriptContent, Encoding.UTF8);
-	}
-
-	private static string GetScriptExtension(string? language)
-	{
-		return language?.ToLower() switch
-		{
-			"python" => "py",
-			"powershell" => "ps1",
-			_ => null // Jeśli język nie jest obsługiwany, zwróć null
-		} ?? string.Empty;
 	}
 
 	private static string GenerateScriptContent(Message message)

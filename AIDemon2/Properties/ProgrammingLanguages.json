@@ -1,0 +1,62 @@
+{
+    "python": {
+        "launcher": "python",
+        "extension": ".py",
+        "arguments": "\"{0}\""
+    },
+    "powershell": {
+        "launcher": "powershell",
+        "extension": ".ps1",
+        "arguments": "\"{0}\""
+    },
+    "batch": {
+        "launcher": "cmd",
+        "extension": ".bat",
+        "arguments": "/C \"{0}\""
+    },
+    "nodejs": {
+        "launcher": "node",
+        "extension": ".js",
+        "arguments": ""
+    },
+    "bash": {
+        "launcher": "bash",
+        "extension": ".sh",
+        "arguments": "\"{0}\""
+    },
+    "zsh": {
+        "launcher": "zsh",
+        "extension": ".sh",
+        "arguments": "\"{0}\""
+    },
+    "perl": {
+        "launcher": "perl",
+        "extension": ".pl",
+        "arguments": "\"{0}\""
+    },
+    "ruby": {
+        "launcher": "ruby",
+        "extension": ".rb",
+        "arguments": "\"{0}\""
+    },
+    "php": {
+        "launcher": "php",
+        "extension": ".php",
+        "arguments": "\"{0}\""
+    },
+    "groovy": {
+        "launcher": "groovy",
+        "extension": ".groovy",
+        "arguments": "\"{0}\""
+    },
+    "lua": {
+        "launcher": "lua",
+        "extension": ".lua",
+        "arguments": "\"{0}\""
+    },
+    "go": {
+        "launcher": "go",
+        "extension": ".go",
+        "arguments": "run \"{0}\""
+    }
+}

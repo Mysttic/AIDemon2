@@ -29,7 +29,7 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string? aIModel;
 
-	public List<string> ProgrammingLanguageList { get; } = Resources.ProgrammingLanguages.Split(';').ToList();
+	public List<string> ProgrammingLanguageList { get; } = ProgrammingLanguageConfig.Languages.Keys.ToList();
 
 	[ObservableProperty]
 	private string? programmingLanguage;

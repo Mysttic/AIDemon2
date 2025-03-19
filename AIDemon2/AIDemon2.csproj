@@ -1,18 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
+	<UseWPF>false</UseWPF>
 	<ImplicitUsings>enable</ImplicitUsings>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	  <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+	  <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 	<StartupObject>AIDemon2.Program</StartupObject>
 	<Company>Mysttic</Company>
 	<PackageIcon>AIDemon2.png</PackageIcon>
+  <Platforms>AnyCPU;x86</Platforms>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Properties\ProgrammingLanguages.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\ProgrammingLanguages.json" />
   </ItemGroup>
 
   <ItemGroup>
