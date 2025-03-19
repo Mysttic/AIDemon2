@@ -22,7 +22,7 @@ To run the application, you must create an account there and obtain an API key t
 https://ai.io.net/ai/models
 
 ## Supported programming languages
-| Language | Supported | Example |
+| Language | Supported | Info |
 |:--------:|:-------:|:-------:|
 | <img src="https://github.com/user-attachments/assets/8000a7f8-5880-4fab-be01-6fa41e32bbe9" height="48" alt="python"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> |  |
 | <img src="https://github.com/user-attachments/assets/ad3fe48d-7e75-48fd-8f48-265c7db3c463" height="48" alt="powershell"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> |  |
