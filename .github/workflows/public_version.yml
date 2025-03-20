@@ -3,7 +3,7 @@ name: Build and Publish ClickOnce .NET 8 App
 on:
   push:
     branches:
-      - master
+      - instalator
 
 jobs:
   build-and-release:
