@@ -1,4 +1,4 @@
-name: Build and Publish ClickOnce .NET 8 App
+name: Build and Create Installer
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build-and-release:
     runs-on: windows-latest
     permissions:
-      contents: write  # Daje wymagane uprawnienia do tworzenia release
+      contents: write  # Uprawnienia do tworzenia release
 
     steps:
     - name: Checkout Repository
@@ -20,21 +20,32 @@ jobs:
       with:
         dotnet-version: '8.x'
 
-    - name: Install Windows Desktop workload
-      run: dotnet workload install microsoft-net-sdk-windowsdesktop
-
-    - name: Publish Application
+    - name: Install Chocolatey
       run: |
-        dotnet publish AIDemon2/AIDemon2.csproj -c Release -p:DeployOnBuild=true -p:PublishProfile=Properties\PublishProfiles\ClickOnceProfile.pubxml -p:ApplicationVersion=1.0.${{ github.run_number }}.0 -o bin\Release\publish
-          
-    - name: Zip Publish Directory
-      run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-    - name: Upload artifacts
+    - name: Install Inno Setup
+      run: choco install innosetup --no-progress -y
+
+    - name: Publish Application (self-contained)
+      run: |
+        dotnet publish AIDemon2/AIDemon2.csproj `
+          -c Release `
+          -r win-x64 `
+          --self-contained true `
+          -o bin\publish
+
+    - name: Build Inno Setup Installer
+      run: |
+        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer.iss
+
+    - name: Upload Installer
       uses: actions/upload-artifact@v4
       with:
-        name: clickonce-app
-        path: ./publish/**
+        name: AIDemon2-Installer
+        path: "*.exe"
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -43,7 +54,6 @@ jobs:
         name: Release v1.0.${{ github.run_number }}
         draft: false
         prerelease: false
-        files: ./publish/**
+        files: "*.exe"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
