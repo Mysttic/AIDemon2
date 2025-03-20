@@ -26,7 +26,8 @@ jobs:
           /p:DeployOnBuild=true `
           /p:PublishProfile=Properties\PublishProfiles\ClickOnceProfile.pubxml `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
-          /p:AssemblyVersion=1.0.${{ github.run_number }} `
+          /p:AssemblyVersion=1.0.${{ github.run_number }}.0 `
+          /p:FileVersion=1.0.${{ github.run_number }}.0 `
           /p:PublishDir=bin\Release\publish
           
     - name: Zip Publish Directory
