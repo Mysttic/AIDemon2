@@ -35,37 +35,17 @@ jobs:
         name: clickonce-app
         path: |
           ./publish/*.exe
-          ClickOnce_${{ github.ref_name }}.zip
-          
-    - name: Configure Git
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          ClickOnce_${{ github.run_number }}.zip
 
-    - name: Authenticate with GitHub using PAT
-      env:
-        GITHUB_PAT: ${{ secrets.PAT_TOKEN }}
-      run: |
-        git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
-        git fetch --unshallow
-        git fetch --tags
-    
-    - name: Debug Existing Tags
-      run: git tag --list
-    
-    - name: Create Tag
-      run: |
-        git tag -d v1.0.${{ github.run_number }} || true
-        git tag v1.0.${{ github.run_number }}
-        git push --force origin v1.0.${{ github.run_number }}
-    
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v1.0.${{ github.run_number }}
+        release_name: Release v1.0.${{ github.run_number }}
+        draft: false
+        prerelease: false
         files: |
           ./publish/*.exe
           ClickOnce_${{ github.run_number }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
