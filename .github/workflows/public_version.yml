@@ -36,7 +36,7 @@ jobs:
         path: |
           ./publish/*.exe
           ClickOnce_${{ github.ref_name }}.zip
-
+          
     - name: Configure Git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -46,15 +46,13 @@ jobs:
       env:
         GITHUB_PAT: ${{ secrets.PAT_TOKEN }}
       run: |
-        git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
+        git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch --unshallow
     
-    - name: Fetch Tags
-      run: git fetch --tags
-
     - name: Create Tag
       run: |
-        git tag v1.0.${{ github.run_number }}
-        git push origin v1.0.${{ github.run_number }}
+        git tag -f v1.0.${{ github.run_number }}
+        git push --force origin v1.0.${{ github.run_number }}
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
