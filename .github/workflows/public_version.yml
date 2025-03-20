@@ -34,18 +34,19 @@ jobs:
         dotnet publish AIDemon2/AIDemon2.csproj `
         -c Release `
         --self-contained true `
-        -o bin\publish
-
+        -r win-x64 `
+        -o AIDemon2/bin/Release/publish
 
     - name: Build Inno Setup Installer
       run: |
         "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer.iss
+      shell: cmd
 
     - name: Upload Installer
       uses: actions/upload-artifact@v4
       with:
         name: AIDemon2-Installer
-        path: "*.exe"
+        path: AIDemon2_Installer.exe
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -54,6 +55,6 @@ jobs:
         name: Release v1.0.${{ github.run_number }}
         draft: false
         prerelease: false
-        files: "*.exe"
+        files: AIDemon2_Installer.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
