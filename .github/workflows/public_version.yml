@@ -30,7 +30,7 @@ jobs:
       env:
         CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_SECRET }}
       run: |
-        dotnet publish AIDemon2.sln -c Release -r win-x64 --self-contained true `
+        dotnet publish AIDemon2/AIDemon2.csproj -c Release -r win-x86 --self-contained true `
           /p:PublishSingleFile=true `
           /p:PublishReadyToRun=true `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
