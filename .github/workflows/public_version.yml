@@ -55,6 +55,6 @@ jobs:
         name: Release v1.0.${{ github.run_number }}
         draft: false
         prerelease: false
-        files: AIDemon2_Installer.exe
+        files: ${{ github.workspace }}/Output/AIDemon2_Installer.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
