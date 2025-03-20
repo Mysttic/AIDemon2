@@ -37,9 +37,16 @@ jobs:
           ./publish/*.exe
           ClickOnce_${{ github.ref_name }}.zip
 
+    - name: Create Tag
+      run: |
+        git tag v1.0.${{ github.run_number }}
+        git push origin v1.0.${{ github.run_number }}
+
+
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: v1.0.${{ github.run_number }}
         files: |
           ./publish/*.exe
-          ClickOnce_${{ github.ref_name }}.zip
+          ClickOnce_${{ github.run_number }}.zip
