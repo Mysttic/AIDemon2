@@ -30,14 +30,15 @@ jobs:
       env:
         CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_SECRET }}
       run: |
+        $certPassword = "${{ secrets.CERTIFICATE_SECRET }}"
         dotnet publish AIDemon2.sln -c Release -r win-x64 --self-contained true `
           /p:PublishSingleFile=true `
           /p:PublishReadyToRun=true `
-          /p:ApplicationVersion=${{ github.ref_name }} `
+          /p:ApplicationVersion=1.0.${{ github.run_number }} `
           /p:SignManifests=true `
           /p:ManifestCertificate=clickonce-cert.pfx `
           /p:ManifestKeyFile=clickonce-cert.pfx `
-          /p:ManifestCertificatePassword=$env:CERTIFICATE_PASSWORD `
+          /p:ManifestCertificatePassword=$certPassword `
           -o ./publish
           
     - name: Zip Publish Directory
