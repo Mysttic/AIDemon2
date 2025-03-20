@@ -24,9 +24,10 @@ jobs:
       run: |
         dotnet publish AIDemon2/AIDemon2.csproj -c Release `
           /p:DeployOnBuild=true `
-          /p:PublishProfile=ClickOnceProfile `
+          /p:PublishProfile=Properties\PublishProfiles\ClickOnceProfile.pubxml `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
-          /p:PublishDir=./publish
+          /p:AssemblyVersion=1.0.${{ github.run_number }} `
+          /p:PublishDir=bin\Release\publish
           
     - name: Zip Publish Directory
       run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
