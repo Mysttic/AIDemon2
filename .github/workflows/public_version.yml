@@ -27,7 +27,7 @@ jobs:
           -o ./publish
           
     - name: Zip Publish Directory
-      run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.ref_name }}.zip
+      run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -42,12 +42,19 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
     
-    - name: Create Tag
+    - name: Authenticate with GitHub using PAT
       env:
         GITHUB_PAT: ${{ secrets.PAT_TOKEN }}
       run: |
+        git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
+    
+    - name: Fetch Tags
+      run: git fetch --tags
+
+    - name: Create Tag
+      run: |
         git tag v1.0.${{ github.run_number }}
-        git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git v1.0.${{ github.run_number }}
+        git push origin v1.0.${{ github.run_number }}
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -56,3 +63,6 @@ jobs:
         files: |
           ./publish/*.exe
           ClickOnce_${{ github.run_number }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
