@@ -1,0 +1,59 @@
+name: Build and Publish ClickOnce .NET 8 App
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
+
+    - name: Generate self-signed certificate
+      env:
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_SECRET }}
+      run: |
+        $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=ClickOnceCert" -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\CurrentUser\My" -FriendlyName "ClickOnceCert" -NotAfter (Get-Date).AddYears(2)
+        $pwd = ConvertTo-SecureString -String "$env:CERTIFICATE_PASSWORD" -Force -AsPlainText
+        Export-PfxCertificate -Cert $cert -FilePath "clickonce-cert.pfx" -Password $pwd
+
+    - name: Publish Application
+      env:
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_SECRET }}
+      run: |
+        dotnet publish AIDemon2.sln -c Release -r win-x64 --self-contained true `
+          /p:PublishSingleFile=true `
+          /p:PublishReadyToRun=true `
+          /p:ApplicationVersion=${{ github.ref_name }} `
+          /p:SignManifests=true `
+          /p:ManifestCertificate=clickonce-cert.pfx `
+          /p:ManifestKeyFile=clickonce-cert.pfx `
+          /p:ManifestCertificatePassword=$env:CERTIFICATE_PASSWORD `
+          -o ./publish
+          
+    - name: Zip Publish Directory
+      run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.ref_name }}.zip
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: clickonce-app
+        path: |
+          ./publish/*.exe
+          ClickOnce_${{ github.ref_name }}.zip
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ./publish/*.exe
+          ClickOnce_${{ github.ref_name }}.zip
