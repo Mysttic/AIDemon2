@@ -35,9 +35,9 @@ jobs:
           /p:PublishReadyToRun=true `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
           /p:SignManifests=true `
-          /p:ManifestCertificate=clickonce-cert.pfx `
-          /p:ManifestKeyFile=clickonce-cert.pfx `
-          "/p:ManifestCertificatePassword=${{ secrets.CERTIFICATE_SECRET }}" `
+          /p:ManifestCertificate="clickonce-cert.pfx" `
+          /p:ManifestKeyFile="clickonce-cert.pfx" `
+          /p:ManifestCertificatePassword="%CERTIFICATE_PASSWORD%" `
           -o ./publish
           
     - name: Zip Publish Directory
