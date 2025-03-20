@@ -22,11 +22,11 @@ jobs:
 
     - name: Publish Application
       run: |
-        dotnet publish AIDemon2/AIDemon2.csproj -c Release -r win-x86 --self-contained true `
-          /p:PublishSingleFile=true `
-          /p:PublishReadyToRun=true `
+        dotnet publish AIDemon2/AIDemon2.csproj -c Release `
+          /p:DeployOnBuild=true `
+          /p:PublishProfile=ClickOnceProfile `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
-          -o ./publish
+          /p:PublishDir=./publish
           
     - name: Zip Publish Directory
       run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
@@ -35,19 +35,16 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: clickonce-app
-        path: |
-          ./publish/*.exe
-          ClickOnce_${{ github.run_number }}.zip
+        path: ./publish/**
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v1.0.${{ github.run_number }}
-        release_name: Release v1.0.${{ github.run_number }}
+        name: Release v1.0.${{ github.run_number }}
         draft: false
         prerelease: false
-        files: |
-          ./publish/*.exe
-          ClickOnce_${{ github.run_number }}.zip
+        files: ./publish/**
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
