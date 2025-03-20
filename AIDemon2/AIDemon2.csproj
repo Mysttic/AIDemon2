@@ -12,6 +12,7 @@
   <Platforms>AnyCPU;x86</Platforms>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
 	<PlatformTarget>x86</PlatformTarget>
+	<ApplicationIcon>Assets\AIDemon2.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,10 @@
 
   <ItemGroup>
     <None Remove="Properties\ProgrammingLanguages.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\AIDemon2.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,5 +76,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\AIDemon2.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Assets\AIDemon2.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
