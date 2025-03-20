@@ -30,15 +30,16 @@ jobs:
       env:
         CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_SECRET }}
       run: |
-        dotnet publish AIDemon2/AIDemon2.csproj -c Release -r win-x86 --self-contained true `
+        msbuild AIDemon2/AIDemon2.csproj /t:Publish /p:Configuration=Release /p:PublishDir="./publish" `
+          /p:RuntimeIdentifier=win-x86 `
+          /p:SelfContained=true `
           /p:PublishSingleFile=true `
           /p:PublishReadyToRun=true `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
           /p:SignManifests=true `
           /p:ManifestCertificate="clickonce-cert.pfx" `
           /p:ManifestKeyFile="clickonce-cert.pfx" `
-          /p:ManifestCertificatePassword="%CERTIFICATE_PASSWORD%" `
-          -o ./publish
+          /p:ManifestCertificatePassword="%CERTIFICATE_PASSWORD%"
           
     - name: Zip Publish Directory
       run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.ref_name }}.zip
