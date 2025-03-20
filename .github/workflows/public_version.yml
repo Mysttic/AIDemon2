@@ -26,11 +26,12 @@ jobs:
 
     - name: Publish Application
       run: |
-        "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" AIDemon2/AIDemon2.csproj /t:Publish `
+        & "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" AIDemon2/AIDemon2.csproj /t:Publish `
           /p:DeployOnBuild=true `
           /p:PublishProfile=Properties\PublishProfiles\ClickOnceProfile.pubxml `
           /p:ApplicationVersion=1.0.${{ github.run_number }} `
           /p:PublishDir=bin\Release\publish
+      shell: pwsh
           
     - name: Zip Publish Directory
       run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
