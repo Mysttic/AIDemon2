@@ -1,0 +1,50 @@
+name: Build and Publish ClickOnce .NET 8 App
+
+on:
+  push:
+    branches:
+      - instalator
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # Daje wymagane uprawnienia do tworzenia release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
+
+    - name: Publish Application
+      run: |
+        dotnet publish AIDemon2/AIDemon2.csproj -c Release `
+          /p:DeployOnBuild=true `
+          /p:PublishProfile=ClickOnceProfile `
+          /p:ApplicationVersion=1.0.${{ github.run_number }} `
+          /p:PublishDir=./publish
+          
+    - name: Zip Publish Directory
+      run: Compress-Archive -Path ./publish/* -DestinationPath ClickOnce_${{ github.run_number }}.zip
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: clickonce-app
+        path: ./publish/**
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Release v1.0.${{ github.run_number }}
+        draft: false
+        prerelease: false
+        files: ./publish/**
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
