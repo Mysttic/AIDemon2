@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: AIDemon2-Installer
-        path: AIDemon2_Installer.exe
+        path: AIDemon2/Output/AIDemon2_Installer.exe
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
