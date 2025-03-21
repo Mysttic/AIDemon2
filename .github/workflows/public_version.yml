@@ -52,8 +52,8 @@ jobs:
 
     - name: Create tar.gz for Linux
       run: |
-        Compress-Archive -Path AIDemon2/bin/Release/publish-linux/* -DestinationPath AIDemon2_Linux.zip
-
+        Compress-Archive -Path AIDemon2/bin/Release/publish-linux/* -DestinationPath Output/AIDemon2_Linux.zip
+        
     - name: Upload Windows Installer
       uses: actions/upload-artifact@v4
       with:
