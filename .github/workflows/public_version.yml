@@ -58,13 +58,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: AIDemon2-Installer
-        path: AIDemon2_Installer.exe
+        path: ${{ github.workspace }}/Output/AIDemon2_Installer.exe
 
     - name: Upload Linux Build
       uses: actions/upload-artifact@v4
       with:
         name: AIDemon2-Linux
-        path: AIDemon2_Linux.zip
+        path: ${{ github.workspace }}/Output/AIDemon2_Linux.zip
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -74,7 +74,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          AIDemon2_Installer.exe
-          AIDemon2_Linux.zip
+          ${{ github.workspace }}/Output/AIDemon2_Installer.exe
+          ${{ github.workspace }}/Output/AIDemon2_Linux.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
