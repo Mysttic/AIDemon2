@@ -9,7 +9,7 @@ jobs:
   build-and-release:
     runs-on: windows-latest
     permissions:
-      contents: write  # Uprawnienia do tworzenia release
+      contents: write
 
     steps:
     - name: Checkout Repository
@@ -29,24 +29,42 @@ jobs:
     - name: Install Inno Setup
       run: choco install innosetup --no-progress -y
 
-    - name: Publish Application (self-contained)
+    - name: Publish Application (Windows)
       run: |
         dotnet publish AIDemon2/AIDemon2.csproj `
         -c Release `
         --self-contained true `
         -r win-x64 `
-        -o AIDemon2/bin/Release/publish
+        -o AIDemon2/bin/Release/publish-win
 
     - name: Build Inno Setup Installer
       run: |
         "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer.iss
       shell: cmd
 
-    - name: Upload Installer
+    - name: Publish Application (Linux)
+      run: |
+        dotnet publish AIDemon2/AIDemon2.csproj `
+        -c Release `
+        --self-contained true `
+        -r linux-x64 `
+        -o AIDemon2/bin/Release/publish-linux
+
+    - name: Create tar.gz for Linux
+      run: |
+        Compress-Archive -Path AIDemon2/bin/Release/publish-linux/* -DestinationPath AIDemon2_Linux.zip
+
+    - name: Upload Windows Installer
       uses: actions/upload-artifact@v4
       with:
         name: AIDemon2-Installer
         path: AIDemon2_Installer.exe
+
+    - name: Upload Linux Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: AIDemon2-Linux
+        path: AIDemon2_Linux.zip
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -55,6 +73,8 @@ jobs:
         name: Release v1.0.${{ github.run_number }}
         draft: false
         prerelease: false
-        files: AIDemon2_Installer.exe
+        files: |
+          AIDemon2_Installer.exe
+          AIDemon2_Linux.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
