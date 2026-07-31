@@ -15,16 +15,16 @@ public partial class SettingsViewModel : ObservableObject
 	{
 		_settingsRepository = settingsRepository;
 		_chatService = chatService;
-		LoadSettingsAsync();
 	}
 
 	[ObservableProperty]
-	private string apiKey;
+	private string apiKey = string.Empty;
 
 	[ObservableProperty]
-	private string instructionPrompt;
+	private string instructionPrompt = string.Empty;
 
-	public List<string> AIModelsList { get; private set; } = Resources.AIModels.Split(';').ToList();
+	// Lista jest budowana raz i nigdy nie podmieniana — powiadomienie zbędne.
+	public List<string> AIModelsList { get; } = Resources.AIModels.Split(';').ToList();
 
 	[ObservableProperty]
 	private string? aIModel;
@@ -34,13 +34,17 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string? programmingLanguage;
 
-	private async void LoadSettingsAsync()
+	/// <summary>
+	/// Było "async void" wołane z konstruktora: wyjątek z tej metody nie miał gdzie
+	/// wypłynąć i ubijał proces bez śladu.
+	/// </summary>
+	public async Task InitializeAsync()
 	{
 		var settings = await _settingsRepository.Get();
 		if (settings != null)
 		{
-			ApiKey = settings.ApiKey;
-			InstructionPrompt = settings.InstructionPrompt;
+			ApiKey = settings.ApiKey ?? string.Empty;
+			InstructionPrompt = settings.InstructionPrompt ?? string.Empty;
 			AIModel = settings.AIModel;
 			ProgrammingLanguage = settings.ProgrammingLanguage;
 		}
@@ -52,7 +56,10 @@ public partial class SettingsViewModel : ObservableObject
 		var settings = await _settingsRepository.Get();
 		if (settings != null)
 		{
-			if (settings.InstructionPrompt != InstructionPrompt ||
+			// Klucz API MUSI być na tej liście: bez tego zapisanie nowego klucza
+			// nie odtwarzało klienta i aplikacja do restartu używała starego.
+			if (settings.ApiKey != ApiKey ||
+				settings.InstructionPrompt != InstructionPrompt ||
 				settings.AIModel != AIModel ||
 				settings.ProgrammingLanguage != ProgrammingLanguage)
 				_chatService.ResetClient();

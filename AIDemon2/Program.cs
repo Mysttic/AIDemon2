@@ -1,10 +1,11 @@
-﻿using AIDemon2.Properties;
+﻿using AIDemon2.Domain;
 using AIDemon2.ViewModels;
 using AIDemon2.Views;
 using Avalonia;
-using Avalonia.ReactiveUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using AIDemon2.Services.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace AIDemon2;
 
@@ -18,7 +19,16 @@ internal class Program
 	{
 		var services = new ServiceCollection();
 		ConfigureServices(services);
-		var serviceProvider = services.BuildServiceProvider();
+		var serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+		{
+			// Walidacja przy starcie zamiast wyjątku przy pierwszym użyciu:
+			// ValidateScopes wyłapie ponowne wstrzyknięcie usługi Scoped
+			// do Singletona, ValidateOnBuild — brakującą rejestrację.
+			ValidateScopes = true,
+			ValidateOnBuild = true
+		});
+
+		RegisterGlobalExceptionHandlers(serviceProvider);
 
 		InitializeScope(serviceProvider);
 
@@ -27,13 +37,46 @@ internal class Program
 			.StartWithClassicDesktopLifetime(args);
 	}
 
-	private static void ConfigureServices(IServiceCollection services)
+	/// <summary>
+	/// Ostatnia linia obrony. Bez tego wyjątek spoza obsłużonej ścieżki ubijał proces
+	/// bez żadnego śladu — ani w oknie, ani w pliku — więc zgłoszenie użytkownika
+	/// „aplikacja się zamyka" nie dawało się zdiagnozować.
+	/// </summary>
+	private static void RegisterGlobalExceptionHandlers(IServiceProvider serviceProvider)
 	{
-		// Rejestracja DbContext – connection string ustawiony wewnętrznie
-		services.AddDbContext<AIDemonDbContext>(options =>
-			options.UseSqlite($"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AIDemon2.db")};Password={Resources.SQLiteDBPass};"),
-			ServiceLifetime.Scoped
-		);
+		var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+		AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+			logger.LogCritical(e.ExceptionObject as Exception,
+				"Nieobsłużony wyjątek; zamykanie aplikacji: {Terminating}", e.IsTerminating);
+
+		// Wyjątek z zadania, na które nikt nie czekał (typowo "_ = SomethingAsync()").
+		TaskScheduler.UnobservedTaskException += (_, e) =>
+		{
+			logger.LogError(e.Exception, "Nieobserwowany wyjątek zadania w tle");
+			e.SetObserved();
+		};
+	}
+
+	/// <summary>Internal, żeby test mógł zweryfikować, że kontener DI w ogóle się składa —
+	/// błąd w rejestracjach objawia się dopiero jako crash przy starcie aplikacji.</summary>
+	internal static void ConfigureServices(IServiceCollection services)
+	{
+		// Rejestracja DbContext – ścieżka i klucz z DatabaseLocation, wspólne
+		// z fabryką design-time, żeby narzędzia EF nie rozjechały się z aplikacją.
+		// Fabryka, nie AddDbContext: repozytoria są Singletonami i wstrzyknięty
+		// kontekst Scoped stałby się captive dependency żyjącą przez cały proces.
+		services.AddDbContextFactory<AIDemonDbContext>(options =>
+			options.UseSqlite(DatabaseLocation.ConnectionString));
+
+		services.AddLogging(builder => builder
+			.SetMinimumLevel(LogLevel.Information)
+			.AddProvider(new FileLoggerProvider()));
+
+		// Fabryka klienta AI zamiast "new" w środku ChatService — dzięki temu
+		// serwis da się przetestować bez wychodzenia w sieć.
+		services.AddSingleton<Func<string, IChatCompletionClient>>(
+			_ => apiKey => new IoIntelligenceChatClient(apiKey));
 
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
 		services.AddSingleton<IMessageRepository, MessageRepository>();
@@ -57,9 +100,29 @@ internal class Program
 
 	private static void InitializeScope(ServiceProvider serviceProvider)
 	{
-		using var scope = serviceProvider.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<AIDemonDbContext>();
-		dbContext.Database.Migrate(); // lub dbContext.Database.EnsureCreated();
+		var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+		try
+		{
+			var contextFactory = serviceProvider
+				.GetRequiredService<IDbContextFactory<AIDemonDbContext>>();
+			using var dbContext = contextFactory.CreateDbContext();
+			dbContext.Database.Migrate();
+
+			logger.LogInformation("Baza gotowa: {Sciezka}", DatabaseLocation.DatabasePath);
+		}
+		catch (Exception ex)
+		{
+			// Ten kod wykonuje się PRZED pokazaniem okna. Bez tego bloku każdy problem
+			// z bazą — brak uprawnień do katalogu, uszkodzony plik, zły klucz — kończył
+			// się zamknięciem procesu bez jakiegokolwiek komunikatu i bez śladu w logu.
+			logger.LogCritical(ex, "Nie udało się przygotować bazy danych ({Sciezka})",
+				DatabaseLocation.DatabasePath);
+
+			throw new InvalidOperationException(
+				$"Nie udało się otworzyć bazy danych w {DatabaseLocation.DatabasePath}. " +
+				$"Szczegóły zapisano w {FileLoggerProvider.DefaultDirectory}.", ex);
+		}
 	}
 
 	// Avalonia configuration, don't remove; also used by visual designer.
@@ -67,6 +130,5 @@ internal class Program
 		=> AppBuilder.Configure<App>()
 			.UsePlatformDetect()
 			.WithInterFont()
-			.LogToTrace()
-			.UseReactiveUI();
+			.LogToTrace();
 }

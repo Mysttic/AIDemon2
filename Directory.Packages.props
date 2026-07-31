@@ -1,0 +1,55 @@
+﻿<Project>
+
+  <!--
+    Centralne zarządzanie wersjami pakietów (CPM).
+
+    Wersje były wcześniej rozsypane po plikach .csproj — Microsoft.EntityFrameworkCore.Sqlite.Core
+    figurował w dwóch projektach osobno, a rozjazd między nimi ujawniłby się dopiero
+    przy ładowaniu assembly w czasie działania testów. Tutaj wersja jest jedna.
+
+    Projekty deklarują wyłącznie <PackageReference Include="..." /> bez atrybutu Version.
+  -->
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Pakiety Avalonii muszą iść równo; rozjazd wersji między Avalonia
+         a Avalonia.Desktop kończy się błędem ładowania XAML w czasie działania. -->
+    <AvaloniaVersion>11.2.5</AvaloniaVersion>
+    <EfCoreVersion>9.0.3</EfCoreVersion>
+  </PropertyGroup>
+
+  <ItemGroup Label="Avalonia">
+    <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="AnimatedImage.Avalonia" Version="2.0.0" />
+    <PackageVersion Include="Material.Icons.Avalonia" Version="2.3.1" />
+    <PackageVersion Include="MessageBox.Avalonia" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Dane">
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
+  </ItemGroup>
+
+  <ItemGroup Label="Pozostałe">
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageVersion Include="CsvHelper" Version="33.0.1" />
+    <PackageVersion Include="IONET.IOIntelligence" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(EfCoreVersion)" />
+    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(EfCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Label="Testy">
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+</Project>

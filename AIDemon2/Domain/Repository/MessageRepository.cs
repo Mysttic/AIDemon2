@@ -2,28 +2,43 @@
 
 public class MessageRepository : GenericRepository<Message>, IMessageRepository
 {
-	public MessageRepository(AIDemonDbContext context) : base(context)
+	public MessageRepository(IDbContextFactory<AIDemonDbContext> contextFactory)
+		: base(contextFactory)
 	{
 	}
 
-	public new async Task<IEnumerable<Message>> GetAllAsync()
+	/// <summary>
+	/// override, a nie "new": przy przesłanianiu metoda bazowa nadal byłaby wołana
+	/// przez każdy kod trzymający referencję typu <c>GenericRepository&lt;Message&gt;</c>,
+	/// i cicho zwracała także wiadomości skasowane.
+	///
+	/// Filtr !Deleted zapewnia globalny HasQueryFilter w OnModelCreating — tutaj
+	/// zostaje wyłącznie sortowanie.
+	/// </summary>
+	public override async Task<IEnumerable<Message>> GetAllAsync()
 	{
-		return await _context.Messages.Where(m=>!m.Deleted).OrderBy(x => x.CreationDate).ToListAsync();
+		await using var context = await _contextFactory.CreateDbContextAsync();
+		return await context.Messages.OrderBy(x => x.CreationDate).ToListAsync();
 	}
 
 	public async Task<IEnumerable<Message>> GetAllFavouriteAsync()
 	{
-		return await _context.Messages.Where(m => m.Favourite).OrderBy(x => x.CreationDate).ToListAsync();
+		await using var context = await _contextFactory.CreateDbContextAsync();
+		return await context.Messages
+			.Where(m => m.Favourite)
+			.OrderBy(x => x.CreationDate)
+			.ToListAsync();
 	}
 
 	public async Task DeleteAllAsync()
 	{
-		var messages = await _context.Messages.ToListAsync();
-		if(messages.Any())
+		await using var context = await _contextFactory.CreateDbContextAsync();
+		var messages = await context.Messages.ToListAsync();
+		if (messages.Any())
 		{
 			foreach (var message in messages)
 				message.Deleted = true;
-			await _context.SaveChangesAsync();
+			await context.SaveChangesAsync();
 		}
 	}
 }

@@ -1,0 +1,155 @@
+name: release
+
+# Wydanie wyzwala SCALENIE na master. Nie ma ręcznego tagowania — tag zakłada
+# automat. Bramką jest numer w pliku VERSION: jeśli tag dla tej wersji już istnieje,
+# przebieg kończy się bez żadnego skutku. Dzięki temu scalenie niezwiązane
+# z wydaniem niczego nie publikuje, a ponowne uruchomienie jest bezpieczne.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # wapproj wymaga targetów DesktopBridge z Visual Studio — nie ma ich w SDK.
+      # Obraz windows-2022 zawiera komponent Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging.
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Read version
+        id: version
+        shell: pwsh
+        run: |
+          $v = pwsh tools/Release.ps1 -Command version
+          "number=$v" | Out-File $env:GITHUB_OUTPUT -Append
+          if (git tag --list "v$v") {
+            Write-Host "Tag v$v already exists - nothing to release."
+            "publish=no" | Out-File $env:GITHUB_OUTPUT -Append
+          } else {
+            Write-Host "Version $v has not been released yet."
+            "publish=yes" | Out-File $env:GITHUB_OUTPUT -Append
+          }
+
+      - name: Test
+        if: steps.version.outputs.publish == 'yes'
+        run: |
+          dotnet build AIDemon2/AIDemon2.csproj -c Release -p:Platform=x64
+          dotnet test AIDemon2.Tests/AIDemon2.Tests.csproj -c Release
+
+      - name: Promote changelog and stamp manifest
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        run: |
+          $date = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')
+          pwsh tools/Release.ps1 -Command release -Date $date -OutFile RELEASE_NOTES.md
+          Write-Host "--- release notes ---"
+          Get-Content RELEASE_NOTES.md
+
+      - name: Prepare signing certificate
+        id: cert
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        env:
+          PFX_BASE64: ${{ secrets.MSIX_PFX_BASE64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PFX_BASE64)) {
+            # Brak sekretu nie przerywa wydania — powstaje pakiet niepodpisany,
+            # który da się zainstalować przez Add-AppDevPackage.ps1.
+            Write-Host "::warning::MSIX_PFX_BASE64 not set - building an unsigned package."
+            "signed=false" | Out-File $env:GITHUB_OUTPUT -Append
+          } else {
+            $path = Join-Path $env:RUNNER_TEMP 'sign.pfx'
+            [IO.File]::WriteAllBytes($path, [Convert]::FromBase64String($env:PFX_BASE64))
+            "signed=true" | Out-File $env:GITHUB_OUTPUT -Append
+            "path=$path" | Out-File $env:GITHUB_OUTPUT -Append
+          }
+
+      - name: Build MSIX package
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        env:
+          PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
+        run: |
+          # Kolejność ma znaczenie: restore wapproj przed restore aplikacji.
+          msbuild AIDemon2.Package\AIDemon2.Package.wapproj -t:Restore `
+            -p:Configuration=Release -p:Platform=x64
+          msbuild AIDemon2\AIDemon2.csproj -t:Restore `
+            -p:Configuration=Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64
+
+          $args = @(
+            'AIDemon2.Package\AIDemon2.Package.wapproj'
+            # -t:Publish, nie -t:Build: Build zostawia sam rozsypany layout,
+            # paczkę tworzy dopiero Publish.
+            '-t:Publish'
+            '-p:Configuration=Release'
+            '-p:Platform=x64'
+            '-p:RuntimeIdentifier=win-x64'
+            "-p:Version=${{ steps.version.outputs.number }}"
+            '-p:UapAppxPackageBuildMode=SideloadOnly'
+            '-p:AppxBundle=Never'
+            '-p:AppxAutoIncrementPackageRevision=false'
+            "-p:AppxPackageDir=${{ github.workspace }}\artifacts\msix\"
+          )
+          if ('${{ steps.cert.outputs.signed }}' -eq 'true') {
+            $args += '-p:AppxPackageSigningEnabled=true'
+            $args += "-p:PackageCertificateKeyFile=${{ steps.cert.outputs.path }}"
+            $args += "-p:PackageCertificatePassword=$env:PFX_PASSWORD"
+          }
+          msbuild @args
+
+      - name: Remove certificate
+        if: always()
+        shell: pwsh
+        run: Remove-Item (Join-Path $env:RUNNER_TEMP 'sign.pfx') -ErrorAction SilentlyContinue
+
+      - name: Commit release changes
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md AIDemon2.Package/Package.appxmanifest
+          if (git diff --cached --quiet) {
+            Write-Host "Nothing to commit (changelog section was already prepared)."
+          } else {
+            git commit -m "Release ${{ steps.version.outputs.number }} [skip ci]"
+            git push origin HEAD:master
+          }
+
+      - name: Tag
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        run: |
+          $v = "${{ steps.version.outputs.number }}"
+          git tag -a "v$v" -m "AIDemon2 $v"
+          git push origin "v$v"
+
+      - name: Publish GitHub release
+        if: steps.version.outputs.publish == 'yes'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.number }}
+          name: AIDemon2 ${{ steps.version.outputs.number }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          files: |
+            artifacts/msix/**/*.msix
+            artifacts/msix/**/*.appx
+            artifacts/msix/**/*.cer

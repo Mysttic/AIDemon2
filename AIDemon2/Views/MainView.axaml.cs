@@ -1,10 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using PropertyChanged;
 
 namespace AIDemon2.Views;
 
-[DoNotNotify]
 public partial class MainView : UserControl
 {
 	private bool _isLeftPanelVisible = false;

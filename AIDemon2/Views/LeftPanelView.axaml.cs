@@ -1,22 +1,19 @@
-using AIDemon2.ViewModels;
+﻿using AIDemon2.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
-using PropertyChanged;
 
 namespace AIDemon2.Views;
 
-[DoNotNotify]
 public partial class LeftPanelView : UserControl
 {
 	public LeftPanelView()
 	{
 		InitializeComponent();
-		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
-			.GetRequiredService<LeftPanelViewModel>();
+		DataContext = ViewServices.Get<LeftPanelViewModel>();
 		SettingsButton.Click += OnSettingsButtonClick;
 		this.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
 	}

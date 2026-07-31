@@ -11,7 +11,14 @@ public partial class RightPanelViewModel : ObservableObject
 	private readonly IMessageExportService _messageExportService;
 	private readonly IDialogService _dialogService;
 
-	private Message _selectedMessage;
+	/// <summary>
+	/// Przekazanie roboty na wątek UI. Wstrzykiwalne, bo Dispatcher.UIThread.Post
+	/// bez uruchomionej aplikacji Avalonii NIE rzuca — po cichu kolejkuje w próżnię,
+	/// więc test widziałby pustą konsolę zamiast błędu.
+	/// </summary>
+	private readonly Action<Action> _uiPost;
+
+	private Message? _selectedMessage;
 	public Message? SelectedMessage
 	{
 		get => _selectedMessage;
@@ -22,21 +29,23 @@ public partial class RightPanelViewModel : ObservableObject
 	public event Action<string>? ResendMessageRequested;
 
 	[ObservableProperty]
-	public string messageContent;
+	private string messageContent = string.Empty;
 
 	[ObservableProperty]
-	public string consoleOutput;
+	private string consoleOutput = string.Empty;
 
 	public RightPanelViewModel(
 		IMessageRepository messageRepository,
 		ICodeRunnerService codeRunnerService,
 		IMessageExportService messageExportService,
-		IDialogService dialogService)
+		IDialogService dialogService,
+		Action<Action>? uiPost = null)
 	{
 		_messageRepository = messageRepository;
 		_codeRunnerService = codeRunnerService;
 		_messageExportService = messageExportService;
 		_dialogService = dialogService;
+		_uiPost = uiPost ?? (action => Dispatcher.UIThread.Post(action));
 	}
 
 	public void SelectMessage(Message? message)
@@ -65,18 +74,23 @@ public partial class RightPanelViewModel : ObservableObject
 		if (!string.IsNullOrEmpty(SelectedMessage?.MessageContent) &&
 			!string.IsNullOrEmpty(SelectedMessage?.ProgrammingLanguage))
 		{
+			// Kod pochodzi od modelu AI i wykonuje się z pełnymi uprawnieniami
+			// użytkownika. Skoro usunięcie wiadomości wymaga potwierdzenia,
+			// to uruchomienie dowolnego skryptu tym bardziej.
+			if (!await _dialogService.ShowConfirmationDialog(
+					"Run code",
+					$"This will run the {SelectedMessage.ProgrammingLanguage} code below on your computer " +
+					$"with your own permissions. It can read, change or delete your files." +
+					$"{Environment.NewLine}{Environment.NewLine}" +
+					$"Run it only if you understand what it does. Continue?"))
+				return;
+
 			ConsoleOutput = string.Empty;
 
 			await _codeRunnerService.RunCodeAsync(
 				MessageContent,
 				SelectedMessage.ProgrammingLanguage,
-				output =>
-				{
-					Dispatcher.UIThread.Post(() =>
-					{
-						ConsoleOutput += output;
-					});
-				});
+				output => _uiPost(() => ConsoleOutput += output));
 		}
 	}
 
@@ -86,22 +100,33 @@ public partial class RightPanelViewModel : ObservableObject
 		ResendMessageRequested?.Invoke(MessageContent);
 	}
 
+	/// <summary>
+	/// Zdejmuje wiadomość z ulubionych i przywraca jej pierwotną treść.
+	///
+	/// Komenda nazywała się DeleteMessage, a przycisk miał ikonę kosza na czerwonym
+	/// tle — mimo że wiadomość zostaje w rozmowie i w bazie. Jedyne prawdziwe
+	/// usuwanie (miękkie, przez flagę Deleted) robi "Cleanup" w lewym panelu.
+	/// Nazwa i wygląd obiecywały nieodwracalną operację, której tu nie ma.
+	/// </summary>
 	[RelayCommand]
-	private async Task DeleteMessage()
+	private async Task UnpinMessage()
 	{
-		if (SelectedMessage != null)
-		{
-			if (await _dialogService.ShowConfirmationDialog("Delete message", "Are you sure that you want to delete this message? It will remove all your changes made so far."))
-			{
-				MessageContent = string.Empty;
-				SelectedMessage.Favourite = false;
-				SelectedMessage.ModificationDate = DateTime.UtcNow;
-				SelectedMessage.MessageContent = SelectedMessage.OriginalMessage;
-				await _messageRepository.UpdateAsync(SelectedMessage);
-				MessageUpdated?.Invoke(SelectedMessage);
-				SelectedMessage = null;
-			}
-		}
+		if (SelectedMessage == null)
+			return;
+
+		if (!await _dialogService.ShowConfirmationDialog(
+				"Usuń z ulubionych",
+				"Wiadomość zniknie z listy ulubionych, a jej treść wróci do pierwotnej wersji. " +
+				"Sama wiadomość zostanie w rozmowie. Kontynuować?"))
+			return;
+
+		MessageContent = string.Empty;
+		SelectedMessage.Favourite = false;
+		SelectedMessage.ModificationDate = DateTime.UtcNow;
+		SelectedMessage.MessageContent = SelectedMessage.OriginalMessage;
+		await _messageRepository.UpdateAsync(SelectedMessage);
+		MessageUpdated?.Invoke(SelectedMessage);
+		SelectedMessage = null;
 	}
 
 	[RelayCommand]

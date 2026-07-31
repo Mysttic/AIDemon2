@@ -1,21 +1,21 @@
-using AIDemon2.ViewModels;
+﻿using AIDemon2.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
-using PropertyChanged;
 
 namespace AIDemon2.Views;
 
-[DoNotNotify]
 public partial class SettingsView : UserControl
 {
 	public SettingsView()
 	{
 		InitializeComponent();
-		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
-			.GetRequiredService<SettingsViewModel>();
+		var viewModel = ViewServices.Get<SettingsViewModel>();
+		DataContext = viewModel;
+		// Wczytanie ustawień przeniesione z konstruktora ViewModelu.
+		Loaded += async (_, _) => await viewModel.InitializeAsync();
 		SaveButton.Click += Close;
 		CancelButton.Click += Close;
 	}

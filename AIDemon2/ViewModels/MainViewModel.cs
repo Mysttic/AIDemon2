@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 
 namespace AIDemon2.ViewModels;
 
@@ -11,8 +12,13 @@ public partial class MainViewModel : ObservableObject
 
 	private readonly IMessageRepository _messageRepository;
 	private readonly IChatService _chatService;
+	private readonly ILogger<MainViewModel> _logger;
 
-	public bool IsLoading { get; set; }
+	// Było zwykłe { get; set; } notyfikujące wyłącznie dzięki weaverowi Fody.
+	// Binding IsVisible w MainView.axaml zależy od tego powiadomienia, a jego
+	// utrata nie dałaby żadnego błędu kompilacji.
+	[ObservableProperty]
+	private bool isLoading;
 
 	[ObservableProperty]
 	private string newMessageText = string.Empty;
@@ -22,34 +28,48 @@ public partial class MainViewModel : ObservableObject
 		MainChatViewModel chatViewModel,
 		RightPanelViewModel rightPanelViewModel,
 		IMessageRepository messageRepository,
-		IChatService chatService)
+		IChatService chatService,
+		ILogger<MainViewModel> logger)
 	{
 		LeftPanelViewModel = leftPanelViewModel;
 		ChatViewModel = chatViewModel;
 		RightPanelViewModel = rightPanelViewModel;
 		_messageRepository = messageRepository;
 		_chatService = chatService;
+		_logger = logger;
 		RightPanelViewModel.MessageUpdated += OnMessageUpdated;
 		RightPanelViewModel.ResendMessageRequested += ResendMessageRequested;
-		ChatViewModel.IsLoading += OnIsLoading;
 		LeftPanelViewModel.OnCleanup += OnCleanup;
-		_ = LoadMessages();
+	}
+
+	/// <summary>
+	/// Wczytanie danych wyniesione z konstruktora. Wywoływane po otwarciu okna,
+	/// gdzie wyjątek da się złapać i zalogować.
+	/// </summary>
+	public async Task InitializeAsync()
+	{
+		await ChatViewModel.InitializeAsync();
+		await LeftPanelViewModel.InitializeAsync();
 	}
 
 	private async void OnCleanup()
 	{
-		await LoadMessages();
-		RightPanelViewModel.SelectMessage(null);
+		// async void jest tu nieuniknione (handler zdarzenia), więc wyjątek musi
+		// zostać złapany na miejscu — inaczej ubija proces.
+		try
+		{
+			await LoadMessages();
+			RightPanelViewModel.SelectMessage(null);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Odświeżenie listy po wyczyszczeniu historii nie powiodło się");
+		}
 	}
 
 	private void OnMessageUpdated(Message? updatedMessage)
 	{
 		_ = LeftPanelViewModel.LoadFavouriteMessages();
-	}
-
-	private void OnIsLoading(bool isLoading)
-	{
-		IsLoading = isLoading;
 	}
 
 	private void ResendMessageRequested(string newMessage)
@@ -77,6 +97,15 @@ public partial class MainViewModel : ObservableObject
 			IsLoading = true;
 			var aiMessage = await _chatService.SendMessageAsync(userMessage);
 			ChatViewModel.AddMessage(aiMessage);
+		}
+		catch (ChatServiceException ex)
+		{
+			_logger.LogError(ex, "Nie udało się uzyskać odpowiedzi od usługi AI");
+
+			// Komunikat widoczny w rozmowie, ale NIEzapisany do bazy: wcześniej
+			// tekst błędu lądował w historii jako pełnoprawna odpowiedź modelu
+			// i trafiał do eksportu.
+			ChatViewModel.AddMessage(new Message(ex.Message, isUserMessage: false));
 		}
 		finally
 		{

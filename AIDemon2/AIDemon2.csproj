@@ -2,16 +2,23 @@
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
 	<UseWPF>false</UseWPF>
-	<ImplicitUsings>enable</ImplicitUsings>
-	  <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
-	  <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+	  <TargetFramework>net8.0-windows</TargetFramework>
 	<StartupObject>AIDemon2.Program</StartupObject>
 	<Company>Mysttic</Company>
 	<PackageIcon>AIDemon2.png</PackageIcon>
-  <Platforms>AnyCPU;x86</Platforms>
+  <Platforms>AnyCPU;x64</Platforms>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
-	<PlatformTarget>x86</PlatformTarget>
+	<!-- To JEDYNA właściwość, która decyduje o bitowości wyjścia — trafia do kompilatora
+	     jako /platform. Przekazanie -p:Platform=x64 samo z siebie nic tu nie zmienia:
+	     SDK wyprowadza PlatformTarget z Platform tylko wtedy, gdy PlatformTarget jest puste. -->
+	<PlatformTarget>x64</PlatformTarget>
+	<!-- Zawęża restore do jednej platformy. UWAGA: wbrew temu, co mówił poprzedni komentarz
+	     w tym miejscu, samo RuntimeIdentifiers NIE przycina katalogu runtimes/ w wyjściu
+	     zwykłego `dotnet build` — tam nadal ląduje komplet 25 platform (~130 MB). Przycięcie
+	     następuje dopiero przy buildzie pod konkretny RID (-r win-x64 lub RuntimeIdentifier). -->
+	<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+	<!-- Katalogi tłumaczeń komunikatów EF Core; aplikacja jest jednojęzyczna. -->
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,31 +34,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnimatedImage.Avalonia" Version="2.0.0" />
-    <PackageReference Include="Avalonia" Version="11.2.5" />
-	<PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
+    <PackageReference Include="AnimatedImage.Avalonia" />
+    <PackageReference Include="Avalonia" />
+	<PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="IONET.IOIntelligence" Version="1.0.1" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
-    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3" />
-	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="IONET.IOIntelligence" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="MessageBox.Avalonia" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" />
+    <!-- .Core, NIE Microsoft.EntityFrameworkCore.Sqlite: ten drugi ciągnie tranzytywnie
+         SQLitePCLRaw.bundle_e_sqlite3, który konkuruje z bundle_e_sqlcipher poniżej.
+         O tym, który natywny SQLite wygrywa, decydowało wtedy porównanie wersji assembly
+         przez MSBuild — a przy przegranej SQLCipher połączenie z Password= rzuca wyjątek. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql" Version="9.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,4 +80,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="AIDemon2.Tests" />
+  </ItemGroup>
+
 </Project>

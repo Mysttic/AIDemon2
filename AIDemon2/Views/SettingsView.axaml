@@ -30,7 +30,9 @@
 			<StackPanel Grid.Row="1" Orientation="Vertical" Spacing="10" Margin="10">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="ApiKey:" Width="200" Foreground="White"/>
-					<TextBox Text="{Binding ApiKey}" Width="250"/>
+					<!-- PasswordChar: klucz był dotąd widoczny jawnie, więc trafiał
+					     na każdy zrzut ekranu i nagranie okna ustawień. -->
+					<TextBox Text="{Binding ApiKey}" Width="250" PasswordChar="•"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Instruction Prompt:" Width="200" Foreground="White"/>

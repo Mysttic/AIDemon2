@@ -15,7 +15,8 @@ public static class ProgrammingLanguageConfig
 		if (resourceName == null)
 			throw new FileNotFoundException("ProgrammingLanguages.json not found in embedded resources.");
 
-		using Stream stream = assembly.GetManifestResourceStream(resourceName);
+		using Stream stream = assembly.GetManifestResourceStream(resourceName)
+			?? throw new FileNotFoundException($"Nie udało się otworzyć zasobu {resourceName}.");
 		using StreamReader reader = new StreamReader(stream);
 		string json = reader.ReadToEnd();
 
@@ -46,8 +47,8 @@ public static class ProgrammingLanguageConfig
 
 	public class LanguageInfo
 	{
-		public string Launcher { get; set; }
-		public string Extension { get; set; }
+		public string Launcher { get; set; } = string.Empty;
+		public string Extension { get; set; } = string.Empty;
 		public string Arguments { get; set; } = "";
 	}
 }

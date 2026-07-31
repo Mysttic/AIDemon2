@@ -1,6 +1,34 @@
-<Project>
+﻿<Project>
+
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <AvaloniaVersion>11.1.0</AvaloniaVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <!--
+    Ostrzeżenia kompilatora jako błędy.
+
+    Projekt miał 33 miejsca z ostrzeżeniami (głównie nullable i przestarzałe API
+    dialogów Avalonii). Dopóki ostrzeżenia są tylko ostrzeżeniami, kolejne wtapiają
+    się w szum i nikt ich nie czyta. Po wyzerowaniu utrzymanie zera jest darmowe.
+
+    Warunek na .csproj: wapproj (pakowanie MSIX) sypie ostrzeżeniami z targetów
+    DesktopBridge, na które nie mamy wpływu.
+  -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- NU19xx to ostrzeżenia o podatnościach w pakietach. Zależą od zewnętrznej
+         bazy CVE, więc jako błędy wywracałyby CI bez żadnej zmiany w repozytorium.
+         Mają być widoczne, ale nie blokować. -->
+    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <!-- Wapproj nie obsługuje centralnego zarządzania wersjami: jego
+       PackageReference na Microsoft.Windows.SDK.BuildTools ma wersję wprost,
+       co przy włączonym CPM jest błędem NU1008. -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.wapproj'">
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
 </Project>

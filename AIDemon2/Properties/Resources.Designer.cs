@@ -69,13 +69,6 @@ namespace AIDemon2.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to P@ssword1.
-        /// </summary>
-        internal static string SQLiteDBPass {
-            get {
-                return ResourceManager.GetString("SQLiteDBPass", resourceCulture);
-            }
-        }
+        
     }
 }
