@@ -5,6 +5,8 @@ using Avalonia;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using AIDemon2.Services.Logging;
+using AIDemon2.Services.ChatService;
+using AIDemon2.Services.ModelCatalog;
 using Microsoft.Extensions.Logging;
 
 namespace AIDemon2;
@@ -14,8 +16,12 @@ internal class Program
 	// Initialization code. Don't use any Avalonia, third-party APIs or any
 	// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
 	// yet and stuff might break.
+	// Synchroniczne, mimo że kusi async: nie ma tu na co czekać
+	// (StartWithClassicDesktopLifetime blokuje do zamknięcia okna), a "async Task Main"
+	// przy [STAThread] jest wręcz szkodliwe — kontynuacja po await wraca na wątek puli,
+	// który nie jest STA, więc kod COM-owy w oknach dialogowych mógłby się wywrócić.
 	[STAThread]
-	public static async Task Main(string[] args)
+	public static void Main(string[] args)
 	{
 		var services = new ServiceCollection();
 		ConfigureServices(services);
@@ -76,7 +82,7 @@ internal class Program
 		// Fabryka klienta AI zamiast "new" w środku ChatService — dzięki temu
 		// serwis da się przetestować bez wychodzenia w sieć.
 		services.AddSingleton<Func<string, IChatCompletionClient>>(
-			_ => apiKey => new IoIntelligenceChatClient(apiKey));
+			_ => apiKey => new OpenRouterChatClient(apiKey));
 
 		// Rejestracja innych serwisów jako Scoped zamiast Transient
 		services.AddSingleton<IMessageRepository, MessageRepository>();
@@ -85,6 +91,11 @@ internal class Program
 		services.AddSingleton<ICodeRunnerService, CodeRunnerService>();
 		services.AddSingleton<IDialogService, DialogService>();
 		services.AddSingleton<IMessageExportService, MessageExportService>();
+		// Lista modeli pochodzi z API OpenRoutera (endpoint nie wymaga klucza),
+		// z kopia na dysku i lista awaryjna na wypadek braku sieci.
+		services.AddSingleton<IModelCatalog, OpenRouterModelCatalog>(
+			sp => new OpenRouterModelCatalog(
+				sp.GetRequiredService<ILogger<OpenRouterModelCatalog>>()));
 
 		services.AddSingleton<MainViewModel>();
 		services.AddSingleton<LeftPanelViewModel>();

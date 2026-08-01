@@ -61,3 +61,17 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# Znaki konca linii wymuszone tam, gdzie maja znaczenie funkcjonalne
+###############################################################################
+
+# Skrypty powloki MUSZA miec LF takze po checkoucie na Windows: powloki uniksowe
+# przerywaja na CRLF komunikatem "command not found" z niewidocznym  na koncu
+# kazdego polecenia. Dotyczy to tools/language-check/run.sh, uruchamianego w kontenerze.
+*.sh text eol=lf
+Dockerfile text eol=lf
+
+# Pliki wsadowe Windows odwrotnie - wymagaja CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf

@@ -11,7 +11,11 @@
   -->
 
   <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Wyłączone dla wapproj: jego PackageReference na Microsoft.Windows.SDK.BuildTools
+         niesie wersję wprost, co przy włączonym CPM jest błędem NU1008 i wywraca restore
+         projektu pakującego. Warunek MUSI stać tutaj, nie w Directory.Build.props —
+         ten plik jest importowany później i nadpisałby tamtejszą wartość. -->
+    <ManagePackageVersionsCentrally Condition="'$(MSBuildProjectExtension)' != '.wapproj'">true</ManagePackageVersionsCentrally>
     <!-- Pakiety Avalonii muszą iść równo; rozjazd wersji między Avalonia
          a Avalonia.Desktop kończy się błędem ładowania XAML w czasie działania. -->
     <AvaloniaVersion>11.2.5</AvaloniaVersion>
@@ -40,7 +44,6 @@
   <ItemGroup Label="Pozostałe">
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="CsvHelper" Version="33.0.1" />
-    <PackageVersion Include="IONET.IOIntelligence" Version="1.0.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(EfCoreVersion)" />
     <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(EfCoreVersion)" />

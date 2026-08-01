@@ -452,3 +452,6 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Generowane przez tools/Release.ps1 na potrzeby opisu wydania w GitHubie.
+RELEASE_NOTES.md

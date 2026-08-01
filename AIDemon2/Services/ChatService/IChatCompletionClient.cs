@@ -1,41 +1,18 @@
-﻿using IoIntelligence.Client.Interfaces;
-using IoIntelligence.Client.Models.AIModel.Chat;
-using IoIntelligence.Client.Services;
+﻿using AIDemon2.Services.ChatService;
 
 /// <summary>
-/// Cienka warstwa nad klientem io.net, sprowadzona do jednej operacji, której
-/// aplikacja faktycznie używa.
+/// Jedna operacja, której aplikacja faktycznie używa: wyślij rozmowę, odbierz treść.
 ///
-/// Powód istnienia jest konkretny: <c>IIoIntelligenceClient.Models</c> zwraca klasę
-/// <c>ModelClient</c>, a jej <c>CreateChatCompletionAsync</c> NIE jest wirtualna.
-/// Samo wstrzyknięcie fabryki <c>IIoIntelligenceClient</c> nie pozwalało więc podstawić
-/// odpowiedzi w teście — każdy test i tak wychodziłby w sieć. Ta abstrakcja zamyka
-/// pakiet zewnętrzny w jednej klasie adaptera, a logikę czatu czyni testowalną.
+/// Abstrakcja istnieje, żeby logika czatu dała się testować bez wychodzenia w sieć,
+/// a dostawca modeli był wymienny — co się właśnie przydało przy przejściu z io.net
+/// na OpenRoutera: zmienił się wyłącznie adapter.
 /// </summary>
 public interface IChatCompletionClient
 {
 	/// <summary>Zwraca surową treść odpowiedzi modelu, bez czyszczenia.</summary>
-	Task<string> CompleteAsync(ChatCompletionRequest request);
-}
-
-/// <summary>Produkcyjna implementacja oparta o pakiet IONET.IOIntelligence.</summary>
-public class IoIntelligenceChatClient : IChatCompletionClient
-{
-	private readonly IIoIntelligenceClient _client;
-
-	public IoIntelligenceChatClient(string apiKey)
-		: this(new IoIntelligenceClient(apiKey))
-	{
-	}
-
-	public IoIntelligenceChatClient(IIoIntelligenceClient client)
-	{
-		_client = client;
-	}
-
-	public async Task<string> CompleteAsync(ChatCompletionRequest request)
-	{
-		var response = await _client.Models.CreateChatCompletionAsync(request);
-		return response.Choices.First().Message.Content;
-	}
+	/// <exception cref="ChatServiceException">
+	/// Gdy usługa zwróciła błąd albo pustą odpowiedź. Wywołujący dostaje komunikat
+	/// gotowy do pokazania użytkownikowi.
+	/// </exception>
+	Task<string> CompleteAsync(OpenRouterChatRequest request, CancellationToken cancellationToken = default);
 }

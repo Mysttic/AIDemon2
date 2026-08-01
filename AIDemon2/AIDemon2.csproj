@@ -43,7 +43,6 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="CsvHelper" />
-    <PackageReference Include="IONET.IOIntelligence" />
     <PackageReference Include="Material.Icons.Avalonia" />
     <PackageReference Include="MessageBox.Avalonia" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" />

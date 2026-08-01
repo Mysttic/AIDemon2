@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:vm="clr-namespace:AIDemon2.ViewModels"
@@ -10,6 +10,8 @@
 		<StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
 			<Button 
 				x:Name="SettingsButton"		
+				Classes="tool"
+				ToolTip.Tip="API key, model and script language"
 				Command="{Binding ShowSettingsCommand}"
 				Padding="10"
 				Margin="0,10,0,0"
@@ -22,6 +24,8 @@
 
 			<Button
 				x:Name="ExportButton"
+				Classes="tool"
+				ToolTip.Tip="Export the whole conversation to JSON or CSV"
 				Command="{Binding ExportCommand}"
 				Padding="10"
 				Margin="0,5,0,0"
@@ -34,7 +38,8 @@
 
 			<Button
 				x:Name="CleanupButton"
-				Background="#FF0000" 
+				Classes="tool danger"
+				ToolTip.Tip="Delete the entire conversation history"
 				Command="{Binding CleanupCommand}"
 				Padding="10"
 				Margin="0,35,0,0"
@@ -51,16 +56,15 @@
 		<ListBox Grid.Row="1" ItemsSource="{Binding FavouriteMessages}" Margin="0">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Border BorderThickness="1" BorderBrush="Gray" Padding="0" Margin="0"
-							CornerRadius="0" Background="#333" MinWidth="150" MaxWidth="250" Height="70" MaxHeight="70">
+					<!-- Karta miala CornerRadius=0 i zerowe odstepy, wiec tekst dotykal
+					     obwodki, a kolejne pozycje sklejaly sie w jeden blok. -->
+					<Border Classes="card" MinWidth="150" MaxWidth="250" Height="70" MaxHeight="70">
 						<StackPanel>
 							<TextBlock Text="{Binding MessageContent, Converter={StaticResource TextTruncateConverter}, ConverterParameter=70}"
-									   Foreground="White"
-									   TextWrapping="Wrap"
+									   Classes="body"
 									   MaxWidth="200"/>
 							<TextBlock Text="{Binding ModificationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
-									   FontSize="10"
-									   Foreground="LightGray"
+									   Classes="meta"
 									   HorizontalAlignment="Right"/>
 						</StackPanel>
 					</Border>

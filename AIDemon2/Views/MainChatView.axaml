@@ -17,8 +17,11 @@
 
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Border Padding="8" Margin="5"
-                                Background="{Binding AIModel, Converter={StaticResource AIMessageBackgroundConverter}}"
+						<!-- Klasy zamiast konwertera koloru: przenosi wygląd do arkusza stylów
+						     i pozwala wystylizować cały dymek, nie tylko jego tło. -->
+						<Border Classes="bubble"
+								Classes.user="{Binding IsUserMessage}"
+								Classes.ai="{Binding !IsUserMessage}"
                                 HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource MessageAlignmentConverter}}">
 							<Grid>
 								<Grid.RowDefinitions>
@@ -28,14 +31,16 @@
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 
-								<!-- Górna część (treść) -->
-								<StackPanel Grid.Row="0">
+								<!-- Górna część (treść). ScrollViewer z MaxHeight, bo długa
+								     odpowiedź z kodem rozciągała pojedynczy dymek na kilka
+								     ekranów i wypychała resztę rozmowy poza widok. -->
+								<ScrollViewer Grid.Row="0" MaxHeight="420"
+											  VerticalScrollBarVisibility="Auto"
+											  HorizontalScrollBarVisibility="Disabled">
 									<TextBlock Text="{Binding OriginalMessage}"
-											   FontWeight="Bold"
-											   Foreground="White"
-											   MaxWidth="400"
-											   TextWrapping="Wrap"/>
-								</StackPanel>
+											   Classes="body"
+											   MaxWidth="520"/>
+								</ScrollViewer>
 
 								<!-- Dolna część (data + ikona modyfikacji, przycisk Resend) -->
 								<Grid Grid.Row="1" Margin="0,5,0,0">
@@ -47,19 +52,20 @@
 									<!-- Nazwa modelu AI (pokazuj tylko, gdy to nie jest wiadomość użytkownika) -->
 									<TextBlock Text="{Binding AIModel}"
 											   Grid.Column="0"
-											   FontSize="10"
-											   Foreground="LightBlue"
+											   Classes="model"
 											   IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolInverseToVisibilityConverter}}"/>
 
-									<!-- Data i ewentualna ikona modyfikacji w prawym dolnym rogu -->
+									<!-- Data i ewentualna ikona modyfikacji w prawym dolnym rogu.
+									     Klasa "meta" daje monospace — cyfry o stałej szerokości
+									     nie przeskakują przy każdej sekundzie. Wcześniejszy
+									     Foreground="Gray" dawał na dymku 2.26:1, czyli poniżej
+									     progu czytelności WCAG AA. -->
 									<StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
 										<!-- Data -->
 										<TextBlock Text="{Binding CreationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
-												   FontSize="10"
-												   Foreground="Gray"/>
+												   Classes="meta"/>
 										<TextBlock Text="{Binding ModificationDate, Converter={StaticResource UtcToLocalTimeConverter}, StringFormat='HH:mm:ss'}"
-												   FontSize="10"
-												   Foreground="Gray"
+												   Classes="meta"
 												   IsVisible="{Binding IsModified, Converter={StaticResource BoolToVisibilityConverter}}"/>
 									
 									</StackPanel>

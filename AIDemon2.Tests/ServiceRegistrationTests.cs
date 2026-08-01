@@ -1,4 +1,5 @@
 ﻿using AIDemon2;
+using AIDemon2.Services.ChatService;
 using AIDemon2.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,7 +81,7 @@ public class ServiceRegistrationTests
 		var fabryka = provider.GetRequiredService<Func<string, IChatCompletionClient>>();
 
 		// Samo utworzenie klienta nie wykonuje żadnego żądania sieciowego.
-		Assert.IsType<IoIntelligenceChatClient>(fabryka("klucz-testowy"));
+		Assert.IsType<OpenRouterChatClient>(fabryka("klucz-testowy"));
 	}
 
 	[Fact]

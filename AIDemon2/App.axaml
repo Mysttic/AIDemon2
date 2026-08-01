@@ -3,24 +3,36 @@
              x:Class="AIDemon2.App"
 			 xmlns:cv="clr-namespace:AIDemon2.Converters"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
+             <!-- "Dark", nie "Default": przy "Default" motyw szedł za ustawieniem systemu,
+                  więc na jasnym Windowsie Fluent przełączał się na wariant Light, a paleta
+                  aplikacji pozostawała ciemna — powstawała mieszanka jasnych kontrolek
+                  na ciemnym tle. -->
 
     <Application.Styles>
         <FluentTheme />
 		<materialIcons:MaterialIconStyles />
+		<!-- ZA FluentTheme: style stanów muszą nadpisywać te z motywu, nie odwrotnie. -->
+		<StyleInclude Source="avares://AIDemon2/Styles/Theme.axaml" />
     </Application.Styles>
 
 	<Application.Resources>
-		<cv:AIMessageBackgroundConverter x:Key="AIMessageBackgroundConverter"/>
-		<cv:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
-		<cv:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
-		<cv:StringEmptyConverter x:Key="StringEmptyConverter"/>
-		<cv:TextTruncateConverter x:Key="TextTruncateConverter"/>
-		<cv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-		<cv:BoolInverseToVisibilityConverter x:Key="BoolInverseToVisibilityConverter" />
-		<cv:NullToBoolConverter x:Key="NullToBoolConverter" />
-		<cv:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
+		<!-- Application.Resources przyjmuje jeden słownik, więc konwertery muszą
+		     znaleźć się wewnątrz niego, obok dołączonej palety. -->
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://AIDemon2/Styles/Palette.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<cv:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
+			<cv:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+			<cv:StringEmptyConverter x:Key="StringEmptyConverter"/>
+			<cv:TextTruncateConverter x:Key="TextTruncateConverter"/>
+			<cv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+			<cv:BoolInverseToVisibilityConverter x:Key="BoolInverseToVisibilityConverter" />
+			<cv:NullToBoolConverter x:Key="NullToBoolConverter" />
+			<cv:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
+		</ResourceDictionary>
 	</Application.Resources>
 
 </Application>

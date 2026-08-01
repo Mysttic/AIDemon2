@@ -1,81 +1,97 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:vm="clr-namespace:AIDemon2.ViewModels"
              x:Class="AIDemon2.Views.RightPanelView">
 	<Grid RowDefinitions="Auto,*,Auto">
-		<!-- Przyciski (row 0) -->
+		<!--
+			Przyciski (row 0). Każdy ma etykietę tekstową i podpowiedź — wcześniej były
+			to same ikony, więc bez kliknięcia nie dało się odgadnąć, co robi rakieta,
+			a co przekreślona gwiazdka.
+
+			Kolory pochodzą z klasy "tool", nie z atrybutu Background: Fluent nadpisuje
+			tło na ContentPresenterze w stanie :pointerover, więc wpisany tu kolor
+			znikał przy najechaniu myszką razem z czytelnością ikon.
+		-->
 		<StackPanel Grid.Row="0"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10"
 					IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToBoolConverter}}">
-			<!-- Przyciski Save, RunCode, Resend, Delete, Clear -->
-			<Button 
-				Content="{materialIcons:MaterialIconExt Kind=ContentSave}" 
-				Command="{Binding SaveFavouriteCommand}"
-				Background="#444444" 
-				Foreground="White" 
-				Margin="0,0,5,0"
-				Padding="15,5,15,5"/>
-			<Button
-				Content="{materialIcons:MaterialIconExt Kind=RocketLaunch}"
-				Command="{Binding RunCodeCommand}"
-				Background="#444444" 
-				Foreground="White" 
-				Margin="5,0,5,0"
-				Padding="15,5,15,5"
-				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
-			<Button
-				Content="{materialIcons:MaterialIconExt Kind=Replay}"
-				Command="{Binding ResendMessageCommand}"
-				Background="#444444"
-				Foreground="White"
-				Margin="5,0,5,0"
-				Padding="15,5,15,5"
-				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringEmptyConverter}}"/>
-			<Button
-				Content="{materialIcons:MaterialIconExt Kind=Export}"
-				Command="{Binding ExportMessageCommand}"
-				Background="#444444"
-				Foreground="White"
-				Margin="5,0,5,0"
-				Padding="15,5,15,5"
-				IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}"/>
-			<Button
-				Content="{materialIcons:MaterialIconExt Kind=StarOff}"
-				ToolTip.Tip="Usuń z ulubionych i przywróć pierwotną treść"
-				Command="{Binding UnpinMessageCommand}"
-				Background="#444444"
-				Foreground="White"
-				Margin="5,0,5,0"
-				Padding="15,5,15,5"
-				IsEnabled="{Binding SelectedMessage.Favourite}"/>
-			<Button
-				Content="{materialIcons:MaterialIconExt Kind=Clear}"
-				Command="{Binding ClearMessageCommand}"
-				Background="#444444"
-				Foreground="White"
-				Margin="5,0,5,0"
-				Padding="15,5,15,5"/>
+			<Button Classes="tool"
+					ToolTip.Tip="Save your edits and add the message to favourites"
+					Command="{Binding SaveFavouriteCommand}"
+					Margin="0,0,6,0">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="ContentSave" Width="16" Height="16"/>
+					<TextBlock Text="Save"/>
+				</StackPanel>
+			</Button>
+			<Button Classes="tool"
+					ToolTip.Tip="Run this code on your computer"
+					Command="{Binding RunCodeCommand}"
+					Margin="0,0,6,0"
+					IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="RocketLaunch" Width="16" Height="16"/>
+					<TextBlock Text="Run"/>
+				</StackPanel>
+			</Button>
+			<Button Classes="tool"
+					ToolTip.Tip="Send this message again"
+					Command="{Binding ResendMessageCommand}"
+					Margin="0,0,6,0"
+					IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringEmptyConverter}}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="Replay" Width="16" Height="16"/>
+					<TextBlock Text="Resend"/>
+				</StackPanel>
+			</Button>
+			<Button Classes="tool"
+					ToolTip.Tip="Save as a script file"
+					Command="{Binding ExportMessageCommand}"
+					Margin="0,0,6,0"
+					IsVisible="{Binding SelectedMessage.ProgrammingLanguage, Converter={StaticResource StringNotEmptyConverter}}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="Export" Width="16" Height="16"/>
+					<TextBlock Text="Export"/>
+				</StackPanel>
+			</Button>
+			<Button Classes="tool"
+					ToolTip.Tip="Remove from favourites and restore the original text"
+					Command="{Binding UnpinMessageCommand}"
+					Margin="0,0,6,0"
+					IsEnabled="{Binding SelectedMessage.Favourite}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="StarOff" Width="16" Height="16"/>
+					<TextBlock Text="Unpin"/>
+				</StackPanel>
+			</Button>
+			<Button Classes="tool"
+					ToolTip.Tip="Close the editor without saving"
+					Command="{Binding ClearMessageCommand}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<materialIcons:MaterialIcon Kind="Clear" Width="16" Height="16"/>
+					<TextBlock Text="Clear"/>
+				</StackPanel>
+			</Button>
 		</StackPanel>
 
-		<!-- Edytor kodu (row 1) -->
+		<!-- Edytor kodu (row 1). Monospace jest tu wymogiem funkcjonalnym, nie ozdobą:
+		     w czcionce proporcjonalnej wcięcia kodu się rozjeżdżają. -->
 		<TextBox Grid.Row="1"
+				 Classes="code"
 				 Text="{Binding MessageContent}"
-				 AcceptsReturn="True"
-				 TextWrapping="Wrap"
 				 Margin="10"
 				 MaxWidth="800"/>
 
 		<!-- Okno wyjścia konsoli (row 2) -->
-		<Border Grid.Row="2" Margin="10" BorderThickness="1" BorderBrush="Gray">
-			<TextBox Text="{Binding ConsoleOutput}"
+		<Border Grid.Row="2" Margin="10" BorderThickness="1"
+				BorderBrush="{StaticResource BrushBorderSubtle}"
+				CornerRadius="{StaticResource RadiusControl}">
+			<TextBox Classes="code"
+					 Text="{Binding ConsoleOutput}"
 					 IsReadOnly="True"
-					 AcceptsReturn="True"
-					 TextWrapping="Wrap"
-					 Background="Black"
-					 Foreground="White"
 					 Height="150"
 					 MaxWidth="800"/>
 		</Border>

@@ -296,6 +296,25 @@ public class ViewModelTests : IDisposable
 	}
 
 	[Fact]
+	public async Task RunCode_ShowsMessageInConsole_WhenInterpreterMissing()
+	{
+		// Regresja: brak interpretera rzuca NotSupportedException z CodeRunnerService.
+		// Bez obsługi w ViewModelu wyjątek wychodził z AsyncRelayCommand na pętlę
+		// komunikatów — użytkownik po potwierdzeniu groźnego dialogu dostawał pustą
+		// konsolę albo zamknięcie aplikacji.
+		var wiadomosc = await _messages.AddAsync(
+			new Message("print(1)") { ProgrammingLanguage = "python" });
+		_runner.Wyjatek = new NotSupportedException("No interpreter found for 'python'.");
+		var vm = PrawyPanel();
+		vm.SelectMessage(wiadomosc);
+		_dialogi.Zaplanuj(true);
+
+		await vm.RunCodeCommand.ExecuteAsync(null);
+
+		Assert.Contains("No interpreter found", vm.ConsoleOutput);
+	}
+
+	[Fact]
 	public void SelectMessage_ClearsPreviousConsoleOutput()
 	{
 		var vm = PrawyPanel();

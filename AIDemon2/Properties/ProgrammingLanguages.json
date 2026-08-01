@@ -1,62 +1,98 @@
 {
     "python": {
-        "launcher": "python",
         "extension": ".py",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "py", "python" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "python3", "python" ], "arguments": "\"{0}\"" },
+        "docker": "python:3.13-slim"
     },
     "powershell": {
-        "launcher": "powershell",
         "extension": ".ps1",
-        "arguments": "\"{0}\""
+        "lineEndings": "crlf",
+        "windows": {
+            "launchers": [ "pwsh", "powershell" ],
+            "arguments": "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"{0}\""
+        },
+        "linux": {
+            "launchers": [ "pwsh" ],
+            "arguments": "-NoLogo -NoProfile -NonInteractive -File \"{0}\""
+        },
+        "docker": "mcr.microsoft.com/powershell:7.5-ubuntu-22.04"
     },
     "batch": {
-        "launcher": "cmd",
         "extension": ".bat",
-        "arguments": "/C \"{0}\""
+        "lineEndings": "crlf",
+        "windows": { "launchers": [ "cmd.exe" ], "arguments": "/D /S /C \"\"{0}\"\"" },
+        "linux": {
+            "supported": false,
+            "unsupportedReason": "Pliki wsadowe uruchamia wyłącznie interpreter cmd.exe systemu Windows."
+        }
     },
     "nodejs": {
-        "launcher": "node",
         "extension": ".js",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "node" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "node", "nodejs" ], "arguments": "\"{0}\"" },
+        "docker": "node:22-bookworm-slim"
     },
     "bash": {
-        "launcher": "bash",
         "extension": ".sh",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "shell": "posix", "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "bash" ], "arguments": "\"{0}\"" },
+        "docker": "bash:5.2"
     },
     "zsh": {
-        "launcher": "zsh",
-        "extension": ".sh",
-        "arguments": "\"{0}\""
+        "extension": ".zsh",
+        "lineEndings": "lf",
+        "windows": {
+            "supported": false,
+            "unsupportedReason": "Zsh nie jest dostępny w Windows ani w Git for Windows. Wymaga instalacji WSL."
+        },
+        "linux": { "launchers": [ "zsh" ], "arguments": "\"{0}\"" },
+        "docker": "aidemon-langtest"
     },
     "perl": {
-        "launcher": "perl",
         "extension": ".pl",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "perl" ], "arguments": "\"{0}\"", "gitBashFallback": "usr/bin/perl.exe" },
+        "linux": { "launchers": [ "perl" ], "arguments": "\"{0}\"" },
+        "docker": "perl:5.40"
     },
     "ruby": {
-        "launcher": "ruby",
         "extension": ".rb",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "ruby" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "ruby" ], "arguments": "\"{0}\"" },
+        "docker": "ruby:3.4-slim"
     },
     "php": {
-        "launcher": "php",
         "extension": ".php",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "preamble": "<?php\n",
+        "windows": { "launchers": [ "php" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "php" ], "arguments": "\"{0}\"" },
+        "docker": "php:8.4-cli"
     },
     "groovy": {
-        "launcher": "groovy",
         "extension": ".groovy",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "groovy.bat", "groovy.cmd" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "groovy" ], "arguments": "\"{0}\"" },
+        "docker": "groovy:4.0-jdk21"
     },
     "lua": {
-        "launcher": "lua",
         "extension": ".lua",
-        "arguments": "\"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "lua", "lua54", "lua5.4", "lua53", "luajit" ], "arguments": "\"{0}\"" },
+        "linux": { "launchers": [ "lua", "lua5.4", "lua5.3" ], "arguments": "\"{0}\"" },
+        "docker": "nickblah/lua:5.4-alpine"
     },
     "go": {
-        "launcher": "go",
         "extension": ".go",
-        "arguments": "run \"{0}\""
+        "lineEndings": "lf",
+        "windows": { "launchers": [ "go" ], "arguments": "run \"{0}\"" },
+        "linux": { "launchers": [ "go" ], "arguments": "run \"{0}\"" },
+        "docker": "golang:1.24-bookworm"
     }
 }

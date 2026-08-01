@@ -1,4 +1,4 @@
-﻿using IoIntelligence.Client.Models.AIModel.Chat;
+﻿using AIDemon2.Services.ChatService;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -10,15 +10,14 @@ public class ChatService : IChatService
 	private readonly Func<string, IChatCompletionClient> _clientFactory;
 	private readonly ILogger<ChatService> _logger;
 
-	private IChatCompletionClient? _ioIntelligenceClient;
+	private IChatCompletionClient? _client;
 	private Settings? _settings;
 	private bool _systemMessagesRequired = true;
 
 	/// <param name="clientFactory">
-	/// Fabryka klienta zamiast <c>new IoIntelligenceClient(...)</c> w środku metody.
-	/// Typem jest własny <see cref="IChatCompletionClient"/>, a nie interfejs z pakietu:
-	/// ten drugi wystawia klasę ModelClient z niewirtualną metodą, więc nie dałoby się
-	/// podstawić odpowiedzi i każdy test wychodziłby w sieć.
+	/// Fabryka klienta zamiast tworzenia go w środku metody — dzięki temu test
+	/// podstawia własną implementację i nie wychodzi w sieć, a zmiana dostawcy
+	/// modeli (io.net -> OpenRouter) nie dotknęła tej klasy.
 	/// </param>
 	public ChatService(
 		IMessageRepository messageRepository,
@@ -50,7 +49,7 @@ public class ChatService : IChatService
 			throw new ChatServiceException(
 				"Nie wybrano modelu AI. Wskaż go w ustawieniach aplikacji.");
 
-		_ioIntelligenceClient = _clientFactory(_settings.ApiKey);
+		_client = _clientFactory(_settings.ApiKey);
 	}
 
 	public async Task<Message> SendMessageAsync(Message userMessage)
@@ -58,13 +57,13 @@ public class ChatService : IChatService
 		if (userMessage == null)
 			throw new ArgumentNullException(nameof(userMessage));
 
-		if (_ioIntelligenceClient == null)
+		if (_client == null)
 			await InitializeAsync();
 
 		var settings = _settings!;
 
 		// Przygotowanie wiadomości dla AI
-		var messages = new List<ChatCompletionMessage>();
+		var messages = new List<OpenRouterMessage>();
 
 		// Jeśli flaga _systemMessagesRequired jest ustawiona, dodaj dwie wiadomości systemowe
 		if (_systemMessagesRequired)
@@ -72,26 +71,16 @@ public class ChatService : IChatService
 			// Pusta instrukcja to nie to samo co brak instrukcji — wysyłanie
 			// wiadomości systemowej bez treści tylko zużywa tokeny.
 			if (!string.IsNullOrWhiteSpace(settings.InstructionPrompt))
-				messages.Add(new ChatCompletionMessage
-				{
-					Role = "system",
-					Content = settings.InstructionPrompt
-				});
-			messages.Add(new ChatCompletionMessage
-			{
-				Role = "system",
-				Content = "For script writing use programming language: " + settings.ProgrammingLanguage
-			});
+				messages.Add(OpenRouterMessage.System(settings.InstructionPrompt));
+			messages.Add(OpenRouterMessage.System(
+				"For script writing use programming language: " + settings.ProgrammingLanguage));
 			//_systemMessagesRequired = false; //odznaczyć jeśli chcemy aby instrukcje były wysyłane tylko raz
 		}
 
-		messages.Add(new ChatCompletionMessage
-		{
-			Role = "user",
-			Content = JsonSerializer.Serialize(new { text = userMessage.MessageContent })
-		});
+		messages.Add(OpenRouterMessage.User(
+			JsonSerializer.Serialize(new { text = userMessage.MessageContent })));
 
-		var chatRequest = new ChatCompletionRequest
+		var chatRequest = new OpenRouterChatRequest
 		{
 			Model = settings.AIModel!, // niepuste — sprawdzone w InitializeAsync
 			Messages = messages
@@ -102,12 +91,18 @@ public class ChatService : IChatService
 		{
 			responseText = await GetResponseFromAIAsync(chatRequest);
 		}
+		catch (ChatServiceException ex)
+		{
+			// Klient OpenRoutera zna powód (zły klucz, brak środków, limit zapytań)
+			// i ma gotowy komunikat. Owijanie go w ogólnik "sprawdź klucz i sieć"
+			// gubiłoby tę informację — logujemy i przepuszczamy bez zmian.
+			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
+			throw;
+		}
 		catch (Exception ex)
 		{
 			// Wcześniej ten blok połykał KAŻDY wyjątek i zapisywał komunikat błędu do bazy
 			// jako odpowiedź AI — nie do odróżnienia od prawdziwej, również w eksporcie.
-			// Teraz błąd jest logowany i przekazywany wyżej, a warstwa widoku decyduje,
-			// jak go pokazać użytkownikowi.
 			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
 
 			throw new ChatServiceException(
@@ -146,14 +141,17 @@ public class ChatService : IChatService
 	/// </summary>
 	public void ResetClient()
 	{
-		_ioIntelligenceClient = null;
+		// Każdy klient trzyma własny HttpClient; bez zwolnienia zmiana klucza API
+		// zostawiałaby po sobie gniazdo aż do zebrania przez GC.
+		(_client as IDisposable)?.Dispose();
+		_client = null;
 		_settings = null;
 		_systemMessagesRequired = true;
 	}
 
-	private async Task<string> GetResponseFromAIAsync(ChatCompletionRequest chatRequest)
+	private async Task<string> GetResponseFromAIAsync(OpenRouterChatRequest chatRequest)
 	{
-		var content = await _ioIntelligenceClient!.CompleteAsync(chatRequest);
+		var content = await _client!.CompleteAsync(chatRequest);
 		return SanitizeResponse(content);
 	}
 

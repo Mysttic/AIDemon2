@@ -31,7 +31,23 @@ A few notes on the tests:
   InMemory does not execute SQL, so it would not catch a broken query filter or a
   `DateTimeKind` lost on round-trip — exactly the defects these tests exist for.
 - Migration tests are slow (~20 s) because SQLCipher derives a key with PBKDF2.
-- Tests touching the code runner use `batch`, the only interpreter guaranteed on CI.
+- The OpenRouter client is tested against a fake `HttpMessageHandler`, so no test needs
+  an API key or makes a paid request.
+- `CodeRunnerIntegrationTests` starts real interpreters. Languages missing on the machine
+  are skipped rather than failed — the set installed on a developer box and on CI differs.
+
+## Checking the script languages
+
+Interpreter configuration lives in `AIDemon2/Properties/ProgrammingLanguages.json` and is
+verified end to end, because a wrong launcher shows up only when a user tries to run code:
+
+```bash
+docker build -t aidemon-langcheck tools/language-check
+docker run --rm -v "$(pwd):/repo:ro" aidemon-langcheck bash /repo/tools/language-check/run.sh
+```
+
+The container covers the Linux side (10 languages). PowerShell and batch are Windows-only
+and are covered by the integration tests instead.
 
 ## Architecture
 
@@ -131,7 +147,7 @@ pre-release with a note explaining the problem.
 
 - `Domain/` — EF Core context, entities, repositories. `DatabaseKeyProvider` owns
   the SQLCipher key; `DatabaseLocation` owns where the database lives.
-- `Services/` — chat (io.net), code runner, dialogs, export, logging.
+- `Services/` — chat (OpenRouter), model catalog, code runner, dialogs, export, logging.
 - `ViewModels/` + `Views/` — Avalonia MVVM, using CommunityToolkit.Mvvm only.
 
 Invariants worth knowing before changing things:

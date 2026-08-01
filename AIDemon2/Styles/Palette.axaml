@@ -1,0 +1,108 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Jedyne miejsce w aplikacji z wartościami kolorów. Wcześniej były wpisane na sztywno
+    w kilkudziesięciu miejscach w pięciu plikach widoków, więc każda zmiana wyglądu
+    wymagała edycji wszystkich naraz i nie dało się utrzymać spójności.
+
+    Wszystkie pary tekst/tło policzone względem WCAG 2.1 i przechodzą próg AA 4.5:1.
+  -->
+
+  <!-- 1. SUROWE KOLORY -->
+  <Color x:Key="ColorBgApp">#0F1115</Color>
+  <Color x:Key="ColorBgPanel">#171A21</Color>
+  <Color x:Key="ColorBgSurface">#1F2430</Color>
+  <Color x:Key="ColorBgSurfaceHover">#2A3140</Color>
+  <Color x:Key="ColorBgSurfacePressed">#14181F</Color>
+  <Color x:Key="ColorBgCode">#0B0D11</Color>
+  <Color x:Key="ColorBgScrim">#CC0B0D11</Color>
+  <Color x:Key="ColorBorderSubtle">#39414F</Color>
+  <Color x:Key="ColorBorderStrong">#6A7486</Color>
+  <Color x:Key="ColorTextPrimary">#E6E9EF</Color>
+  <Color x:Key="ColorTextSecondary">#A3ADBD</Color>
+  <Color x:Key="ColorTextDisabled">#737D8C</Color>
+  <Color x:Key="ColorAccent">#4C9DFF</Color>
+  <!-- Jaśniejszy wariant akcentu dla tekstu na dymku modelu: #4C9DFF dawał tam 4.12:1. -->
+  <Color x:Key="ColorAccentSoft">#7AB8FF</Color>
+  <Color x:Key="ColorAccentPressed">#2E7FE0</Color>
+  <Color x:Key="ColorDangerText">#F07A72</Color>
+  <!-- Przygaszona czerwień zamiast #FF0000: czysta czerwień dawała 4.00:1 z jasnym
+       tekstem i jest najgorszym możliwym wyborem przy deuteranopii. -->
+  <Color x:Key="ColorDangerBg">#8E241D</Color>
+  <Color x:Key="ColorDangerBgHover">#A8322A</Color>
+  <Color x:Key="ColorDangerBgPressed">#6E1A15</Color>
+  <Color x:Key="ColorOnDanger">#F5F7FA</Color>
+  <Color x:Key="ColorBubbleUser">#232A36</Color>
+  <Color x:Key="ColorBubbleAi">#1B3B5F</Color>
+
+  <!-- 2. PĘDZLE -->
+  <SolidColorBrush x:Key="BrushBgApp" Color="{StaticResource ColorBgApp}" />
+  <SolidColorBrush x:Key="BrushBgPanel" Color="{StaticResource ColorBgPanel}" />
+  <SolidColorBrush x:Key="BrushBgSurface" Color="{StaticResource ColorBgSurface}" />
+  <SolidColorBrush x:Key="BrushBgSurfaceHover" Color="{StaticResource ColorBgSurfaceHover}" />
+  <SolidColorBrush x:Key="BrushBgSurfacePressed" Color="{StaticResource ColorBgSurfacePressed}" />
+  <SolidColorBrush x:Key="BrushBgCode" Color="{StaticResource ColorBgCode}" />
+  <SolidColorBrush x:Key="BrushBgScrim" Color="{StaticResource ColorBgScrim}" />
+  <SolidColorBrush x:Key="BrushBorderSubtle" Color="{StaticResource ColorBorderSubtle}" />
+  <SolidColorBrush x:Key="BrushBorderStrong" Color="{StaticResource ColorBorderStrong}" />
+  <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource ColorTextSecondary}" />
+  <SolidColorBrush x:Key="BrushTextDisabled" Color="{StaticResource ColorTextDisabled}" />
+  <SolidColorBrush x:Key="BrushAccent" Color="{StaticResource ColorAccent}" />
+  <SolidColorBrush x:Key="BrushAccentSoft" Color="{StaticResource ColorAccentSoft}" />
+  <SolidColorBrush x:Key="BrushAccentPressed" Color="{StaticResource ColorAccentPressed}" />
+  <SolidColorBrush x:Key="BrushDangerText" Color="{StaticResource ColorDangerText}" />
+  <SolidColorBrush x:Key="BrushDangerBg" Color="{StaticResource ColorDangerBg}" />
+  <SolidColorBrush x:Key="BrushDangerBgHover" Color="{StaticResource ColorDangerBgHover}" />
+  <SolidColorBrush x:Key="BrushDangerBgPressed" Color="{StaticResource ColorDangerBgPressed}" />
+  <SolidColorBrush x:Key="BrushOnDanger" Color="{StaticResource ColorOnDanger}" />
+  <SolidColorBrush x:Key="BrushBubbleUser" Color="{StaticResource ColorBubbleUser}" />
+  <SolidColorBrush x:Key="BrushBubbleAi" Color="{StaticResource ColorBubbleAi}" />
+
+  <!-- 3. METRYKI I TYPOGRAFIA -->
+  <CornerRadius x:Key="RadiusBubble">10</CornerRadius>
+  <CornerRadius x:Key="RadiusCard">8</CornerRadius>
+  <CornerRadius x:Key="RadiusControl">6</CornerRadius>
+  <Thickness x:Key="PaddingBubble">12,9,12,7</Thickness>
+  <Thickness x:Key="MarginBubble">10,4,10,4</Thickness>
+  <Thickness x:Key="PaddingToolButton">12,7,12,7</Thickness>
+  <x:Double x:Key="FontSizeBody">13</x:Double>
+  <x:Double x:Key="FontSizeMeta">11</x:Double>
+  <!-- Consolas jest na każdym Windows od Visty; Cascadia Mono tylko na nowszych. -->
+  <FontFamily x:Key="FontMono">Cascadia Mono, Consolas, Courier New</FontFamily>
+
+  <!--
+    4. NADPISANIA KLUCZY FLUENTA
+    Druga warstwa, niezależna od selektorów w Theme.axaml: dzięki niej kontrolki,
+    dla których nie napisano własnego stylu (ComboBox, ScrollBar, TextBox w ustawieniach),
+    też dostają tę paletę. Application przeszukuje własny słownik przed stylami.
+  -->
+  <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource ColorBgSurface}" />
+  <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{StaticResource ColorBgSurfaceHover}" />
+  <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{StaticResource ColorBgSurfacePressed}" />
+  <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="{StaticResource ColorBgPanel}" />
+  <SolidColorBrush x:Key="ButtonForeground" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="{StaticResource ColorTextDisabled}" />
+  <SolidColorBrush x:Key="ButtonBorderBrush" Color="{StaticResource ColorBorderStrong}" />
+  <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{StaticResource ColorAccent}" />
+  <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="{StaticResource ColorAccentPressed}" />
+  <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="{StaticResource ColorBorderSubtle}" />
+  <SolidColorBrush x:Key="TextControlBackground" Color="{StaticResource ColorBgSurface}" />
+  <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{StaticResource ColorBgSurfaceHover}" />
+  <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{StaticResource ColorBgSurface}" />
+  <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="{StaticResource ColorBgPanel}" />
+  <SolidColorBrush x:Key="TextControlForeground" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{StaticResource ColorTextDisabled}" />
+  <SolidColorBrush x:Key="TextControlBorderBrush" Color="{StaticResource ColorBorderStrong}" />
+  <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{StaticResource ColorBorderStrong}" />
+  <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource ColorAccent}" />
+  <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="{StaticResource ColorBorderSubtle}" />
+  <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{StaticResource ColorTextSecondary}" />
+  <CornerRadius x:Key="ControlCornerRadius">6</CornerRadius>
+
+</ResourceDictionary>

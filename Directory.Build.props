@@ -24,11 +24,8 @@
     <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
   </PropertyGroup>
 
-  <!-- Wapproj nie obsługuje centralnego zarządzania wersjami: jego
-       PackageReference na Microsoft.Windows.SDK.BuildTools ma wersję wprost,
-       co przy włączonym CPM jest błędem NU1008. -->
-  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.wapproj'">
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-  </PropertyGroup>
+  <!-- Centralne zarządzanie wersjami pakietów jest włączane w Directory.Packages.props,
+       razem z wyjątkiem dla wapproj. Ustawianie tego tutaj nie działa: tamten plik
+       jest importowany później i nadpisuje wartość stąd. -->
 
 </Project>

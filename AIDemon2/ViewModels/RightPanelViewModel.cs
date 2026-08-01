@@ -87,10 +87,21 @@ public partial class RightPanelViewModel : ObservableObject
 
 			ConsoleOutput = string.Empty;
 
-			await _codeRunnerService.RunCodeAsync(
-				MessageContent,
-				SelectedMessage.ProgrammingLanguage,
-				output => _uiPost(() => ConsoleOutput += output));
+			try
+			{
+				await _codeRunnerService.RunCodeAsync(
+					MessageContent,
+					SelectedMessage.ProgrammingLanguage,
+					output => _uiPost(() => ConsoleOutput += output));
+			}
+			catch (NotSupportedException ex)
+			{
+				// Brakujący interpreter albo język niedostępny na tym systemie.
+				// Bez tego bloku wyjątek wychodzi z AsyncRelayCommand na pętlę
+				// komunikatów, a użytkownik — który przed chwilą potwierdził groźny
+				// dialog — dostaje pustą konsolę albo zamknięcie aplikacji.
+				_uiPost(() => ConsoleOutput = ex.Message);
+			}
 		}
 	}
 

@@ -47,9 +47,15 @@ public sealed class FakeCodeRunnerService : ICodeRunnerService
 	public List<(string Kod, string Jezyk)> Uruchomienia { get; } = new();
 	public string Wyjscie { get; set; } = "wynik dzialania\n";
 
+	/// <summary>Gdy ustawione, RunCodeAsync rzuca zamiast wypisywać wyjście.</summary>
+	public Exception? Wyjatek { get; set; }
+
 	public Task RunCodeAsync(string code, string language, Action<string> onOutputReceived,
 		CancellationToken cancellationToken = default)
 	{
+		if (Wyjatek is not null)
+			throw Wyjatek;
+
 		Uruchomienia.Add((code, language));
 		onOutputReceived(Wyjscie);
 		return Task.CompletedTask;

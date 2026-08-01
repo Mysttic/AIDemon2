@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
@@ -8,7 +8,7 @@
 	<Grid x:Name="MainGrid" RowDefinitions="*" ColumnDefinitions="Auto,*,Auto">
 
 		<!-- LEWA KOLUMNA -->
-		<Border Grid.Column="0" Background="#333333">
+		<Border Grid.Column="0" Background="{StaticResource BrushBgPanel}">
 			<Grid x:Name="LeftPanelGrid">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
@@ -17,6 +17,7 @@
 
 				<!-- Rząd 0: Przycisk zwijania -->
 				<Button x:Name="ToggleLeftPanelButton"
+						Classes="paneltoggle"
 						HorizontalContentAlignment="Left"
 						HorizontalAlignment="Stretch"
 						Grid.Row="0"
@@ -32,7 +33,7 @@
 		</Border>
 
 		<!-- ŚRODKOWA KOLUMNA -->
-		<Border Grid.Column="1" Background="#000000">
+		<Border Grid.Column="1" Background="{StaticResource BrushBgApp}">
 			<Grid RowDefinitions="*,Auto,Auto">
 				<views:MainChatView
 					Grid.Row="0"/>
@@ -48,26 +49,21 @@
 
 				<Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="5">
 					<TextBox Grid.Column="0"
-							 Background="DimGray"
 							 AcceptsReturn="True"
 							 TextWrapping="Wrap"
 							 MinHeight="50"
 							 MaxHeight="150"
 							 Watermark="Enter your prompt..."
 							 Text="{Binding NewMessageText, Mode=TwoWay}"
-							 Padding="10,5,10,35">
-						<TextBox.Styles>
-							<Style Selector="ScrollViewer">
-								<Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-							</Style>
-						</TextBox.Styles>
-					</TextBox>
+							 Padding="10,5,10,35" />
 
 					<Button Grid.Column="0"
 							Width="40"
 							Margin="0,0,2,2"
 							HorizontalAlignment="Right"
 							VerticalAlignment="Bottom"
+							Classes="tool"
+							ToolTip.Tip="Send message"
 							Command="{Binding SendMessageCommand}"
 							IsEnabled="{Binding NewMessageText, Converter={StaticResource StringNotEmptyConverter}}">
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -81,7 +77,7 @@
 		</Border>
 
 		<!-- PRAWA KOLUMNA -->
-		<Border Grid.Column="2" Background="#80BFFF">
+		<Border Grid.Column="2" Background="{StaticResource BrushBgPanel}">
 			<Grid x:Name="RightPanelGrid">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
@@ -90,7 +86,7 @@
 
 				<!-- Przycisk zwijania -->
 				<Button x:Name="ToggleRightPanelButton"
-						Background="#006080"
+						Classes="paneltoggle"
                         Grid.Row="0"
                         Content="&lt;&lt;"
 						HorizontalContentAlignment="Right"

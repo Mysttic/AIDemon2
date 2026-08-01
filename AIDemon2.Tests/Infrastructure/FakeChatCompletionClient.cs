@@ -1,20 +1,20 @@
-﻿using IoIntelligence.Client.Models.AIModel.Chat;
+﻿using AIDemon2.Services.ChatService;
 
 namespace AIDemon2.Tests.Infrastructure;
 
 /// <summary>Atrapa klienta AI — zapamiętuje żądania i oddaje zaplanowaną odpowiedź.</summary>
 public sealed class FakeChatCompletionClient : IChatCompletionClient
 {
-	private readonly Func<ChatCompletionRequest, string> _odpowiedz;
+	private readonly Func<OpenRouterChatRequest, string> _odpowiedz;
 
-	public List<ChatCompletionRequest> Zadania { get; } = new();
+	public List<OpenRouterChatRequest> Zadania { get; } = new();
 
 	public FakeChatCompletionClient(string odpowiedz = "odpowiedz modelu")
 		: this(_ => odpowiedz)
 	{
 	}
 
-	public FakeChatCompletionClient(Func<ChatCompletionRequest, string> odpowiedz)
+	public FakeChatCompletionClient(Func<OpenRouterChatRequest, string> odpowiedz)
 	{
 		_odpowiedz = odpowiedz;
 	}
@@ -22,7 +22,8 @@ public sealed class FakeChatCompletionClient : IChatCompletionClient
 	public static FakeChatCompletionClient Rzucajacy(Exception wyjatek) =>
 		new(_ => throw wyjatek);
 
-	public Task<string> CompleteAsync(ChatCompletionRequest request)
+	public Task<string> CompleteAsync(OpenRouterChatRequest request,
+		CancellationToken cancellationToken = default)
 	{
 		Zadania.Add(request);
 		return Task.FromResult(_odpowiedz(request));

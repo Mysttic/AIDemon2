@@ -54,7 +54,6 @@
     <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\AIDemon2\AIDemon2.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
@@ -74,6 +73,10 @@
            -p:PackageCertificateKeyFile=<sciezka.pfx>
            -p:PackageCertificatePassword=<haslo>
          Bez tych parametrów powstaje pakiet niepodpisany, a build nie przerywa się.
+         Domyślne False poniżej działa tylko dlatego, że wyżej NIE ma bezwarunkowego
+         <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled> — było, i przez to
+         warunek nigdy nie zachodził, a build bez certyfikatu padał z APPX0101
+         mimo obsłużonej w release.yml ścieżki "brak sekretu -> pakiet niepodpisany".
          Subject certyfikatu musi brzmieć dokładnie CN=7D16EB93-BD30-4D8E-A3B6-8FDB3CE89F4A
          (Publisher z Package.appxmanifest), inaczej signtool odrzuci pakiet. -->
     <AppxPackageSigningEnabled Condition="'$(AppxPackageSigningEnabled)' == ''">False</AppxPackageSigningEnabled>
