@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
@@ -13,11 +14,17 @@ public class DialogService : IDialogService
 		_mainWindow = mainWindow;
 	}
 
+	/// <summary>
+	/// Okno właściciela było przekazywane do dialogów bez sprawdzenia, więc
+	/// wywołanie przed <see cref="Initialize"/> kończyło się NullReferenceException
+	/// gdzieś w środku biblioteki okien.
+	/// </summary>
+	private Window RequireWindow() =>
+		_mainWindow ?? throw new InvalidOperationException(
+			"DialogService nie został zainicjalizowany oknem głównym.");
+
 	public async Task<bool> ShowConfirmationDialog(string title, string message, bool oneDecision = false)
 	{
-		if (_mainWindow == null)
-			throw new InvalidOperationException("DialogService is not initialized with a main window.");
-
 		var messageBox = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
 		{
 			ContentTitle = title,
@@ -26,7 +33,7 @@ public class DialogService : IDialogService
 			Icon = Icon.None
 		});
 
-		var result = await messageBox.ShowAsPopupAsync(_mainWindow);
+		var result = await messageBox.ShowAsPopupAsync(RequireWindow());
 		return result == ButtonResult.Yes;
 	}
 
@@ -45,37 +52,41 @@ public class DialogService : IDialogService
 			Icon = Icon.Question
 		});
 
-		var result = await messageBox.ShowAsPopupAsync(_mainWindow);
-		return result == "Anuluj" ? null : result.ToLower();
+		var result = await messageBox.ShowAsPopupAsync(RequireWindow());
+		// Zamknięcie okna krzyżykiem oddaje pusty ciąg, nie "Anuluj".
+		return string.IsNullOrEmpty(result) || result == "Anuluj" ? null : result.ToLower();
 	}
 
-	public async Task<string?> SelectMessagesExportFilePath(string format)
-	{
-		return await SelectFilePath("messages", format, new List<FileDialogFilter>
+	public Task<string?> SelectMessagesExportFilePath(string format) =>
+		SelectFilePath("messages", format, new[]
 		{
-			new FileDialogFilter { Name = "JSON Files", Extensions = { "json" } },
-			new FileDialogFilter { Name = "CSV Files", Extensions = { "csv" } }
+			new FilePickerFileType("Pliki JSON") { Patterns = new[] { "*.json" } },
+			new FilePickerFileType("Pliki CSV") { Patterns = new[] { "*.csv" } }
 		});
-	}
 
-	public async Task<string?> SelectMessageScriptExportFilePath(string language, string format)
-	{
-		return await SelectFilePath($"{language} script {DateTime.Now.ToShortDateString()}", format, new List<FileDialogFilter>
+	public Task<string?> SelectMessageScriptExportFilePath(string language, string format) =>
+		SelectFilePath($"{language} script {DateTime.Now.ToShortDateString()}", format, new[]
 		{
-			new FileDialogFilter { Name = $"Plik {language}", Extensions = { format } }
+			new FilePickerFileType($"Plik {language}") { Patterns = new[] { $"*.{format}" } }
 		});
-	}
 
-	private async Task<string?> SelectFilePath(string initialName, string format, List<FileDialogFilter> filters)
+	/// <summary>
+	/// SaveFileDialog i FileDialogFilter są w Avalonii 11 przestarzałe na rzecz
+	/// StorageProvider. Stare API oddawało ścieżkę wprost; nowe zwraca
+	/// <see cref="IStorageFile"/>, z którego ścieżkę lokalną trzeba wyłuskać —
+	/// dla dostawcy plikowego na Windows zawsze się to udaje.
+	/// </summary>
+	private async Task<string?> SelectFilePath(string initialName, string format,
+		IReadOnlyList<FilePickerFileType> fileTypes)
 	{
-		var saveFileDialog = new SaveFileDialog
+		var file = await RequireWindow().StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
 		{
 			Title = "Zapisz wiadomości",
-			Filters = filters,
+			FileTypeChoices = fileTypes,
 			DefaultExtension = format,
-			InitialFileName = $"{initialName}.{format}"
-		};
+			SuggestedFileName = $"{initialName}.{format}"
+		});
 
-		return await saveFileDialog.ShowAsync(_mainWindow);
+		return file?.TryGetLocalPath();
 	}
 }

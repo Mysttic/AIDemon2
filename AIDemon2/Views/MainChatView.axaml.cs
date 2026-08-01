@@ -1,22 +1,19 @@
-using AIDemon2.ViewModels;
+﻿using AIDemon2.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
-using PropertyChanged;
 
 namespace AIDemon2.Views;
 
-[DoNotNotify]
 public partial class MainChatView : UserControl
 {
 	public MainChatView()
 	{
 		InitializeComponent();
-		var services = (IServiceProvider)Application.Current!.Resources["Services"];
-		DataContext = services.GetRequiredService<MainChatViewModel>();
+		DataContext = ViewServices.Get<MainChatViewModel>();
 		if (DataContext is MainChatViewModel vm)
 			vm.ScrollRequested += ScrollToBottom;
 		this.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);

@@ -60,22 +60,6 @@ namespace AIDemon2.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to deepseek-ai/DeepSeek-R1;deepseek-ai/DeepSeek-R1-Distill-Llama-70B;deepseek-ai/DeepSeek-R1-Distill-Qwen-32B;meta-llama/Llama-3.3-70B-Instruct;databricks/dbrx-instruct;Qwen/QwQ-32B-Preview;mistralai/Ministral-8B-Instruct-2410;deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B;deepseek-ai/DeepSeek-R1-Distill-Qwen-7B;deepseek-ai/DeepSeek-R1-Distill-Qwen-14B;deepseek-ai/DeepSeek-R1-Distill-Llama-8B;netease-youdao/Confucius-o1-14B;nvidia/AceMath-7B-Instruct;google/gemma-2-9b-it;neuralmagic/Llama-3.1-Nemotron-70B-Instruct- [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string AIModels {
-            get {
-                return ResourceManager.GetString("AIModels", resourceCulture);
-            }
-        }
         
-        /// <summary>
-        ///   Looks up a localized string similar to P@ssword1.
-        /// </summary>
-        internal static string SQLiteDBPass {
-            get {
-                return ResourceManager.GetString("SQLiteDBPass", resourceCulture);
-            }
-        }
     }
 }

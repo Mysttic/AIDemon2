@@ -12,7 +12,7 @@ public class StringNotEmptyConverter : IValueConverter
 		return !string.IsNullOrWhiteSpace(value as string);
 	}
 
-	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
 		throw new NotSupportedException();
 	}

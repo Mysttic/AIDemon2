@@ -1,15 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DynamicData;
-using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.Reactive;
 
 namespace AIDemon2.ViewModels;
 
 public partial class LeftPanelViewModel : ObservableObject
 {
-	public ObservableCollection<Message> FavouriteMessages { get; set; } = new ObservableCollection<Message>();
+	// { get; } zamiast { get; set; }: kolekcja jest tylko mutowana, nigdy podmieniana,
+	// a o zmianach zawartości informuje sama ObservableCollection.
+	public ObservableCollection<Message> FavouriteMessages { get; } = new();
 
 	private readonly IMessageRepository _messageRepository;
 	private readonly IDialogService _dialogService;
@@ -23,9 +22,7 @@ public partial class LeftPanelViewModel : ObservableObject
 		set => SetProperty(ref _isSettingsVisible, value);
 	}
 
-	public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; }
-
-	public event Action OnCleanup;
+	public event Action? OnCleanup;
 
 	public LeftPanelViewModel(
 		IMessageRepository messageRepository,
@@ -35,20 +32,32 @@ public partial class LeftPanelViewModel : ObservableObject
 		_messageRepository = messageRepository;
 		_dialogService = dialogService;
 		_messageExportService = messageExportService;
-		ShowSettingsCommand = ReactiveCommand.Create(() =>
-		{
-			IsSettingsVisible = true;
-		});
-		_ = LoadFavouriteMessages();
 	}
+
+	/// <summary>
+	/// Było ReactiveCommand — jedyny użytek z ReactiveUI w całym projekcie.
+	/// CommunityToolkit generuje z tej metody właściwość ShowSettingsCommand,
+	/// więc binding w LeftPanelView.axaml pozostaje bez zmian.
+	/// </summary>
+	[RelayCommand]
+	private void ShowSettings()
+	{
+		IsSettingsVisible = true;
+	}
+
+	/// <summary>Wczytanie danych wyniesione z konstruktora — patrz MainChatViewModel.</summary>
+	public Task InitializeAsync() => LoadFavouriteMessages();
 
 	public async Task LoadFavouriteMessages()
 	{
+		// ContinueWith bez opcji planisty gubił kontekst i połykał wyjątki
+		// (task.Result rzuca AggregateException wewnątrz kontynuacji).
+		var favourites = await _messageRepository.GetAllFavouriteAsync();
 		FavouriteMessages.Clear();
-		await _messageRepository.GetAllFavouriteAsync().ContinueWith(task =>
-		{
-			FavouriteMessages.AddRange(task.Result);
-		});
+		// Pętla zamiast AddRange: to była metoda rozszerzająca z DynamicData,
+		// pakietu wciąganego wyłącznie przez ReactiveUI.
+		foreach (var favourite in favourites)
+			FavouriteMessages.Add(favourite);
 	}
 
 	[RelayCommand]

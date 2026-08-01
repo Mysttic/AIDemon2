@@ -1,4 +1,5 @@
-﻿using AIDemon2.Properties;
+﻿using System.Collections.ObjectModel;
+using AIDemon2.Services.ModelCatalog;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -8,23 +9,29 @@ public partial class SettingsViewModel : ObservableObject
 {
 	private readonly ISettingsRepository _settingsRepository;
 	private readonly IChatService _chatService;
+	private readonly IModelCatalog _modelCatalog;
 
 	public event Action? CloseRequested;
 
-	public SettingsViewModel(ISettingsRepository settingsRepository, IChatService chatService)
+	public SettingsViewModel(ISettingsRepository settingsRepository, IChatService chatService,
+		IModelCatalog modelCatalog)
 	{
 		_settingsRepository = settingsRepository;
 		_chatService = chatService;
-		LoadSettingsAsync();
+		_modelCatalog = modelCatalog;
 	}
 
 	[ObservableProperty]
-	private string apiKey;
+	private string apiKey = string.Empty;
 
 	[ObservableProperty]
-	private string instructionPrompt;
+	private string instructionPrompt = string.Empty;
 
-	public List<string> AIModelsList { get; private set; } = Resources.AIModels.Split(';').ToList();
+	/// <summary>
+	/// Lista modeli pobierana z OpenRoutera. Kolekcja obserwowalna, bo wypełnia się
+	/// asynchronicznie — okno otwiera się od razu, lista dochodzi po chwili.
+	/// </summary>
+	public ObservableCollection<string> AIModelsList { get; } = new();
 
 	[ObservableProperty]
 	private string? aIModel;
@@ -34,16 +41,37 @@ public partial class SettingsViewModel : ObservableObject
 	[ObservableProperty]
 	private string? programmingLanguage;
 
-	private async void LoadSettingsAsync()
+	/// <summary>
+	/// Było "async void" wołane z konstruktora: wyjątek z tej metody nie miał gdzie
+	/// wypłynąć i ubijał proces bez śladu.
+	/// </summary>
+	public async Task InitializeAsync()
 	{
 		var settings = await _settingsRepository.Get();
+		string? zapisanyModel = settings?.AIModel;
+
+		// Zapisany model trafia na listę PRZED przypisaniem zaznaczenia, bo ComboBox
+		// z pustym ItemsSource odrzuca SelectedItem i nie przywraca go później.
+		// Dotyczy to również modelu wycofanego przez dostawcę — bez tego pole byłoby
+		// puste, a zapis ustawień po cichu skasowałby wybór użytkownika.
+		if (!string.IsNullOrWhiteSpace(zapisanyModel))
+			AIModelsList.Add(zapisanyModel);
+
+		// Pola formularza wypełniamy z bazy ZANIM pójdziemy po listę modeli do sieci.
+		// Odwrotna kolejność otwierała okno z pustym kluczem API i pustym promptem na
+		// czas trwania zapytania — a kliknięcie "Save" w tym oknie zapisywało te pustki
+		// do bazy, kasując użytkownikowi klucz.
 		if (settings != null)
 		{
-			ApiKey = settings.ApiKey;
-			InstructionPrompt = settings.InstructionPrompt;
-			AIModel = settings.AIModel;
+			ApiKey = settings.ApiKey ?? string.Empty;
+			InstructionPrompt = settings.InstructionPrompt ?? string.Empty;
+			AIModel = zapisanyModel;
 			ProgrammingLanguage = settings.ProgrammingLanguage;
 		}
+
+		foreach (var model in await _modelCatalog.GetModelsAsync())
+			if (!AIModelsList.Contains(model))
+				AIModelsList.Add(model);
 	}
 
 	[RelayCommand]
@@ -52,7 +80,10 @@ public partial class SettingsViewModel : ObservableObject
 		var settings = await _settingsRepository.Get();
 		if (settings != null)
 		{
-			if (settings.InstructionPrompt != InstructionPrompt ||
+			// Klucz API MUSI być na tej liście: bez tego zapisanie nowego klucza
+			// nie odtwarzało klienta i aplikacja do restartu używała starego.
+			if (settings.ApiKey != ApiKey ||
+				settings.InstructionPrompt != InstructionPrompt ||
 				settings.AIModel != AIModel ||
 				settings.ProgrammingLanguage != ProgrammingLanguage)
 				_chatService.ResetClient();

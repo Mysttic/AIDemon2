@@ -1,0 +1,175 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Style stanow. Avalonia to NIE WPF: nie ma <Trigger>, sa selektory z pseudoklasami
+    (:pointerover, :pressed, :disabled) i skladnia /template/ do siegania do wnetrza
+    szablonu kontrolki.
+
+    Powod, dla ktorego stany musza byc tutaj, a nie jako Background na samym przycisku:
+    Fluent ustawia tlo na ContentPresenter#PART_ContentPresenter i to bije lokalna
+    wartosc Background. Wpisany na sztywno kolor przycisku znikal wiec przy najechaniu
+    myszka, a jasny tekst ladowal na jasnym tle - kontrast spadal z 9.7:1 do 1.8:1
+    i ikony stawaly sie praktycznie niewidoczne.
+  -->
+
+  <!--
+    Paleta musi byc dolaczona TUTAJ, nie tylko w Application.Resources.
+    Application.Styles jest ewaluowane zanim powstana zasoby aplikacji, wiec
+    StaticResource w stylach nie mialoby czego znalezc i aplikacja wywracala sie
+    przy starcie z "Static resource 'RadiusBubble' not found". Slownik zawiera same
+    definicje, wiec dolaczenie go w dwoch zakresach nic nie kosztuje.
+  -->
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://AIDemon2/Styles/Palette.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- DYMEK CZATU -->
+  <Style Selector="Border.bubble">
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusBubble}" />
+    <Setter Property="Padding" Value="{StaticResource PaddingBubble}" />
+    <Setter Property="Margin" Value="{StaticResource MarginBubble}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}" />
+  </Style>
+  <Style Selector="Border.bubble.user">
+    <Setter Property="Background" Value="{StaticResource BrushBubbleUser}" />
+  </Style>
+  <Style Selector="Border.bubble.ai">
+    <Setter Property="Background" Value="{StaticResource BrushBubbleAi}" />
+  </Style>
+
+  <!-- Selektor globalny, nie tylko wewnatrz dymka: tej samej klasy uzywa karta
+       ulubionej wiadomosci w lewym panelu, a zawezony selektor zabieral jej
+       zawijanie tekstu. -->
+  <Style Selector="TextBlock.body">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="LineHeight" Value="19" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <Style Selector="TextBlock.meta">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+    <Setter Property="FontFamily" Value="{StaticResource FontMono}" />
+  </Style>
+
+  <Style Selector="TextBlock.model">
+    <Setter Property="Foreground" Value="{StaticResource BrushAccentSoft}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="0.4" />
+  </Style>
+
+  <!-- KOD I KONSOLA -->
+  <Style Selector="TextBox.code">
+    <Setter Property="FontFamily" Value="{StaticResource FontMono}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Background" Value="{StaticResource BrushBgCode}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+    <Setter Property="AcceptsReturn" Value="True" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+  </Style>
+  <Style Selector="TextBox.code /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{StaticResource BrushBgCode}" />
+  </Style>
+
+  <!-- PRZYCISK NARZEDZIOWY: hover / pressed / disabled -->
+  <Style Selector="Button.tool">
+    <Setter Property="Padding" Value="{StaticResource PaddingToolButton}" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.tool /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurface}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+  </Style>
+  <Style Selector="Button.tool:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurfaceHover}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+  </Style>
+  <Style Selector="Button.tool:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurfacePressed}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentPressed}" />
+  </Style>
+  <Style Selector="Button.tool:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgPanel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextDisabled}" />
+  </Style>
+
+  <!-- AKCJA NISZCZACA -->
+  <Style Selector="Button.danger /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushDangerBg}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushDangerText}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushOnDanger}" />
+  </Style>
+  <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushDangerBgHover}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushOnDanger}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushOnDanger}" />
+  </Style>
+  <Style Selector="Button.danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushDangerBgPressed}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushOnDanger}" />
+  </Style>
+  <Style Selector="Button.danger:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgPanel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextDisabled}" />
+  </Style>
+
+  <!-- PASEK ZWIJANIA PANELU -->
+  <Style Selector="Button.paneltoggle">
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="FontFamily" Value="{StaticResource FontMono}" />
+  </Style>
+  <Style Selector="Button.paneltoggle /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgPanel}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+  </Style>
+  <Style Selector="Button.paneltoggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurfaceHover}" />
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+  </Style>
+  <Style Selector="Button.paneltoggle:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurfacePressed}" />
+  </Style>
+
+  <!-- KARTA ULUBIONEJ WIADOMOSCI -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurface}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}" />
+    <Setter Property="Padding" Value="10,8,10,8" />
+    <Setter Property="Margin" Value="0,0,0,6" />
+  </Style>
+
+  <Style Selector="TextBlock.formlabel">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="ListBoxItem">
+    <Setter Property="Padding" Value="6,4,6,4" />
+  </Style>
+  <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource BrushBgSurfaceHover}" />
+  </Style>
+
+</Styles>

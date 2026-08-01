@@ -92,7 +92,7 @@ public class MessageExportService : IMessageExportService
 	{
 		var sb = new StringBuilder();
 
-		sb.AppendLine($"# {message.ProgrammingLanguage.ToUpper()} Script");
+		sb.AppendLine($"# {message.ProgrammingLanguage?.ToUpper() ?? "TEXT"} Script");
 		sb.AppendLine($"# Exported at {DateTime.Now}");
 		sb.AppendLine("# ---------------------------");
 

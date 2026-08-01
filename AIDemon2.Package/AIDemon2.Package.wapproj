@@ -54,17 +54,32 @@
     <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\AIDemon2\AIDemon2.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <!-- False: numer wersji ma pochodzić wyłącznie z pliku VERSION, a nie zmieniać się
+         przy każdym buildzie. Bez tego dwa przebiegi tego samego commita dają różne
+         wersje pakietu, więc wydanie przestaje być powtarzalne. -->
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
-    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
-    <PackageCertificateThumbprint>28F0C992246073E763233CFCE14D4A0C939FFA31</PackageCertificateThumbprint>
+    <!-- Certyfikat NIE jest przypisany na stałe. Odcisk palca wskazywał na certyfikat
+         obecny wyłącznie w magazynie jednej maszyny deweloperskiej, więc build gdziekolwiek
+         indziej (w tym na CI) kończył się błędem o nieznalezionym certyfikacie.
+         Podpisywanie steruje się z linii poleceń:
+           -p:AppxPackageSigningEnabled=true
+           -p:PackageCertificateKeyFile=<sciezka.pfx>
+           -p:PackageCertificatePassword=<haslo>
+         Bez tych parametrów powstaje pakiet niepodpisany, a build nie przerywa się.
+         Domyślne False poniżej działa tylko dlatego, że wyżej NIE ma bezwarunkowego
+         <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled> — było, i przez to
+         warunek nigdy nie zachodził, a build bez certyfikatu padał z APPX0101
+         mimo obsłużonej w release.yml ścieżki "brak sekretu -> pakiet niepodpisany".
+         Subject certyfikatu musi brzmieć dokładnie CN=7D16EB93-BD30-4D8E-A3B6-8FDB3CE89F4A
+         (Publisher z Package.appxmanifest), inaczej signtool odrzuci pakiet. -->
+    <AppxPackageSigningEnabled Condition="'$(AppxPackageSigningEnabled)' == ''">False</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>

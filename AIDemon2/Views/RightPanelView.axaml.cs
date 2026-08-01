@@ -1,22 +1,19 @@
-using AIDemon2.ViewModels;
+﻿using AIDemon2.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
-using PropertyChanged;
 
 namespace AIDemon2.Views;
 
-[DoNotNotify]
 public partial class RightPanelView : UserControl
 {
 	public RightPanelView()
 	{
 		InitializeComponent();
-		DataContext = ((IServiceProvider)Application.Current!.Resources["Services"])
-			.GetRequiredService<RightPanelViewModel>();
+		DataContext = ViewServices.Get<RightPanelViewModel>();
 		if (DataContext is RightPanelViewModel vm)
 			vm.MessageUpdated += OnRightPanelMessageUpdated;
 	}

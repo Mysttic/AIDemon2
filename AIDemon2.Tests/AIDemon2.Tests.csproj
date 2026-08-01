@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Ten sam TFM co aplikacja — inaczej nie da się jej zreferencjonować. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <!-- Musi zgadzać się z bitowością aplikacji. Rozjazd kończy się mylącym
+         "Could not load file or assembly AIDemon2" mimo obecnego pliku DLL —
+         host testów nie załaduje assembly o innej architekturze. -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>AnyCPU;x64</Platforms>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AIDemon2\AIDemon2.csproj" />
+  </ItemGroup>
+
+</Project>

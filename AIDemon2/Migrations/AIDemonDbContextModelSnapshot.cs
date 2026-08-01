@@ -34,6 +34,9 @@ namespace AIDemon2.Migrations
                     b.Property<bool>("Favourite")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsUserMessage")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("MessageContent")
                         .IsRequired()
                         .HasColumnType("TEXT");

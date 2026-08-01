@@ -10,8 +10,6 @@ public partial class MainChatViewModel : ObservableObject
 
 	public event Action? ScrollRequested;
 
-	public event Action<bool>? IsLoading;
-
 	private ObservableCollection<Message> _messages = new();
 
 	public ObservableCollection<Message> Messages
@@ -41,8 +39,14 @@ public partial class MainChatViewModel : ObservableObject
 	{
 		_chatService = chatService;
 		_messageRepository = messageRepository;
-		_ = LoadMessages();
 	}
+
+	/// <summary>
+	/// Wczytanie danych wyniesione z konstruktora. Zapis "_ = LoadMessages()" oznaczał,
+	/// że konstruktor sięgał do bazy, a ewentualny wyjątek nie miał gdzie wypłynąć.
+	/// Uniemożliwiał też utworzenie ViewModelu w teście bez działającej bazy.
+	/// </summary>
+	public Task InitializeAsync() => LoadMessages();
 
 	public async Task LoadMessages()
 	{

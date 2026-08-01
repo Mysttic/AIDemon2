@@ -16,48 +16,79 @@ Thanks to predefined communication instructions and language preferences, you wi
 Just specify in the message what functionality you expect. The selected AI model will prepare this script in the language you provided and send it back to you in response.
 
 ## Prerequisites
-The application uses AI models provided by the **io.net** platform. 
-To run the application, you must create an account there and obtain an API key that will be used in the application to communicate with selected AI models.
-![image](https://github.com/user-attachments/assets/019d2c6b-b8ce-4192-8a19-f819489e36c6)
-https://ai.io.net/ai/models
+AIDemon2 runs on **64-bit Windows 10 or 11**.
+
+The application talks to AI models through **[OpenRouter](https://openrouter.ai)**, a single
+API in front of models from many providers — OpenAI, Anthropic, Google, Meta, DeepSeek,
+Mistral and others. To use the application, create an account there and generate an API key.
+
+The list of models is fetched from OpenRouter when you open the settings, so it is always
+current and does not require an application update when a provider adds or retires a model.
+
+> Upgrading from 1.0.x? Paste a new OpenRouter key **and pick the model again** — io.net
+> identifiers do not exist in OpenRouter.
 
 ## Supported programming languages
-| <img src="https://github.com/user-attachments/assets/8000a7f8-5880-4fab-be01-6fa41e32bbe9" height="48" title="python"> | <img src="https://github.com/user-attachments/assets/ad3fe48d-7e75-48fd-8f48-265c7db3c463" height="48" title="powershell"> | <img src="https://github.com/user-attachments/assets/04aae282-f452-4840-a0b8-c4510b2a4146" height="48" title="batch"> | <img src="https://github.com/user-attachments/assets/1b23d960-4a3a-4e94-a9cc-2831cf91b102" height="48" title="nodejs"> | <img src="https://github.com/user-attachments/assets/40f642d6-c132-4e78-8925-be68cc8074ae" height="48" title="bash"> | <img src="https://github.com/user-attachments/assets/b8a9b6cc-06e2-4751-9d41-ae6e6086769f" height="48" title="zsh"> | 
-|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
-| <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/6330a48d-70a1-4738-8e3c-affb63e92c0a" height="24" alt="inprogress"> | <img src="https://github.com/user-attachments/assets/6330a48d-70a1-4738-8e3c-affb63e92c0a" height="24" alt="inprogress"> |
-| <img src="https://github.com/user-attachments/assets/9e12b9b2-80dd-4c40-afe6-3ef09b38092e" height="48" title="perl"> | <img src="https://github.com/user-attachments/assets/7cbb44f4-36ad-4c57-9948-6ee0e65a39a7" height="48" title="ruby"> | <img src="https://github.com/user-attachments/assets/70dd0bf6-4d99-4a05-8a19-aeef84c5f568" height="48" title="php"> | <img src="https://github.com/user-attachments/assets/5199af82-a7f1-4867-a731-304960b013fc" height="48" title="groovy"> | <img src="https://github.com/user-attachments/assets/8faf05cb-9e13-46ab-b148-14be937d9d4e" height="48" title="lua"> | <img src="https://github.com/user-attachments/assets/5c3fa94a-60b9-46c6-9a10-9498e98c2811" height="48" title="go"> |
-| <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/6330a48d-70a1-4738-8e3c-affb63e92c0a" height="24" alt="inprogress"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="approved"> |
 
+Every language below is verified automatically: on Linux by running each interpreter inside
+a container (`tools/language-check`), on Windows by integration tests that start the real
+process. "Requires" names what has to be installed for the language to work.
+
+| Language | Windows | Linux | Requires |
+|---|:---:|:---:|---|
+| python | yes | yes | Python (the app prefers the `py` launcher over the Microsoft Store alias) |
+| powershell | yes | yes | built into Windows; `pwsh` is used when available |
+| batch | yes | — | built into Windows |
+| nodejs | yes | yes | Node.js |
+| bash | yes | yes | on Windows: Git for Windows or WSL, located automatically |
+| zsh | — | yes | not available on Windows outside WSL |
+| perl | yes | yes | Strawberry Perl, or the copy shipped with Git for Windows |
+| ruby | yes | yes | Ruby |
+| php | yes | yes | PHP (the opening `<?php` tag is added automatically when missing) |
+| groovy | yes | yes | Groovy and a JDK |
+| lua | yes | yes | Lua (`lua`, `lua5.4` or `luajit`) |
+| go | yes | yes | Go toolchain |
+
+The application picks the first interpreter it can actually find, so alternative binary names
+are handled without configuration. If none is present, it says which names it looked for
+instead of failing with a raw system error. Line endings are matched to the interpreter —
+a shell script written on Windows would otherwise fail on every line.
 
 ## Application UI
-![image](https://github.com/user-attachments/assets/bc1a6588-d7f8-4fd6-be48-fab1bccd671c)
-The application interface consists of the following components:
-- The chat window displays user messages and responses from the AI ​​model. 
+![Chat window](docs/chat.png)
 
-- Field for entering a message
-- Button for sending a message
+The chat window displays your messages on the left and the model's replies on the right,
+each reply labelled with the model that produced it. Below the conversation there is a
+field for entering a message and a button for sending it.
 
-- Expandable panel on the left side consisting of the following elements:
-  - Button for collapsing/expanding the panel
-  - Button for opening the settings window
-  - Button for exporting all messages
-  - Button for clearing history deleting all messages
-  - List of saved messages
+### Left panel
+![Left panel](docs/left-panel.png)
 
-- Expandable panel on the right side consisting of the following elements:
-  - Button for collapsing/expanding the panel
-  - Save button adding a given message to the list of saved messages
-  - Run button which runs the code of a given message, works only for messages received from AI
-  - Resend button allowing for re-sending a message, works only for user messages
-  - Button for exporting a message to a script file, works only for messages received from AI and creates a script with an extension appropriate for the given language
-  - Button for deleting a message from the saved list, does not completely delete the message
-  - Button for clearing the message editing window
-  - Field containing the content of the message in which it can be edited
-  - Console output field displaying what the console returns when executing the sent script
+Expanded with the button in the top-left corner. It contains:
+- **Settings** — opens the settings window
+- **Export** — exports the whole conversation to JSON or CSV
+- **Cleanup** — clears the history
+- the list of saved (favourite) messages
+
+### Message panel
+![Message panel](docs/message-panel.png)
+
+Opened by double-clicking any message. From the left, its buttons are:
+- **Save** — adds the message to the favourites list, together with any edits you made
+- **Run** — executes the code, after a confirmation prompt; available only for replies from the model
+- **Resend** — sends the message again; available only for your own messages
+- **Export** — writes the message to a script file with the extension matching its language
+- **Remove from favourites** — takes the message off the favourites list and restores its
+  original text. It does **not** delete the message: it stays in the conversation
+- **Clear** — closes the editor without saving
+
+Below the buttons is the editable message content, and under it the console output shown
+when a script is executed.
 
 ## Configuration
-![image](https://github.com/user-attachments/assets/340ae6c3-0661-4672-bbf8-21fec33a21c7)
-Once you receive the key from the **io.net** platform, in the application settings you must paste the API key required for communication with this platform.
+![Settings window](docs/settings.png)
+
+Once you have generated the key in OpenRouter, paste it into the application settings. The key is masked as you type and is stored in an encrypted database.
 
 If you want the communication with the AI ​​model to proceed on the basis that in the received response you will receive a ready-to-execute script, you must define the content of the instruction that will be sent to the model before sending the actual message from the user. In the Instruction Prompt field, you can freely define the content at your own discretion, an example of the instruction content:
 
@@ -65,23 +96,23 @@ If you want the communication with the AI ​​model to proceed on the basis th
 Your task is to write scripts in the given scripting language, the purpose of which is to perform operations in my Windows system. Your answers should contain only ready code that can be pasted into the script and run. You are not to provide any confirmations, explanations or anything other than the code you are to write. You can include additional information in comments in the script. In each script, add a short comment at the beginning describing the script.
 ```
 
-The platform provides many different AI models that you can communicate with, in the AIModel field you have this list available to choose from. If you wants to change the model, you can freely change it here.
+The AIModel field lists the models OpenRouter currently offers. Pick whichever you like — pricing and capabilities differ, so a cheap fast model is fine for simple scripts and a stronger one pays off for complex ones.
 
 If you want the AI ​​to generate scripts, you must specify in which language it should write it. In the Programming Language field, there is a selection list available, you must select the language before starting communication.
 
 ## How to use
 
-![image](https://github.com/user-attachments/assets/76a8c988-dcbf-459a-a574-a52c60e66167)
 Once everything is set up, you can start communicating. Just write a message and click 'send'. Depending on the model, you might wait some time for a response. After receiving it, it will be added to the list in the chat window. In the window with the response, you can see the information about which model sent us this response, it will be the same model that you selected in the settings.
 
-![image](https://github.com/user-attachments/assets/785ba0ed-8473-4c7f-9316-6eeab0a4c2f9)
-After receiving the response, you can open the message by double-clicking on it, which will cause the message editing window to slide out on the right.
+After receiving the response, you can open the message by double-clicking on it, which will cause the message editing window to slide out on the right. Here you can correct the code before running it.
 
-Here you can trigger the script to run, making any necessary corrections to the code. Run the script by clicking on the run icon, which causes the code to be transferred from the edit field to the script file that is run. The result of operation will be visible in the console window after it has finished.
+Running a script always asks for confirmation first. The code was written by a language model and runs with your own permissions — it can read, change or delete your files, so read it before you agree. A script that does not finish within 30 seconds is terminated together with any processes it started.
+
+Once you confirm, the code is written to a script file and executed. Output appears in the console field as it is produced, so long-running scripts show progress instead of staying blank until they finish.
 
 ## Disclaimer
 The authors of the solution are not responsible for the quality and content generated by the AI models, and do not take responsibility for the effects of invoking scripts generated by it.
 
-The solution and its authors are in no way affiliated with owners of **io.net** platform.
+The solution and its authors are in no way affiliated with the owners of the **OpenRouter** platform or with any of the model providers available through it.
 
 For more information on regulations, please see the licensing arrangements.

@@ -1,6 +1,5 @@
-﻿using IoIntelligence.Client.Interfaces;
-using IoIntelligence.Client.Models.AIModel.Chat;
-using IoIntelligence.Client.Services;
+﻿using AIDemon2.Services.ChatService;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -8,20 +7,49 @@ public class ChatService : IChatService
 {
 	private readonly IMessageRepository _messageRepository;
 	private readonly ISettingsRepository _settingsRepository;
-	private IIoIntelligenceClient _ioIntelligenceClient;
-	private Settings _settings;
+	private readonly Func<string, IChatCompletionClient> _clientFactory;
+	private readonly ILogger<ChatService> _logger;
+
+	private IChatCompletionClient? _client;
+	private Settings? _settings;
 	private bool _systemMessagesRequired = true;
 
-	public ChatService(IMessageRepository messageRepository, ISettingsRepository settingsRepository)
+	/// <param name="clientFactory">
+	/// Fabryka klienta zamiast tworzenia go w środku metody — dzięki temu test
+	/// podstawia własną implementację i nie wychodzi w sieć, a zmiana dostawcy
+	/// modeli (io.net -> OpenRouter) nie dotknęła tej klasy.
+	/// </param>
+	public ChatService(
+		IMessageRepository messageRepository,
+		ISettingsRepository settingsRepository,
+		Func<string, IChatCompletionClient> clientFactory,
+		ILogger<ChatService> logger)
 	{
 		_messageRepository = messageRepository;
 		_settingsRepository = settingsRepository;
+		_clientFactory = clientFactory;
+		_logger = logger;
 	}
 
 	private async Task InitializeAsync()
 	{
-		_settings = await _settingsRepository.Get();
-		_ioIntelligenceClient = new IoIntelligenceClient(_settings.ApiKey);
+		// Wcześniej brak ustawień kończył się NullReferenceException wewnątrz bloku
+		// catch(Exception), który zamieniał go na „problem z połączeniem".
+		_settings = await _settingsRepository.Get()
+			?? throw new ChatServiceException(
+				"Brak ustawień aplikacji w bazie — nie da się wysłać wiadomości.");
+
+		if (string.IsNullOrWhiteSpace(_settings.ApiKey))
+			throw new ChatServiceException(
+				"Nie ustawiono klucza API. Uzupełnij go w ustawieniach aplikacji.");
+
+		// Bez modelu żądanie leciało do API z pustym polem "model" i wracało
+		// nieczytelnym błędem HTTP. Lepiej powiedzieć wprost, czego brakuje.
+		if (string.IsNullOrWhiteSpace(_settings.AIModel))
+			throw new ChatServiceException(
+				"Nie wybrano modelu AI. Wskaż go w ustawieniach aplikacji.");
+
+		_client = _clientFactory(_settings.ApiKey);
 	}
 
 	public async Task<Message> SendMessageAsync(Message userMessage)
@@ -29,37 +57,32 @@ public class ChatService : IChatService
 		if (userMessage == null)
 			throw new ArgumentNullException(nameof(userMessage));
 
-		if (_ioIntelligenceClient == null)
+		if (_client == null)
 			await InitializeAsync();
 
+		var settings = _settings!;
+
 		// Przygotowanie wiadomości dla AI
-		var messages = new List<ChatCompletionMessage>();
+		var messages = new List<OpenRouterMessage>();
 
 		// Jeśli flaga _systemMessagesRequired jest ustawiona, dodaj dwie wiadomości systemowe
 		if (_systemMessagesRequired)
 		{
-			messages.Add(new ChatCompletionMessage
-			{
-				Role = "system",
-				Content = _settings.InstructionPrompt
-			});
-			messages.Add(new ChatCompletionMessage
-			{
-				Role = "system",
-				Content = "For script writing use programming language: " + _settings.ProgrammingLanguage
-			});
+			// Pusta instrukcja to nie to samo co brak instrukcji — wysyłanie
+			// wiadomości systemowej bez treści tylko zużywa tokeny.
+			if (!string.IsNullOrWhiteSpace(settings.InstructionPrompt))
+				messages.Add(OpenRouterMessage.System(settings.InstructionPrompt));
+			messages.Add(OpenRouterMessage.System(
+				"For script writing use programming language: " + settings.ProgrammingLanguage));
 			//_systemMessagesRequired = false; //odznaczyć jeśli chcemy aby instrukcje były wysyłane tylko raz
 		}
 
-		messages.Add(new ChatCompletionMessage
-		{
-			Role = "user",
-			Content = JsonSerializer.Serialize(new { text = userMessage.MessageContent })
-		});
+		messages.Add(OpenRouterMessage.User(
+			JsonSerializer.Serialize(new { text = userMessage.MessageContent })));
 
-		var chatRequest = new ChatCompletionRequest
+		var chatRequest = new OpenRouterChatRequest
 		{
-			Model = _settings.AIModel,
+			Model = settings.AIModel!, // niepuste — sprawdzone w InitializeAsync
 			Messages = messages
 		};
 
@@ -68,9 +91,22 @@ public class ChatService : IChatService
 		{
 			responseText = await GetResponseFromAIAsync(chatRequest);
 		}
-		catch (Exception)
+		catch (ChatServiceException ex)
 		{
-			responseText = "Sorry, I'm having trouble connecting to the AI service. Please try again later.";
+			// Klient OpenRoutera zna powód (zły klucz, brak środków, limit zapytań)
+			// i ma gotowy komunikat. Owijanie go w ogólnik "sprawdź klucz i sieć"
+			// gubiłoby tę informację — logujemy i przepuszczamy bez zmian.
+			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
+			throw;
+		}
+		catch (Exception ex)
+		{
+			// Wcześniej ten blok połykał KAŻDY wyjątek i zapisywał komunikat błędu do bazy
+			// jako odpowiedź AI — nie do odróżnienia od prawdziwej, również w eksporcie.
+			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
+
+			throw new ChatServiceException(
+				"Nie udało się połączyć z usługą AI. Sprawdź klucz API i połączenie z siecią.", ex);
 		}
 
 		var aiMessage = new Message
@@ -79,24 +115,44 @@ public class ChatService : IChatService
 			OriginalMessage = responseText,
 			CreationDate = DateTime.UtcNow,
 			ModificationDate = DateTime.UtcNow,
-			AIModel = _settings.AIModel,
-			ProgrammingLanguage = string.IsNullOrEmpty(_settings.ProgrammingLanguage) ? string.Empty : _settings.ProgrammingLanguage,
-			ReplyTo = userMessage
+			AIModel = settings.AIModel,
+			ProgrammingLanguage = string.IsNullOrEmpty(settings.ProgrammingLanguage) ? string.Empty : settings.ProgrammingLanguage,
+			IsUserMessage = false,
+			// Klucz obcy, NIE nawigacja: repozytorium tworzy nowy kontekst na każdą
+			// operację, a Add() po nawigacji potraktowałby odłączoną wiadomość
+			// użytkownika jako nową i wstawił ją drugi raz.
+			//
+			// Id == 0 oznacza wiadomość jeszcze niezapisaną. Wywołujący ma ją zapisać
+			// przed wysłaniem (tak robi MainViewModel); gdy tego nie zrobił, zostawiamy
+			// powiązanie puste zamiast wstawiać klucz obcy wskazujący na nieistniejący wiersz.
+			ReplyToMessageId = userMessage.Id != 0 ? userMessage.Id : null
 		};
 
 		await _messageRepository.AddAsync(aiMessage);
 		return aiMessage;
 	}
 
+	/// <summary>
+	/// Wymusza odtworzenie klienta i ponowne wczytanie ustawień przy następnej wiadomości.
+	///
+	/// Wcześniej metoda ustawiała wyłącznie <c>_systemMessagesRequired</c>, więc po zmianie
+	/// klucza API aplikacja do restartu wysyłała żądania starym kluczem, a użytkownik
+	/// widział jedynie komunikat o problemie z połączeniem.
+	/// </summary>
 	public void ResetClient()
 	{
+		// Każdy klient trzyma własny HttpClient; bez zwolnienia zmiana klucza API
+		// zostawiałaby po sobie gniazdo aż do zebrania przez GC.
+		(_client as IDisposable)?.Dispose();
+		_client = null;
+		_settings = null;
 		_systemMessagesRequired = true;
 	}
 
-	private async Task<string> GetResponseFromAIAsync(ChatCompletionRequest chatRequest)
+	private async Task<string> GetResponseFromAIAsync(OpenRouterChatRequest chatRequest)
 	{
-		var chatResponse = await _ioIntelligenceClient.Models.CreateChatCompletionAsync(chatRequest);
-		return SanitizeResponse(chatResponse.Choices.First().Message.Content);
+		var content = await _client!.CompleteAsync(chatRequest);
+		return SanitizeResponse(content);
 	}
 
 	private string SanitizeResponse(string response)

@@ -1,7 +1,7 @@
 ﻿public class MessageDto
 {
 	public int Id { get; set; }
-	public string MessageContent { get; set; }
+	public string MessageContent { get; set; } = string.Empty;
 	public string? OriginalMessage { get; set; }
 	public string? AIModel { get; set; }
 	public string? ProgrammingLanguage { get; set; }

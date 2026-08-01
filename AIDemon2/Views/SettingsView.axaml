@@ -1,17 +1,21 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:AIDemon2.ViewModels"
              x:Class="AIDemon2.Views.SettingsView">
 	<Border 
-		Background="#66000000" 
+		Background="{StaticResource BrushBgScrim}" 
 		HorizontalAlignment="Stretch" 
 		VerticalAlignment="Stretch"
 		Padding="50">
-		<Grid HorizontalAlignment="Center"
-			  VerticalAlignment="Center"
-			  Width="500"
-			  Background="#333333">
+		<Border HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Width="500"
+				Background="{StaticResource BrushBgSurface}"
+				BorderBrush="{StaticResource BrushBorderSubtle}"
+				BorderThickness="1"
+				CornerRadius="{StaticResource RadiusCard}">
+		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
@@ -21,7 +25,7 @@
 			</Grid.RowDefinitions>
 
 			<TextBlock Text="Application Settings"
-					   Foreground="White"
+					   Foreground="{StaticResource BrushTextPrimary}"
 					   FontWeight="Bold"
 					   FontSize="16"
 					   Margin="0 0 0 10"
@@ -29,24 +33,26 @@
 
 			<StackPanel Grid.Row="1" Orientation="Vertical" Spacing="10" Margin="10">
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="ApiKey:" Width="200" Foreground="White"/>
-					<TextBox Text="{Binding ApiKey}" Width="250"/>
+					<TextBlock Text="ApiKey:" Width="200" Classes="formlabel"/>
+					<!-- PasswordChar: klucz był dotąd widoczny jawnie, więc trafiał
+					     na każdy zrzut ekranu i nagranie okna ustawień. -->
+					<TextBox Text="{Binding ApiKey}" Width="250" PasswordChar="•"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="Instruction Prompt:" Width="200" Foreground="White"/>
+					<TextBlock Text="Instruction Prompt:" Width="200" Classes="formlabel" VerticalAlignment="Top"/>
 					<TextBox Text="{Binding InstructionPrompt}" 
 							 Width="250" Height="200"
 							 TextWrapping="Wrap"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="AIModel:" Width="200" Foreground="White"/>
+					<TextBlock Text="AIModel:" Width="200" Classes="formlabel"/>
 					<ComboBox ItemsSource="{Binding AIModelsList}"
 							  SelectedItem="{Binding AIModel, Mode=TwoWay}"
 							  Width="250">
 					</ComboBox>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="Programming Language:" Width="200" Foreground="White"/>
+					<TextBlock Text="Programming Language:" Width="200" Classes="formlabel"/>
 					<ComboBox ItemsSource="{Binding ProgrammingLanguageList}"
 							  SelectedItem="{Binding ProgrammingLanguage, Mode=TwoWay}"
 							  Width="250"/>					
@@ -57,9 +63,10 @@
 						HorizontalAlignment="Right"
 						Spacing="10"
 						Margin="10 20 10 10">
-				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}"/>
-				<Button x:Name="CancelButton" Content="Cancel" Command="{Binding CancelCommand}"/>
+				<Button x:Name="SaveButton" Classes="tool" Content="Save" Command="{Binding SaveCommand}"/>
+				<Button x:Name="CancelButton" Classes="tool" Content="Cancel" Command="{Binding CancelCommand}"/>
 			</StackPanel>
 		</Grid>
+		</Border>
 	</Border>
 </UserControl>

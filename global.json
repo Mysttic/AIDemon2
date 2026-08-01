@@ -1,0 +1,7 @@
+{
+  "//": "rollForward: latestFeature, NIE latestMajor. Pakowanie MSIX idzie przez MSBuild z Visual Studio 2022 (17.x), a ten odmawia obsługi SDK 10: 'Version 10.0.302 of the .NET SDK requires at least version 18.0.0 of MSBuild'. Przy latestMajor wystarczyło, że na maszynie pojawi się SDK 10, żeby krok pakowania przestal dzialac - lokalnie i na runnerze. latestFeature trzyma nas w 9.0.x, biorac najwyzszy dostepny feature band.",
+  "sdk": {
+    "version": "9.0.100",
+    "rollForward": "latestFeature"
+  }
+}
