@@ -9,6 +9,8 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-08-01
+
 ### Fixed
 
 - **Every message showed its timestamp twice.** The second line is meant to appear only
@@ -192,7 +194,8 @@ GitHub release, so write it for people.
   combined with `[STAThread]` is actively wrong: a continuation resumes on a pool thread
   that is not STA.
 
-[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/Mysttic/AIDemon2/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/Mysttic/AIDemon2/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Mysttic/AIDemon2/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Mysttic/AIDemon2/releases/tag/v2.0.0
