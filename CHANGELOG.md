@@ -9,6 +9,8 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-01
+
 ### Added
 
 - **Releases now ship a portable ZIP, and that is the artifact to use.** Unpack it and run
@@ -180,6 +182,7 @@ GitHub release, so write it for people.
   combined with `[STAThread]` is actively wrong: a continuation resumes on a pool thread
   that is not STA.
 
-[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/Mysttic/AIDemon2/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Mysttic/AIDemon2/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Mysttic/AIDemon2/releases/tag/v2.0.0
