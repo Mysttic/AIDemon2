@@ -9,6 +9,16 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Every message showed its timestamp twice.** The second line is meant to appear only
+  on a message that was edited, and it shows when that happened — but a message was
+  counted as edited from the moment it was created. Both dates were stamped with separate
+  reads of the clock, and `DateTime.UtcNow` resolves to 100 ns on Windows, so the second
+  read could land a tick after the first. That was enough for "modified after creation"
+  to be true; the difference itself vanished in the `HH:mm:ss` format, leaving what looked
+  like the same time printed twice. The clock is now read once per message.
+
 ## [2.1.0] - 2026-08-01
 
 ### Added

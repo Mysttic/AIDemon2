@@ -27,9 +27,19 @@ public class EntityBase : ObservableObject, IEntityBase
 		set => SetProperty(ref _modificationDate, value);
 	}
 
+	/// <summary>
+	/// Zegar odczytywany RAZ, a nie osobno dla każdej daty.
+	///
+	/// DateTime.UtcNow ma na Windows rozdzielczość 100 ns, więc dwa kolejne odczyty
+	/// potrafią różnić się o tik. Tyle wystarczało, by ModificationDate wypadło
+	/// później niż CreationDate — a więc by IsModified było prawdą dla encji, której
+	/// nikt nie tknął. Widok rozmowy pokazywał wtedy pod znacznikiem czasu drugi,
+	/// identycznie sformatowany (różnica ginęła w formacie HH:mm:ss).
+	/// </summary>
 	public EntityBase()
 	{
-		CreationDate = DateTime.UtcNow;
-		ModificationDate = DateTime.UtcNow;
+		var teraz = DateTime.UtcNow;
+		CreationDate = teraz;
+		ModificationDate = teraz;
 	}
 }

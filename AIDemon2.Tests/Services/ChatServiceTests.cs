@@ -159,6 +159,21 @@ public class ChatServiceTests : IDisposable
 	}
 
 	[Fact]
+	public async Task SendMessage_PersistsAiMessage_ThatIsNotMarkedAsModified()
+	{
+		// ChatService nadpisywał obie daty w inicjalizatorze obiektu, dwoma osobnymi
+		// odczytami zegara. Odpowiedź modelu rodziła się więc "zmodyfikowana", a widok
+		// rozmowy dokładał pod znacznikiem czasu drugi, wyglądający identycznie.
+		await UstawKlucz("klucz", jezyk: "python");
+		var service = Utworz(new FakeChatCompletionClient("print(1)"));
+
+		var odpowiedz = await service.SendMessageAsync(new Message("napisz skrypt"));
+
+		Assert.Equal(odpowiedz.CreationDate, odpowiedz.ModificationDate);
+		Assert.False(odpowiedz.IsModified);
+	}
+
+	[Fact]
 	public async Task SendMessage_MarksReplyAsAiAuthored_EvenWithoutProgrammingLanguage()
 	{
 		// Autor był wyliczany z języka programowania, a ten pochodzi z ustawień.
