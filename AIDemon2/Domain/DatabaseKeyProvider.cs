@@ -121,8 +121,8 @@ internal static class DatabaseKeyProvider
 			RestoreBackup(backupPath, databasePath);
 
 			throw new InvalidOperationException(
-				"Nie udało się przekluczyć bazy AIDemon2 na klucz właściwy dla tej instalacji. " +
-				$"Baza została przywrócona ze stanu sprzed operacji. Szczegóły: {ex.Message}", ex);
+				"Could not re-key the AIDemon2 database to this installation's own key. " +
+				$"The database was restored to its previous state. Details: {ex.Message}", ex);
 		}
 
 		TryDelete(backupPath);

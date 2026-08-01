@@ -25,7 +25,7 @@
         "windows": { "launchers": [ "cmd.exe" ], "arguments": "/D /S /C \"\"{0}\"\"" },
         "linux": {
             "supported": false,
-            "unsupportedReason": "Pliki wsadowe uruchamia wyłącznie interpreter cmd.exe systemu Windows."
+            "unsupportedReason": "Batch files run only under the Windows cmd.exe interpreter."
         }
     },
     "nodejs": {
@@ -47,7 +47,7 @@
         "lineEndings": "lf",
         "windows": {
             "supported": false,
-            "unsupportedReason": "Zsh nie jest dostępny w Windows ani w Git for Windows. Wymaga instalacji WSL."
+            "unsupportedReason": "Zsh is not available on Windows or in Git for Windows. It requires WSL."
         },
         "linux": { "launchers": [ "zsh" ], "arguments": "\"{0}\"" },
         "docker": "aidemon-langtest"

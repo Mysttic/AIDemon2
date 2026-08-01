@@ -23,8 +23,8 @@ internal static class ViewServices
 	{
 		if (Application.Current?.Resources[ResourceKey] is not IServiceProvider provider)
 			throw new InvalidOperationException(
-				$"Zasób \"{ResourceKey}\" nie zawiera kontenera zależności. " +
-				"Widok został utworzony przed konfiguracją aplikacji.");
+				$"Resource \"{ResourceKey}\" does not hold the dependency container. " +
+				"The view was created before the application was configured.");
 
 		return provider.GetRequiredService<T>();
 	}

@@ -105,7 +105,7 @@ public class ViewModelTests : IDisposable
 		await vm.SendMessageCommand.ExecuteAsync(null);
 
 		Assert.Equal(2, vm.ChatViewModel.Messages.Count);
-		Assert.Contains("Nie udało się", vm.ChatViewModel.Messages[1].MessageContent);
+		Assert.Contains("Could not reach", vm.ChatViewModel.Messages[1].MessageContent);
 		// W bazie została tylko wiadomość użytkownika.
 		Assert.Single(await _messages.GetAllAsync());
 	}

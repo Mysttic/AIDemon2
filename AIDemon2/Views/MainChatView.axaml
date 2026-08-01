@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:vm="clr-namespace:AIDemon2.ViewModels"
@@ -50,9 +50,15 @@
 									</Grid.ColumnDefinitions>
 
 									<!-- Nazwa modelu AI (pokazuj tylko, gdy to nie jest wiadomość użytkownika) -->
+									<!-- Przycięcie i odstęp: długie identyfikatory modeli
+									     (np. "openai/gpt-oss-20b:free") sklejały się ze
+									     znacznikiem czasu w sąsiedniej kolumnie. -->
 									<TextBlock Text="{Binding AIModel}"
 											   Grid.Column="0"
 											   Classes="model"
+											   TextTrimming="CharacterEllipsis"
+											   Margin="0,0,10,0"
+											   VerticalAlignment="Center"
 											   IsVisible="{Binding IsUserMessage, Converter={StaticResource BoolInverseToVisibilityConverter}}"/>
 
 									<!-- Data i ewentualna ikona modyfikacji w prawym dolnym rogu.
