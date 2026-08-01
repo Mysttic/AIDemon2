@@ -114,6 +114,29 @@ jobs:
           }
           msbuild @args
 
+      # Portable ZIP is the artifact users actually install. An unsigned MSIX is
+      # refused outright by Windows, and a bare .exe is blocked by browsers on
+      # download - a ZIP is neither. Self-contained, so no .NET is required.
+      - name: Build portable ZIP
+        if: steps.version.outputs.publish == 'yes'
+        shell: pwsh
+        run: |
+          dotnet publish AIDemon2\AIDemon2.csproj -c Release -r win-x64 `
+            --self-contained true `
+            -p:Platform=x64 `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -o portable
+
+          # The PDB would ship debug symbols to every user for no benefit.
+          Remove-Item portable\*.pdb -ErrorAction SilentlyContinue
+
+          New-Item -ItemType Directory -Force -Path artifacts\portable | Out-Null
+          $zip = "artifacts\portable\AIDemon2-${{ steps.version.outputs.number }}-win-x64.zip"
+          Compress-Archive -Path portable\* -DestinationPath $zip -Force
+          "Portable ZIP: {0:N1} MB" -f ((Get-Item $zip).Length / 1MB)
+
       - name: Remove certificate
         if: always()
         shell: pwsh
@@ -150,6 +173,7 @@ jobs:
           body_path: RELEASE_NOTES.md
           draft: false
           files: |
+            artifacts/portable/*.zip
             artifacts/msix/**/*.msix
             artifacts/msix/**/*.appx
             artifacts/msix/**/*.cer

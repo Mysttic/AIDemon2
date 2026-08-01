@@ -125,8 +125,24 @@ Signing is driven by two repository secrets:
 The certificate subject **must** be exactly `CN=7D16EB93-BD30-4D8E-A3B6-8FDB3CE89F4A`,
 matching `Publisher` in `Package.appxmanifest`, or signtool rejects the package.
 
-Without the secrets the release still completes and produces an **unsigned** package,
-installable via the bundled `Add-AppDevPackage.ps1`.
+Without the secrets the release still completes, but the resulting MSIX is **unsigned and
+therefore not installable**. Windows refuses a package with no trust chain outright — this
+is not a warning a user can click through, and no bundled script works around it. That is
+why every release also ships a portable ZIP, which is the artifact users actually run.
+
+Sideloading is not the obstacle here: it has been on by default since Windows 10 version
+2004. The missing piece is the signature.
+
+If you do want an installable MSIX, the options are, cheapest first:
+
+| Option | Cost | What the user does |
+|---|---|---|
+| Microsoft Store | free (account fee was dropped) | one click, no warning, auto-updates |
+| Azure Artifact Signing | ~$10/month | double-click the MSIX, Install |
+| OV certificate from a CA | from €69 (OSS pricing) | double-click the MSIX, Install |
+
+Note that an EV certificate no longer bypasses SmartScreen — Microsoft retired that
+behaviour, so paying the EV premium for that reason alone buys nothing.
 
 ### Repository settings this needs
 

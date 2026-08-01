@@ -15,6 +15,20 @@ Thanks to predefined communication instructions and language preferences, you wi
 
 Just specify in the message what functionality you expect. The selected AI model will prepare this script in the language you provided and send it back to you in response.
 
+## Download
+
+Grab the ZIP from the [latest release](https://github.com/Mysttic/AIDemon2/releases/latest),
+unpack it and run `AIDemon2.exe`. Nothing to install and no .NET required — the runtime is
+inside the executable.
+
+The first launch shows a SmartScreen warning, because the build is not signed with a paid
+certificate. Choose **More info → Run anyway**. The warning fades once the file has been
+downloaded by enough people. If your machine has Smart App Control enabled (some clean
+Windows 11 installs), it will block unsigned applications outright.
+
+The release also contains an `.appx` package. It is currently **unsigned and cannot be
+installed** — it is published for the day a signing certificate is available. Use the ZIP.
+
 ## Prerequisites
 AIDemon2 runs on **64-bit Windows 10 or 11**.
 
