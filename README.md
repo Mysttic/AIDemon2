@@ -30,29 +30,27 @@ current and does not require an application update when a provider adds or retir
 
 ## Supported programming languages
 
-Every language below is verified automatically: on Linux by running each interpreter inside
-a container (`tools/language-check`), on Windows by integration tests that start the real
-process. "Requires" names what has to be installed for the language to work.
+Every language below is verified automatically — on Linux by running each interpreter
+inside a container, on Windows by tests that start the real process.
 
-| Language | Windows | Linux | Requires |
-|---|:---:|:---:|---|
-| python | yes | yes | Python (the app prefers the `py` launcher over the Microsoft Store alias) |
-| powershell | yes | yes | built into Windows; `pwsh` is used when available |
-| batch | yes | — | built into Windows |
-| nodejs | yes | yes | Node.js |
-| bash | yes | yes | on Windows: Git for Windows or WSL, located automatically |
-| zsh | — | yes | not available on Windows outside WSL |
-| perl | yes | yes | Strawberry Perl, or the copy shipped with Git for Windows |
-| ruby | yes | yes | Ruby |
-| php | yes | yes | PHP (the opening `<?php` tag is added automatically when missing) |
-| groovy | yes | yes | Groovy and a JDK |
-| lua | yes | yes | Lua (`lua`, `lua5.4` or `luajit`) |
-| go | yes | yes | Go toolchain |
+| <img src="https://github.com/user-attachments/assets/8000a7f8-5880-4fab-be01-6fa41e32bbe9" height="48" title="python"> | <img src="https://github.com/user-attachments/assets/ad3fe48d-7e75-48fd-8f48-265c7db3c463" height="48" title="powershell"> | <img src="https://github.com/user-attachments/assets/04aae282-f452-4840-a0b8-c4510b2a4146" height="48" title="batch"> | <img src="https://github.com/user-attachments/assets/1b23d960-4a3a-4e94-a9cc-2831cf91b102" height="48" title="nodejs"> | <img src="https://github.com/user-attachments/assets/40f642d6-c132-4e78-8925-be68cc8074ae" height="48" title="bash"> | <img src="https://github.com/user-attachments/assets/b8a9b6cc-06e2-4751-9d41-ae6e6086769f" height="48" title="zsh"> |
+|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+| <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> |
+| **Windows · Linux** | **Windows · Linux** | **Windows** | **Windows · Linux** | **Windows · Linux** | **Linux** |
 
-The application picks the first interpreter it can actually find, so alternative binary names
-are handled without configuration. If none is present, it says which names it looked for
-instead of failing with a raw system error. Line endings are matched to the interpreter —
-a shell script written on Windows would otherwise fail on every line.
+| <img src="https://github.com/user-attachments/assets/9e12b9b2-80dd-4c40-afe6-3ef09b38092e" height="48" title="perl"> | <img src="https://github.com/user-attachments/assets/7cbb44f4-36ad-4c57-9948-6ee0e65a39a7" height="48" title="ruby"> | <img src="https://github.com/user-attachments/assets/70dd0bf6-4d99-4a05-8a19-aeef84c5f568" height="48" title="php"> | <img src="https://github.com/user-attachments/assets/5199af82-a7f1-4867-a731-304960b013fc" height="48" title="groovy"> | <img src="https://github.com/user-attachments/assets/8faf05cb-9e13-46ab-b148-14be937d9d4e" height="48" title="lua"> | <img src="https://github.com/user-attachments/assets/5c3fa94a-60b9-46c6-9a10-9498e98c2811" height="48" title="go"> |
+|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+| <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> | <img src="https://github.com/user-attachments/assets/7cf707a8-2987-43df-bb68-038e53b9c8e6" height="24" alt="supported"> |
+| **Windows · Linux** | **Windows · Linux** | **Windows · Linux** | **Windows · Linux** | **Windows · Linux** | **Windows · Linux** |
+
+`batch` exists only on Windows and `zsh` only on Linux (or WSL); everything else runs on both.
+The application says which interpreter it looked for when one is missing, instead of failing
+with a raw system error, and it matches line endings to the interpreter — a shell script
+written on Windows would otherwise break on every line.
+
+Most interpreters have to be installed separately. Two conveniences worth knowing: `bash`
+on Windows is located automatically in Git for Windows or WSL, even though neither is on
+`PATH`, and `php` gets its opening `<?php` tag added when the model omits it.
 
 ## Application UI
 ![Chat window](docs/chat.png)
