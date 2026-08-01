@@ -9,6 +9,21 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+### Added
+
+- **Releases now ship a portable ZIP, and that is the artifact to use.** Unpack it and run
+  `AIDemon2.exe` — no installer, no .NET runtime needed, nothing written outside
+  `%LOCALAPPDATA%\AIDemon2\`. About 42 MB, self-contained.
+
+### Fixed
+
+- **Previous releases could not be installed at all.** The MSIX shipped unsigned, and Windows
+  refuses a package with no trust chain outright — not a warning to click through, but a flat
+  refusal. `CONTRIBUTING.md` compounded this by claiming the unsigned package was "installable
+  via the bundled `Add-AppDevPackage.ps1`", which was wrong on both counts: that script is not
+  in the release, and it would not have helped. The MSIX is still published for the day a
+  certificate is available, and both files now say plainly which one to use.
+
 ## [2.0.1] - 2026-08-01
 
 ### Fixed
