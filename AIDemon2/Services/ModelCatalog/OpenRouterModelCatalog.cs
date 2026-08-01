@@ -72,12 +72,12 @@ public sealed class OpenRouterModelCatalog : IModelCatalog
 		var zDysku = SprobujOdczytacKopie();
 		if (zDysku is { Count: > 0 })
 		{
-			_logger.LogInformation("Lista modeli z kopii na dysku ({Liczba}).", zDysku.Count);
+			_logger.LogInformation("Model list loaded from the on-disk cache ({Count}).", zDysku.Count);
 			_wPamieci = zDysku;
 			return zDysku;
 		}
 
-		_logger.LogWarning("Brak sieci i kopii listy modeli — używam listy awaryjnej.");
+		_logger.LogWarning("No network and no cached model list; falling back to the built-in list.");
 		_wPamieci = ListaAwaryjna;
 		return ListaAwaryjna;
 	}
@@ -89,7 +89,7 @@ public sealed class OpenRouterModelCatalog : IModelCatalog
 			using var odpowiedz = await _http.GetAsync("models", cancellationToken);
 			if (!odpowiedz.IsSuccessStatusCode)
 			{
-				_logger.LogWarning("Pobranie listy modeli zwróciło {Kod}.", (int)odpowiedz.StatusCode);
+				_logger.LogWarning("Fetching the model list returned {StatusCode}.", (int)odpowiedz.StatusCode);
 				return null;
 			}
 
@@ -106,7 +106,7 @@ public sealed class OpenRouterModelCatalog : IModelCatalog
 			// w trakcie czytania ciała), a OperationCanceledException — TaskCanceledException
 			// z przekroczonego limitu czasu. Bez nich wyjątek uciekał z metody, która
 			// w kontrakcie interfejsu deklaruje, że nigdy nie rzuca.
-			_logger.LogWarning(ex, "Nie udało się pobrać listy modeli z OpenRoutera.");
+			_logger.LogWarning(ex, "Could not fetch the model list from OpenRouter.");
 			return null;
 		}
 	}
@@ -133,7 +133,7 @@ public sealed class OpenRouterModelCatalog : IModelCatalog
 		catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
 		{
 			// Kopia to wygoda, nie wymóg — brak zapisu nie może przerwać działania.
-			_logger.LogWarning(ex, "Nie udało się zapisać kopii listy modeli.");
+			_logger.LogWarning(ex, "Could not write the model list cache.");
 		}
 	}
 
@@ -147,7 +147,7 @@ public sealed class OpenRouterModelCatalog : IModelCatalog
 		}
 		catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
 		{
-			_logger.LogWarning(ex, "Nie udało się odczytać kopii listy modeli.");
+			_logger.LogWarning(ex, "Could not read the model list cache.");
 			return null;
 		}
 	}

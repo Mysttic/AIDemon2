@@ -126,9 +126,9 @@ public partial class RightPanelViewModel : ObservableObject
 			return;
 
 		if (!await _dialogService.ShowConfirmationDialog(
-				"Usuń z ulubionych",
-				"Wiadomość zniknie z listy ulubionych, a jej treść wróci do pierwotnej wersji. " +
-				"Sama wiadomość zostanie w rozmowie. Kontynuować?"))
+				"Remove from favourites",
+				"The message will be taken off the favourites list and its text restored to " +
+				"the original version. The message itself stays in the conversation. Continue?"))
 			return;
 
 		MessageContent = string.Empty;
@@ -161,7 +161,7 @@ public partial class RightPanelViewModel : ObservableObject
 		if (SelectedMessage != null)
 		{
 			await _messageExportService.ExportMessageAsScriptAsync(SelectedMessage);
-			await _dialogService.ShowConfirmationDialog("Eksport", "Script exported successfully.", true);
+			await _dialogService.ShowConfirmationDialog("Export", "Script exported successfully.", true);
 		}
 	}
 }

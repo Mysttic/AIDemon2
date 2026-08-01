@@ -21,7 +21,7 @@ public class DialogService : IDialogService
 	/// </summary>
 	private Window RequireWindow() =>
 		_mainWindow ?? throw new InvalidOperationException(
-			"DialogService nie został zainicjalizowany oknem głównym.");
+			"DialogService was not initialised with a main window.");
 
 	public async Task<bool> ShowConfirmationDialog(string title, string message, bool oneDecision = false)
 	{
@@ -41,33 +41,33 @@ public class DialogService : IDialogService
 	{
 		var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
 		{
-			ContentTitle = "Wybierz format eksportu",
-			ContentMessage = "Wybierz format, w którym chcesz zapisać wiadomości:",
+			ContentTitle = "Choose export format",
+			ContentMessage = "Pick the format to save the messages in:",
 			ButtonDefinitions = new[]
 			{
 				new ButtonDefinition { Name = "JSON", IsDefault = true },
 				new ButtonDefinition { Name = "CSV" },
-				new ButtonDefinition { Name = "Anuluj", IsCancel = true }
+				new ButtonDefinition { Name = "Cancel", IsCancel = true }
 			},
 			Icon = Icon.Question
 		});
 
 		var result = await messageBox.ShowAsPopupAsync(RequireWindow());
-		// Zamknięcie okna krzyżykiem oddaje pusty ciąg, nie "Anuluj".
-		return string.IsNullOrEmpty(result) || result == "Anuluj" ? null : result.ToLower();
+		// Zamknięcie okna krzyżykiem oddaje pusty ciąg, nie "Cancel".
+		return string.IsNullOrEmpty(result) || result == "Cancel" ? null : result.ToLower();
 	}
 
 	public Task<string?> SelectMessagesExportFilePath(string format) =>
 		SelectFilePath("messages", format, new[]
 		{
-			new FilePickerFileType("Pliki JSON") { Patterns = new[] { "*.json" } },
-			new FilePickerFileType("Pliki CSV") { Patterns = new[] { "*.csv" } }
+			new FilePickerFileType("JSON files") { Patterns = new[] { "*.json" } },
+			new FilePickerFileType("CSV files") { Patterns = new[] { "*.csv" } }
 		});
 
 	public Task<string?> SelectMessageScriptExportFilePath(string language, string format) =>
 		SelectFilePath($"{language} script {DateTime.Now.ToShortDateString()}", format, new[]
 		{
-			new FilePickerFileType($"Plik {language}") { Patterns = new[] { $"*.{format}" } }
+			new FilePickerFileType($"{language} file") { Patterns = new[] { $"*.{format}" } }
 		});
 
 	/// <summary>
@@ -81,7 +81,7 @@ public class DialogService : IDialogService
 	{
 		var file = await RequireWindow().StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
 		{
-			Title = "Zapisz wiadomości",
+			Title = "Save messages",
 			FileTypeChoices = fileTypes,
 			DefaultExtension = format,
 			SuggestedFileName = $"{initialName}.{format}"

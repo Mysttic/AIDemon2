@@ -9,6 +9,18 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The interface mixed two languages.** Button labels were English, but everything that
+  appears after an action was still Polish: the confirmation for removing a message from
+  favourites, the export format chooser and its "Anuluj" button, the save-file dialog and
+  its filter names, and the error messages shown in the conversation — a missing API key,
+  no selected model, a failed connection. Startup failures (database, SQLCipher re-keying)
+  and the reasons a language is unavailable on the current system were Polish too, as were
+  the log entries. All of it is English now; only source comments stay Polish.
+- A long model identifier ran into the timestamp in the message bubble
+  (`openai/gpt-oss-20b:free14:00:00`). The name is now ellipsised and given a gap.
+
 ## [2.0.0] - 2026-08-01
 
 > **Upgrading from 1.0.x requires one manual step.** The application no longer uses io.net;

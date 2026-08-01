@@ -52,7 +52,7 @@ public class ChatServiceTests : IDisposable
 		var wyjatek = await Assert.ThrowsAsync<ChatServiceException>(
 			() => service.SendMessageAsync(new Message("czesc")));
 
-		Assert.Contains("klucza API", wyjatek.Message);
+		Assert.Contains("API key", wyjatek.Message);
 	}
 
 	[Fact]
@@ -185,7 +185,7 @@ public class ChatServiceTests : IDisposable
 		var wyjatek = await Assert.ThrowsAsync<ChatServiceException>(
 			() => service.SendMessageAsync(new Message("czesc")));
 
-		Assert.Contains("modelu AI", wyjatek.Message);
+		Assert.Contains("AI model", wyjatek.Message);
 	}
 
 	[Fact]

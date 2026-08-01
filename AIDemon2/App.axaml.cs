@@ -21,7 +21,7 @@ public partial class App : Application
 		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
 			if (Resources["Services"] is not IServiceProvider serviceProvider)
-				throw new InvalidOperationException("Kontener zależności nie został osadzony w zasobach aplikacji.");
+				throw new InvalidOperationException("The dependency container was not placed in the application resources.");
 
 			var dialogService = serviceProvider.GetRequiredService<IDialogService>();
 
@@ -44,7 +44,7 @@ public partial class App : Application
 				}
 				catch (Exception ex)
 				{
-					logger.LogError(ex, "Wczytanie danych startowych nie powiodło się");
+					logger.LogError(ex, "Loading the initial data failed");
 				}
 			};
 		}

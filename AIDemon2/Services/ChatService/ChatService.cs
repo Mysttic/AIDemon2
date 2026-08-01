@@ -37,17 +37,17 @@ public class ChatService : IChatService
 		// catch(Exception), który zamieniał go na „problem z połączeniem".
 		_settings = await _settingsRepository.Get()
 			?? throw new ChatServiceException(
-				"Brak ustawień aplikacji w bazie — nie da się wysłać wiadomości.");
+				"Application settings are missing from the database, so no message can be sent.");
 
 		if (string.IsNullOrWhiteSpace(_settings.ApiKey))
 			throw new ChatServiceException(
-				"Nie ustawiono klucza API. Uzupełnij go w ustawieniach aplikacji.");
+				"No API key is set. Add one in the application settings.");
 
 		// Bez modelu żądanie leciało do API z pustym polem "model" i wracało
 		// nieczytelnym błędem HTTP. Lepiej powiedzieć wprost, czego brakuje.
 		if (string.IsNullOrWhiteSpace(_settings.AIModel))
 			throw new ChatServiceException(
-				"Nie wybrano modelu AI. Wskaż go w ustawieniach aplikacji.");
+				"No AI model is selected. Pick one in the application settings.");
 
 		_client = _clientFactory(_settings.ApiKey);
 	}
@@ -96,17 +96,17 @@ public class ChatService : IChatService
 			// Klient OpenRoutera zna powód (zły klucz, brak środków, limit zapytań)
 			// i ma gotowy komunikat. Owijanie go w ogólnik "sprawdź klucz i sieć"
 			// gubiłoby tę informację — logujemy i przepuszczamy bez zmian.
-			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
+			_logger.LogError(ex, "Call to the AI service failed (model {Model})", settings.AIModel);
 			throw;
 		}
 		catch (Exception ex)
 		{
 			// Wcześniej ten blok połykał KAŻDY wyjątek i zapisywał komunikat błędu do bazy
 			// jako odpowiedź AI — nie do odróżnienia od prawdziwej, również w eksporcie.
-			_logger.LogError(ex, "Wywołanie usługi AI nie powiodło się (model {Model})", settings.AIModel);
+			_logger.LogError(ex, "Call to the AI service failed (model {Model})", settings.AIModel);
 
 			throw new ChatServiceException(
-				"Nie udało się połączyć z usługą AI. Sprawdź klucz API i połączenie z siecią.", ex);
+				"Could not reach the AI service. Check your API key and network connection.", ex);
 		}
 
 		var aiMessage = new Message

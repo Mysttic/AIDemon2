@@ -54,12 +54,12 @@ internal class Program
 
 		AppDomain.CurrentDomain.UnhandledException += (_, e) =>
 			logger.LogCritical(e.ExceptionObject as Exception,
-				"Nieobsłużony wyjątek; zamykanie aplikacji: {Terminating}", e.IsTerminating);
+				"Unhandled exception; terminating: {Terminating}", e.IsTerminating);
 
 		// Wyjątek z zadania, na które nikt nie czekał (typowo "_ = SomethingAsync()").
 		TaskScheduler.UnobservedTaskException += (_, e) =>
 		{
-			logger.LogError(e.Exception, "Nieobserwowany wyjątek zadania w tle");
+			logger.LogError(e.Exception, "Unobserved exception in a background task");
 			e.SetObserved();
 		};
 	}
@@ -120,19 +120,19 @@ internal class Program
 			using var dbContext = contextFactory.CreateDbContext();
 			dbContext.Database.Migrate();
 
-			logger.LogInformation("Baza gotowa: {Sciezka}", DatabaseLocation.DatabasePath);
+			logger.LogInformation("Database ready: {Path}", DatabaseLocation.DatabasePath);
 		}
 		catch (Exception ex)
 		{
 			// Ten kod wykonuje się PRZED pokazaniem okna. Bez tego bloku każdy problem
 			// z bazą — brak uprawnień do katalogu, uszkodzony plik, zły klucz — kończył
 			// się zamknięciem procesu bez jakiegokolwiek komunikatu i bez śladu w logu.
-			logger.LogCritical(ex, "Nie udało się przygotować bazy danych ({Sciezka})",
+			logger.LogCritical(ex, "Could not prepare the database ({Path})",
 				DatabaseLocation.DatabasePath);
 
 			throw new InvalidOperationException(
-				$"Nie udało się otworzyć bazy danych w {DatabaseLocation.DatabasePath}. " +
-				$"Szczegóły zapisano w {FileLoggerProvider.DefaultDirectory}.", ex);
+				$"Could not open the database at {DatabaseLocation.DatabasePath}. " +
+				$"Details were written to {FileLoggerProvider.DefaultDirectory}.", ex);
 		}
 	}
 

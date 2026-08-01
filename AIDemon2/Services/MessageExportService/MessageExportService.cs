@@ -67,14 +67,14 @@ public class MessageExportService : IMessageExportService
 	{
 		if (string.IsNullOrWhiteSpace(message.ProgrammingLanguage) || string.IsNullOrWhiteSpace(message.MessageContent))
 		{
-			throw new InvalidOperationException("Wiadomość nie zawiera języka programowania ani treści.");
+			throw new InvalidOperationException("The message has neither a programming language nor any content.");
 		}
 
 		// Pobierz rozszerzenie dla języka
 		string extension = message.ProgrammingLanguage.ProgrammingLanguageExtension();
 		if (extension == null)
 		{
-			throw new InvalidOperationException($"Nieobsługiwany język: {message.ProgrammingLanguage}");
+			throw new InvalidOperationException($"Unsupported language: {message.ProgrammingLanguage}");
 		}
 
 		// Wybierz miejsce zapisu

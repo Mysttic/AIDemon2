@@ -26,7 +26,7 @@ public static class ProgrammingLanguageConfig
 			throw new FileNotFoundException("ProgrammingLanguages.json not found in embedded resources.");
 
 		using Stream stream = assembly.GetManifestResourceStream(resourceName)
-			?? throw new FileNotFoundException($"Nie udało się otworzyć zasobu {resourceName}.");
+			?? throw new FileNotFoundException($"Could not open embedded resource {resourceName}.");
 		using StreamReader reader = new StreamReader(stream);
 		string json = reader.ReadToEnd();
 
@@ -80,7 +80,7 @@ public static class ProgrammingLanguageConfig
 
 	public static string UnsupportedReason(this string language) =>
 		language.ForCurrentPlatform()?.UnsupportedReason
-		?? $"Język '{language}' nie jest obsługiwany na tym systemie.";
+		?? $"Language '{language}' is not supported on this system.";
 
 	public class LanguageInfo
 	{

@@ -63,7 +63,7 @@ public partial class MainViewModel : ObservableObject
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Odświeżenie listy po wyczyszczeniu historii nie powiodło się");
+			_logger.LogError(ex, "Refreshing the list after clearing the history failed");
 		}
 	}
 
@@ -100,7 +100,7 @@ public partial class MainViewModel : ObservableObject
 		}
 		catch (ChatServiceException ex)
 		{
-			_logger.LogError(ex, "Nie udało się uzyskać odpowiedzi od usługi AI");
+			_logger.LogError(ex, "Could not get a reply from the AI service");
 
 			// Komunikat widoczny w rozmowie, ale NIEzapisany do bazy: wcześniej
 			// tekst błędu lądował w historii jako pełnoprawna odpowiedź modelu
