@@ -9,6 +9,8 @@ GitHub release, so write it for people.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-08-01
+
 ### Fixed
 
 - **The interface mixed two languages.** Button labels were English, but everything that
@@ -163,5 +165,6 @@ GitHub release, so write it for people.
   combined with `[STAThread]` is actively wrong: a continuation resumes on a pool thread
   that is not STA.
 
-[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Mysttic/AIDemon2/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Mysttic/AIDemon2/releases/tag/v2.0.0
