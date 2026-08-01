@@ -113,8 +113,9 @@ public class ChatService : IChatService
 		{
 			MessageContent = responseText,
 			OriginalMessage = responseText,
-			CreationDate = DateTime.UtcNow,
-			ModificationDate = DateTime.UtcNow,
+			// Bez CreationDate/ModificationDate: konstruktor encji nadaje obie z jednego
+			// odczytu zegara. Nadpisanie ich tutaj dwoma osobnymi odczytami sprawiało,
+			// że odpowiedź modelu od razu uchodziła za zmodyfikowaną.
 			AIModel = settings.AIModel,
 			ProgrammingLanguage = string.IsNullOrEmpty(settings.ProgrammingLanguage) ? string.Empty : settings.ProgrammingLanguage,
 			IsUserMessage = false,

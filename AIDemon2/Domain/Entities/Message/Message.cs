@@ -90,8 +90,8 @@ public class Message : EntityBase, IMessage
 	{
 		MessageContent = messageContent;
 		OriginalMessage = messageContent;
-		CreationDate = DateTime.UtcNow;
-		ModificationDate = DateTime.UtcNow;
+		// Dat tu nie ustawiamy — konstruktor bazowy nadał już obie, i to jednym
+		// odczytem zegara. Powtórzenie ich w tym miejscu rozjeżdżało je z powrotem.
 		AIModel = null;
 		IsUserMessage = isUserMessage;
 	}
