@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
@@ -8,6 +8,8 @@ The `## [X.Y.Z]` heading is read by `release.yml` and becomes the body of the
 GitHub release, so write it for people.
 
 ## [Unreleased]
+
+## [2.0.0] - 2026-08-01
 
 > **Upgrading from 1.0.x requires one manual step.** The application no longer uses io.net;
 > it talks to [OpenRouter](https://openrouter.ai). Create an account there, generate an API
@@ -149,4 +151,5 @@ GitHub release, so write it for people.
   combined with `[STAThread]` is actively wrong: a continuation resumes on a pool thread
   that is not STA.
 
-[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v1.0.45...HEAD
+[Unreleased]: https://github.com/Mysttic/AIDemon2/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Mysttic/AIDemon2/releases/tag/v2.0.0
