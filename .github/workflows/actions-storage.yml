@@ -1,0 +1,151 @@
+name: Actions storage
+
+# GitHub counts build artifacts and run logs against a single storage quota
+# shared by the whole account rather than by repository, so one repository
+# filling it stops uploads everywhere. Each repository sweeps its own share.
+#
+# Nothing swept here is a download anybody depends on: everything a release
+# ships lives in a GitHub Release, and artifacts only ever carry previews of a
+# build. Runs keep their record - status, commit, timing; only the log archive
+# goes.
+
+on:
+  schedule:
+    - cron: "40 3 * * *"
+  workflow_dispatch:
+    inputs:
+      artifact_days:
+        description: "Delete artifacts older than this many days (0 deletes all of them)"
+        required: false
+        default: "7"
+      log_days:
+        description: "Delete run logs older than this many days (0 all, -1 keeps every log)"
+        required: false
+        default: "30"
+      dry_run:
+        description: "Report what would go and delete nothing"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  actions: write
+
+concurrency:
+  group: actions-storage
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    name: Delete expired artifacts and logs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          ARTIFACT_DAYS: ${{ inputs.artifact_days || '7' }}
+          LOG_DAYS: ${{ inputs.log_days || '30' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const artifactDays = Number(process.env.ARTIFACT_DAYS);
+            const logDays = Number(process.env.LOG_DAYS);
+            const dryRun = process.env.DRY_RUN === 'true';
+
+            if (!Number.isFinite(artifactDays) || !Number.isFinite(logDays)) {
+              core.setFailed('artifact_days and log_days have to be numbers.');
+              return;
+            }
+
+            const now = Date.now();
+            const ageDays = (stamp) => (now - Date.parse(stamp)) / 86400000;
+            const mib = (bytes) => (bytes / 1048576).toFixed(1);
+
+            // Artifacts. An expired one has already been freed by GitHub, so it
+            // is left alone - deleting it would only spend an API call.
+            const artifacts = await github.paginate(
+              github.rest.actions.listArtifactsForRepo,
+              { owner, repo, per_page: 100 }
+            );
+
+            let artifactsGone = 0;
+            let bytesFreed = 0;
+            let artifactsKept = 0;
+
+            for (const artifact of artifacts) {
+              if (artifact.expired) continue;
+              if (ageDays(artifact.created_at) < artifactDays) {
+                artifactsKept += 1;
+                continue;
+              }
+              if (dryRun) {
+                core.info(`would delete artifact ${artifact.name} (${mib(artifact.size_in_bytes)} MiB)`);
+              } else {
+                try {
+                  await github.rest.actions.deleteArtifact({
+                    owner, repo, artifact_id: artifact.id
+                  });
+                } catch (error) {
+                  // A parallel run of this workflow, or GitHub's own expiry,
+                  // may have taken it already. Not a reason to fail the sweep.
+                  core.info(`artifact ${artifact.name}: ${error.status || ''} ${error.message}`);
+                  continue;
+                }
+              }
+              artifactsGone += 1;
+              bytesFreed += artifact.size_in_bytes;
+            }
+
+            // Logs. deleteWorkflowRunLogs removes the archive and keeps the run,
+            // so the history of what ran and how it ended survives the sweep.
+            // The API answers 404 or 500 for a run whose logs are already gone,
+            // which is the normal case on every sweep after the first.
+            let logsGone = 0;
+            let logsSkipped = 0;
+
+            if (logDays >= 0) {
+              const runs = await github.paginate(
+                github.rest.actions.listWorkflowRunsForRepo,
+                { owner, repo, per_page: 100, status: 'completed' },
+                (response, done) => {
+                  // Runs come back newest first, so once a page is entirely
+                  // inside the window there is nothing older worth fetching.
+                  if (response.data.every(run => ageDays(run.created_at) < logDays)) done();
+                  return response.data;
+                }
+              );
+
+              for (const run of runs) {
+                if (ageDays(run.created_at) < logDays) continue;
+                if (dryRun) {
+                  core.info(`would delete logs of run ${run.id} (${run.name})`);
+                  logsGone += 1;
+                  continue;
+                }
+                try {
+                  await github.rest.actions.deleteWorkflowRunLogs({
+                    owner, repo, run_id: run.id
+                  });
+                  logsGone += 1;
+                } catch (error) {
+                  logsSkipped += 1;
+                }
+              }
+            }
+
+            const heading = dryRun ? 'Would delete' : 'Deleted';
+            await core.summary
+              .addHeading(`${heading} in ${owner}/${repo}`, 3)
+              .addTable([
+                [{ data: 'What', header: true }, { data: 'Count', header: true }, { data: 'Size', header: true }],
+                ['Artifacts', String(artifactsGone), `${mib(bytesFreed)} MiB`],
+                ['Run logs', String(logsGone), 'not reported by the API'],
+              ])
+              .addRaw(
+                `Kept: ${artifactsKept} artifacts younger than ${artifactDays} days` +
+                (logDays < 0 ? ', every log.' : `, logs younger than ${logDays} days.`) +
+                (logsSkipped ? ` ${logsSkipped} runs had no log archive left.` : '')
+              )
+              .write();
