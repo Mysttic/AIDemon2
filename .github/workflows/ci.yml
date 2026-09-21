@@ -1,17 +1,57 @@
 name: ci
 
-# Tylko pull requesty. Commity na develop nie odpalają testów, bo te same zmiany
-# przeszły już przez PR; stan master przed wydaniem sprawdza release.yml, który
+# Testy uruchamiają się WYŁĄCZNIE przy pull requeście z develop do master.
+# Commity na develop i na gałęziach roboczych nie odpalają niczego (brak
+# triggera push); stan master przed wydaniem sprawdza release.yml, który
 # uruchamia testy przed opublikowaniem czegokolwiek.
 on:
   pull_request:
+    # Filtruje wyłącznie gałąź DOCELOWĄ. Gałąź źródłową odsiewa `if:` w jobie —
+    # GitHub nie ma dla niej filtra w `on:`.
+    branches: [master]
+    # PR dotykający wyłącznie dokumentacji nie rozgrzewa runnera Windows.
+    # Uwaga: gdyby `ci` został kiedyś ustawiony jako WYMAGANY check w ochronie
+    # gałęzi, taki PR nie uruchomi workflow w ogóle i check zostanie na zawsze
+    # w stanie "pending", blokując merge — wtedy ten filtr trzeba przenieść
+    # do warunku `if:` niżej.
+    # Lista jest JAWNA, bez `**/*.md`: CHANGELOG.md musi uruchamiać workflow,
+    # bo jest wejściem bramki wydawniczej — krok `Release readiness` niżej
+    # woła tools/Release.ps1 -Command check, który waliduje sekcję
+    # `## [Unreleased]`. Pod wzorcem `**/*.md` PR poprawiający sam changelog
+    # nie odpalałby nic, a błąd wyszedłby dopiero w release.yml na master,
+    # już po zapłaceniu za build i testy na runnerze Windows.
+    paths-ignore:
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - '.github/pull_request_template.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
   workflow_dispatch:
+
+# Kolejny commit dopchnięty do otwartego PR-a przerywa poprzedni, już nieaktualny
+# przebieg, zamiast pozwalać mu dobiec do końca na runnerze rozliczanym 2x.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     # windows, nie ubuntu: TargetFramework to net8.0-windows10.0.26100.0
     # i na Linuksie nie da się tego zbudować.
     runs-on: windows-2022
+    # Bez tego zawieszony `dotnet test` spala domyślny limit 6 h, czyli 720
+    # rozliczanych minut (mnożnik 2x) z jednego przebiegu.
+    timeout-minutes: 20
+    # `workflow_dispatch` musi tu być, bo przy ręcznym uruchomieniu head_ref
+    # jest puste i job zostałby pominięty.
+    #
+    # Konsekwencja przyjęta świadomie: PR do master z gałęzi innej niż develop
+    # nie uruchomi żadnego joba, a GitHub zaraportuje taki przebieg jako
+    # ZIELONY (pominięty job liczy się jako sukces). Nie ma tu joba-zaślepki,
+    # który robiłby z tego wynik czerwony. Bramką jakości przed publikacją
+    # pozostaje release.yml — on uruchamia testy przed każdym wydaniem.
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'develop'
 
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +59,18 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+
+      # Cache pakietów trzymany wprost przez actions/cache, a nie przez
+      # `cache: true` w setup-dotnet: tamto wymaga plików packages.lock.json,
+      # których to repo nie ma. Klucz po plikach projektów i po centralnym
+      # pliku wersji (CPM) — podbicie wersji pakietu tworzy nowy wpis.
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
       - name: Restore
         # Osobno dwa projekty, NIE cała solucja: AIDemon2.sln zawiera wapproj,
