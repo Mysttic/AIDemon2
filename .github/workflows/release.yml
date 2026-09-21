@@ -19,33 +19,73 @@ concurrency:
 jobs:
   release:
     runs-on: windows-2022
+    # Najdłuższe i najbardziej ryzykowne kroki w repo to pakowanie MSIX
+    # i self-contained publish. Bez limitu zawieszony przebieg liczy się
+    # domyślnie przez 6 h, na Windowsie z mnożnikiem 2x.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # Bramka wersji pyta o tagi ZDALNE repozytorium (`git ls-remote`
+          # w kroku `Read version`), a commit i tag wydania dopychają się
+          # także z płytkiego klonu — pełna historia nie jest tu do niczego
+          # potrzebna. `fetch-tags: true` celowo tu NIE ma: przy
+          # `fetch-depth: 1` checkout i tak nie sprowadza tagów wskazujących
+          # na starsze commity, więc ta opcja niczego by nie dawała.
+          fetch-depth: 1
 
-      - uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: global.json
-
-      # wapproj wymaga targetów DesktopBridge z Visual Studio — nie ma ich w SDK.
-      # Obraz windows-2022 zawiera komponent Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging.
-      - uses: microsoft/setup-msbuild@v2
-
+      # Bramka wersji stoi PRZED instalacją SDK i MSBuilda: scalenie na master,
+      # które nie jest wydaniem, kończy się po kilkunastu sekundach, zamiast
+      # płacić za rozgrzewanie runnera Windows tylko po to, żeby stwierdzić,
+      # że nie ma czego wydać. Skrypt czyta wyłącznie plik VERSION i nie
+      # wymaga zainstalowanego dotneta.
       - name: Read version
         id: version
         shell: pwsh
         run: |
           $v = pwsh tools/Release.ps1 -Command version
           "number=$v" | Out-File $env:GITHUB_OUTPUT -Append
-          if (git tag --list "v$v") {
+          # Pytamy o tagi ZDALNE repozytorium, nie lokalny magazyn tagów:
+          # przy `fetch-depth: 1` checkout nie sprowadza tagów, więc
+          # `git tag --list` zawsze widziałby pustkę i bramka przepuszczałaby
+          # KAŻDE scalenie na master, łącznie z tymi bez podbitej wersji.
+          $existing = git ls-remote --tags origin "refs/tags/v$v"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Cannot reach origin to check tag v$v - refusing to release blindly."
+          }
+          if ($existing) {
             Write-Host "Tag v$v already exists - nothing to release."
             "publish=no" | Out-File $env:GITHUB_OUTPUT -Append
           } else {
             Write-Host "Version $v has not been released yet."
             "publish=yes" | Out-File $env:GITHUB_OUTPUT -Append
           }
+
+      - uses: actions/setup-dotnet@v4
+        if: steps.version.outputs.publish == 'yes'
+        with:
+          global-json-file: global.json
+
+      # Cache pakietów wprost przez actions/cache: `cache: true` w setup-dotnet
+      # wymaga plików packages.lock.json, których to repo nie ma. Osobny człon
+      # "release" w kluczu, bo tutaj do ~/.nuget/packages dochodzi jeszcze
+      # runtime pack win-x64 z self-contained publish; `restore-keys` pozwala
+      # odzyskać wpis zapisany przez ci.yml, zanim powstanie własny.
+      - name: Cache NuGet packages
+        if: steps.version.outputs.publish == 'yes'
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-release-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'Directory.Build.props', 'global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-release-
+            nuget-${{ runner.os }}-
+
+      # wapproj wymaga targetów DesktopBridge z Visual Studio — nie ma ich w SDK.
+      # Obraz windows-2022 zawiera komponent Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging.
+      - uses: microsoft/setup-msbuild@v2
+        if: steps.version.outputs.publish == 'yes'
 
       - name: Test
         if: steps.version.outputs.publish == 'yes'
@@ -138,7 +178,9 @@ jobs:
           "Portable ZIP: {0:N1} MB" -f ((Get-Item $zip).Length / 1MB)
 
       - name: Remove certificate
-        if: always()
+        # always(), ale z powtórzonym warunkiem bramki — inaczej krok odpalałby
+        # się także w przebiegach, w których certyfikat nigdy nie powstał.
+        if: always() && steps.version.outputs.publish == 'yes'
         shell: pwsh
         run: Remove-Item (Join-Path $env:RUNNER_TEMP 'sign.pfx') -ErrorAction SilentlyContinue
 
