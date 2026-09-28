@@ -74,9 +74,16 @@ automation — never by hand.**
 Merging without changing `VERSION` releases nothing — the change lands on `master`
 and waits for the next release.
 
+If the release run fails (tests, or a concurrent merge rejected the release commit),
+fix it and then run Actions → release → Run workflow on `master` — merging the fix
+alone does not retry the release. Do the same if no release run appears after
+merging a `VERSION` bump (GitHub checks the path filter against at most the first
+300 changed files of a push).
+
 ### What the automation does
 
-[release.yml](.github/workflows/release.yml) runs on every push to `master` and:
+[release.yml](.github/workflows/release.yml) runs on every push to `master` that
+changes `VERSION` (or manually via Actions → release → Run workflow) and:
 
 1. reads the number from `VERSION`;
 2. **stops with no effect if the tag `vX.Y.Z` already exists** — this is the gate

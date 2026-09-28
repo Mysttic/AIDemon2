@@ -1,12 +1,27 @@
 name: release
 
-# Wydanie wyzwala SCALENIE na master. Nie ma ręcznego tagowania — tag zakłada
-# automat. Bramką jest numer w pliku VERSION: jeśli tag dla tej wersji już istnieje,
-# przebieg kończy się bez żadnego skutku. Dzięki temu scalenie niezwiązane
-# z wydaniem niczego nie publikuje, a ponowne uruchomienie jest bezpieczne.
+# Wydanie wyzwala SCALENIE na master, które zmienia plik VERSION. Nie ma ręcznego
+# tagowania — tag zakłada automat. Bramką jest numer w pliku VERSION: jeśli tag dla
+# tej wersji już istnieje, przebieg kończy się bez żadnego skutku. Dzięki temu
+# scalenie niezwiązane z wydaniem niczego nie publikuje, a ponowne uruchomienie
+# jest bezpieczne.
 on:
   push:
     branches: [master]
+    # Filtr WYŁĄCZNIE na plik, z którego bramka czyta wersję (job `guard` niżej
+    # woła tools/Release.ps1 -Command version, a ten czyta tylko VERSION).
+    # Bez filtra każde scalenie na master startowało runner tylko po to, żeby
+    # bramka stwierdziła "nic do wydania" — a job jest rozliczany od samego
+    # startu (minimum 1 minuta). Skutki, przyjęte świadomie:
+    # - push, który nie rusza VERSION, nie uruchamia NICZEGO — także zmiana
+    #   samego tego pliku workflow; tę sprawdza się przez Run workflow;
+    # - wydanie, które padło przed założeniem tagu (np. na testach), NIE ponowi
+    #   się samo przy następnym scaleniu bez zmiany VERSION. Ponowienie (także
+    #   po scaleniu poprawki) to Actions -> release -> Run workflow na master;
+    #   bramka tagu działa wtedy tak samo, więc jest to bezpieczne. Ten workflow
+    #   nie ma wejścia `force` — ręczne uruchomienie też przechodzi przez bramkę.
+    paths:
+      - 'VERSION'
   workflow_dispatch:
 
 permissions:
@@ -17,34 +32,43 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    runs-on: windows-2022
-    # Najdłuższe i najbardziej ryzykowne kroki w repo to pakowanie MSIX
-    # i self-contained publish. Bez limitu zawieszony przebieg liczy się
-    # domyślnie przez 6 h, na Windowsie z mnożnikiem 2x.
-    timeout-minutes: 45
+  # Bramka wersji to osobny, lekki job na ubuntu, a nie krok w jobie Windows:
+  # przypadek "VERSION ruszony, ale tag tej wersji już jest" (np. poprawka
+  # formatowania pliku) kosztuje 1 minutę ubuntu zamiast rozgrzania runnera
+  # Windows rozliczanego z mnożnikiem 2x. Skrypt czyta wyłącznie plik VERSION
+  # i nie wymaga dotneta; pwsh jest preinstalowany na ubuntu-latest.
+  # Uwaga przy ponawianiu: "Re-run failed jobs" powtarza sam job `release`
+  # z ZAPAMIĘTANĄ decyzją bramki; żeby bramka sprawdziła tagi od nowa, użyj
+  # "Re-run all jobs" albo Run workflow.
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.number }}
+      publish: ${{ steps.version.outputs.publish }}
 
     steps:
       - uses: actions/checkout@v4
         with:
-          # Bramka wersji pyta o tagi ZDALNE repozytorium (`git ls-remote`
-          # w kroku `Read version`), a commit i tag wydania dopychają się
-          # także z płytkiego klonu — pełna historia nie jest tu do niczego
+          # Bramka pyta o tagi ZDALNE repozytorium (`git ls-remote` w kroku
+          # `Read version`), więc pełna historia nie jest tu do niczego
           # potrzebna. `fetch-tags: true` celowo tu NIE ma: przy
           # `fetch-depth: 1` checkout i tak nie sprowadza tagów wskazujących
           # na starsze commity, więc ta opcja niczego by nie dawała.
           fetch-depth: 1
 
-      # Bramka wersji stoi PRZED instalacją SDK i MSBuilda: scalenie na master,
-      # które nie jest wydaniem, kończy się po kilkunastu sekundach, zamiast
-      # płacić za rozgrzewanie runnera Windows tylko po to, żeby stwierdzić,
-      # że nie ma czego wydać. Skrypt czyta wyłącznie plik VERSION i nie
-      # wymaga zainstalowanego dotneta.
       - name: Read version
         id: version
         shell: pwsh
         run: |
           $v = pwsh tools/Release.ps1 -Command version
+          # Niezerowy kod wyjścia procesu potomnego nie przerywa kroku (pwsh 7.4:
+          # $PSNativeCommandUseErrorActionPreference = $false), a `git ls-remote`
+          # niżej nadpisałby $LASTEXITCODE — bez tego sprawdzenia zły VERSION
+          # dawałby publish=yes i rozgrzewał runner Windows.
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($v)) {
+            throw "Cannot read VERSION - refusing to release."
+          }
           "number=$v" | Out-File $env:GITHUB_OUTPUT -Append
           # Pytamy o tagi ZDALNE repozytorium, nie lokalny magazyn tagów:
           # przy `fetch-depth: 1` checkout nie sprowadza tagów, więc
@@ -62,8 +86,27 @@ jobs:
             "publish=yes" | Out-File $env:GITHUB_OUTPUT -Append
           }
 
+  release:
+    # Runner Windows startuje WYŁĄCZNIE, gdy bramka stwierdziła, że wersji
+    # jeszcze nie wydano. Nieudana bramka (np. brak dostępu do origin) pomija
+    # ten job, a przebieg kończy się na czerwono — jak dotąd.
+    needs: guard
+    if: needs.guard.outputs.publish == 'yes'
+    runs-on: windows-2022
+    # Najdłuższe i najbardziej ryzykowne kroki w repo to pakowanie MSIX
+    # i self-contained publish. Bez limitu zawieszony przebieg liczy się
+    # domyślnie przez 6 h, na Windowsie z mnożnikiem 2x.
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # O istniejące tagi pyta już job `guard`; commit i tag wydania
+          # dopychają się także z płytkiego klonu, więc pełna historia nie jest
+          # tu do niczego potrzebna.
+          fetch-depth: 1
+
       - uses: actions/setup-dotnet@v4
-        if: steps.version.outputs.publish == 'yes'
         with:
           global-json-file: global.json
 
@@ -73,7 +116,6 @@ jobs:
       # runtime pack win-x64 z self-contained publish; `restore-keys` pozwala
       # odzyskać wpis zapisany przez ci.yml, zanim powstanie własny.
       - name: Cache NuGet packages
-        if: steps.version.outputs.publish == 'yes'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -85,16 +127,13 @@ jobs:
       # wapproj wymaga targetów DesktopBridge z Visual Studio — nie ma ich w SDK.
       # Obraz windows-2022 zawiera komponent Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging.
       - uses: microsoft/setup-msbuild@v2
-        if: steps.version.outputs.publish == 'yes'
 
       - name: Test
-        if: steps.version.outputs.publish == 'yes'
         run: |
           dotnet build AIDemon2/AIDemon2.csproj -c Release -p:Platform=x64
           dotnet test AIDemon2.Tests/AIDemon2.Tests.csproj -c Release
 
       - name: Promote changelog and stamp manifest
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         run: |
           $date = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')
@@ -104,7 +143,6 @@ jobs:
 
       - name: Prepare signing certificate
         id: cert
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         env:
           PFX_BASE64: ${{ secrets.MSIX_PFX_BASE64 }}
@@ -122,7 +160,6 @@ jobs:
           }
 
       - name: Build MSIX package
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         env:
           PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
@@ -141,7 +178,7 @@ jobs:
             '-p:Configuration=Release'
             '-p:Platform=x64'
             '-p:RuntimeIdentifier=win-x64'
-            "-p:Version=${{ steps.version.outputs.number }}"
+            "-p:Version=${{ needs.guard.outputs.version }}"
             '-p:UapAppxPackageBuildMode=SideloadOnly'
             '-p:AppxBundle=Never'
             '-p:AppxAutoIncrementPackageRevision=false'
@@ -158,7 +195,6 @@ jobs:
       # refused outright by Windows, and a bare .exe is blocked by browsers on
       # download - a ZIP is neither. Self-contained, so no .NET is required.
       - name: Build portable ZIP
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         run: |
           dotnet publish AIDemon2\AIDemon2.csproj -c Release -r win-x64 `
@@ -173,19 +209,19 @@ jobs:
           Remove-Item portable\*.pdb -ErrorAction SilentlyContinue
 
           New-Item -ItemType Directory -Force -Path artifacts\portable | Out-Null
-          $zip = "artifacts\portable\AIDemon2-${{ steps.version.outputs.number }}-win-x64.zip"
+          $zip = "artifacts\portable\AIDemon2-${{ needs.guard.outputs.version }}-win-x64.zip"
           Compress-Archive -Path portable\* -DestinationPath $zip -Force
           "Portable ZIP: {0:N1} MB" -f ((Get-Item $zip).Length / 1MB)
 
       - name: Remove certificate
-        # always(), ale z powtórzonym warunkiem bramki — inaczej krok odpalałby
-        # się także w przebiegach, w których certyfikat nigdy nie powstał.
-        if: always() && steps.version.outputs.publish == 'yes'
+        # always(): certyfikat ma zniknąć także po nieudanym buildzie. Warunku
+        # bramki nie trzeba powtarzać — cały job startuje tylko przy publish=yes,
+        # a brak pliku (certyfikat nie powstał) ignoruje SilentlyContinue.
+        if: always()
         shell: pwsh
         run: Remove-Item (Join-Path $env:RUNNER_TEMP 'sign.pfx') -ErrorAction SilentlyContinue
 
       - name: Commit release changes
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         run: |
           git config user.name  "github-actions[bot]"
@@ -194,24 +230,22 @@ jobs:
           if (git diff --cached --quiet) {
             Write-Host "Nothing to commit (changelog section was already prepared)."
           } else {
-            git commit -m "Release ${{ steps.version.outputs.number }} [skip ci]"
+            git commit -m "Release ${{ needs.guard.outputs.version }} [skip ci]"
             git push origin HEAD:master
           }
 
       - name: Tag
-        if: steps.version.outputs.publish == 'yes'
         shell: pwsh
         run: |
-          $v = "${{ steps.version.outputs.number }}"
+          $v = "${{ needs.guard.outputs.version }}"
           git tag -a "v$v" -m "AIDemon2 $v"
           git push origin "v$v"
 
       - name: Publish GitHub release
-        if: steps.version.outputs.publish == 'yes'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.number }}
-          name: AIDemon2 ${{ steps.version.outputs.number }}
+          tag_name: v${{ needs.guard.outputs.version }}
+          name: AIDemon2 ${{ needs.guard.outputs.version }}
           body_path: RELEASE_NOTES.md
           draft: false
           files: |
